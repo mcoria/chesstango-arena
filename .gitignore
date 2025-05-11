@@ -1,0 +1,7 @@
+uci-arena/target/
+uci-arena-ipc/target/
+uci-arena-web/target/
+uci-gui/target/
+uci-proxy/target/
+matches.pgn
+.idea/
