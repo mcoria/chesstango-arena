@@ -199,7 +199,7 @@ class Match {
     }
 
     private PGN createPGN() {
-        PGN pgn = PGN.of(game);
+        PGN pgn = game.encode();
         pgn.setEvent(mathId);
         pgn.setWhite(white.getEngineName());
         pgn.setBlack(black.getEngineName());
