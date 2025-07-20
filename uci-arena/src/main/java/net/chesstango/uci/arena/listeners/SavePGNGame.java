@@ -2,8 +2,8 @@ package net.chesstango.uci.arena.listeners;
 
 import net.chesstango.board.Game;
 import net.chesstango.board.moves.Move;
-import net.chesstango.board.representations.pgn.PGNStringEncoder;
-import net.chesstango.board.representations.pgn.PGN;
+import net.chesstango.gardel.pgn.PGN;
+import net.chesstango.gardel.pgn.PGNStringEncoder;
 import net.chesstango.uci.arena.MatchResult;
 import net.chesstango.uci.gui.Controller;
 

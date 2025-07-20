@@ -1,9 +1,9 @@
 package net.chesstango.uci.arena;
 
 import lombok.Getter;
-import net.chesstango.board.representations.pgn.PGN;
 import net.chesstango.engine.Session;
 import net.chesstango.engine.Tango;
+import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerVisitor;
 import net.chesstango.uci.proxy.UciProxy;

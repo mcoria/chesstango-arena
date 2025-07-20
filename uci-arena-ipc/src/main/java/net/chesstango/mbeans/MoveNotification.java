@@ -4,12 +4,15 @@ package net.chesstango.mbeans;
 import lombok.Getter;
 
 import javax.management.Notification;
+import java.io.Serial;
 
 /**
  * @author Mauricio Coria
  */
 public class MoveNotification extends Notification {
+    @Serial
     private static final long serialVersionUID = 1L;
+
     public static final String ATTRIBUTE_CHANGE = "net.chesstango.move";
 
     @Getter

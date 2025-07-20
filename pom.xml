@@ -47,7 +47,7 @@
 
         <chesstango-engine.version>1.1.0-SNAPSHOT</chesstango-engine.version>
         <goyeneche.version>1.0.6</goyeneche.version>
-        <gardel.version>1.0.2</gardel.version>
+        <gardel.version>1.0.4-SNAPSHOT</gardel.version>
         <piazzolla.version>1.0.1</piazzolla.version>
     </properties>
 
