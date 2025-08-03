@@ -2,12 +2,11 @@ package net.chesstango.uci.arena;
 
 import lombok.Getter;
 import net.chesstango.engine.Session;
-import net.chesstango.engine.Tango;
 import net.chesstango.gardel.pgn.PGN;
+import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerVisitor;
 import net.chesstango.uci.proxy.UciProxy;
-import net.chesstango.uci.engine.UciTango;
 
 import java.util.function.Consumer;
 
@@ -40,11 +39,9 @@ public class MatchResult {
 
     private static void discoverEngineController(Controller controller, Consumer<Session> sessionSetter) {
         controller.accept(new ControllerVisitor() {
-
             @Override
             public void visit(UciTango uciTango) {
-                Tango tango = uciTango.getTango();
-                sessionSetter.accept(tango.getCurrentSession());
+                sessionSetter.accept(uciTango.getSession());
             }
 
             @Override

@@ -1,8 +1,8 @@
 package net.chesstango.uci.arena;
 
+import net.chesstango.engine.Tango;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
-import net.chesstango.engine.Tango;
 import net.chesstango.search.dummy.Dummy;
 import net.chesstango.uci.arena.gui.ControllerPoolFactory;
 import net.chesstango.uci.arena.matchtypes.MatchByDepth;
@@ -38,8 +38,13 @@ public class MatchMultipleTest {
                         .overrideEngineName("Smart")
         ));
 
+        //new Tango(new Dummy())
+
         dummyEnginePool = new GenericObjectPool<>(new ControllerPoolFactory(() ->
-                new ControllerTango(new UciTango(new Tango(new Dummy())))
+                new ControllerTango(new UciTango(config -> {
+                    config.setSearch(new Dummy());
+                    return Tango.open(config);
+                }))
                         .overrideEngineName("Dummy")
         ));
     }
