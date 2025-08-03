@@ -11,5 +11,4 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @SelectClasses({ MatchTest.class, MatchMultipleTest.class })
 public class UCIArenaTestSuite {
-
 }
