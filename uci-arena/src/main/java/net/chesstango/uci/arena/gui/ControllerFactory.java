@@ -3,7 +3,6 @@ package net.chesstango.uci.arena.gui;
 import net.chesstango.engine.Config;
 import net.chesstango.engine.Tango;
 import net.chesstango.evaluation.Evaluator;
-import net.chesstango.search.DefaultSearch;
 import net.chesstango.search.Search;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
@@ -28,20 +27,20 @@ public class ControllerFactory {
         return new ControllerProxy(proxy);
     }
 
-    /**
-     * Tango without any customization
-     *
-     * @return
-     */
     public static Controller createTangoController() {
         return new ControllerTango(new UciTango());
     }
 
-    /**
-     * Tango with search customization
-     *
-     * @return
-     */
+    public static Controller createTangoControllerCustomConfig(Consumer<Config> configConsumer) {
+        Function<Config, Tango> tangoFactory = config -> {
+            configConsumer.accept(config);
+            return Tango.open(config);
+        };
+
+        return new ControllerTango(new UciTango(tangoFactory));
+    }
+
+
     public static Controller createTangoControllerWithSearch(Supplier<Search> searchMoveSupplier) {
         Search search = searchMoveSupplier.get();
 
@@ -54,16 +53,12 @@ public class ControllerFactory {
                 .overrideEngineName(search.getClass().getSimpleName());
     }
 
-    /**
-     * Tango with evaluator customization
-     *
-     * @return
-     */
+
     public static Controller createTangoControllerWithEvaluator(Supplier<Evaluator> gameEvaluatorSupplier) {
         Evaluator evaluator = gameEvaluatorSupplier.get();
 
         Function<Config, Tango> tangoFactory = config -> {
-            config.setSearch(new DefaultSearch(evaluator));
+            config.setSearch(Search.getInstance(evaluator));
             return Tango.open(config);
         };
 
