@@ -1,7 +1,8 @@
 package net.chesstango.uci.gui;
 
 import net.chesstango.goyeneche.UCIGui;
-import net.chesstango.goyeneche.responses.*;
+import net.chesstango.goyeneche.responses.RspId;
+import net.chesstango.goyeneche.responses.RspUciOk;
 
 /**
  * @author Mauricio Coria
@@ -9,7 +10,7 @@ import net.chesstango.goyeneche.responses.*;
 class StateWaitRspUciOk implements UCIGui {
     private final ControllerAbstract controllerAbstract;
 
-    public StateWaitRspUciOk(ControllerAbstract controllerAbstract) {
+    StateWaitRspUciOk(ControllerAbstract controllerAbstract) {
         this.controllerAbstract = controllerAbstract;
     }
 
@@ -18,22 +19,6 @@ class StateWaitRspUciOk implements UCIGui {
         controllerAbstract.responseReceived(rspUciOk);
     }
 
-    @Override
-    public void do_option(RspOption rspOption) {
-
-    }
-
-    @Override
-    public void do_readyOk(RspReadyOk rspReadyOk) {
-    }
-
-    @Override
-    public void do_bestMove(RspBestMove rspBestMove) {
-    }
-
-    @Override
-    public void do_info(RspInfo rspInfo) {
-    }
 
     @Override
     public void do_id(RspId rspId) {
@@ -44,5 +29,4 @@ class StateWaitRspUciOk implements UCIGui {
             controllerAbstract.setEngineAuthor(rspId.getText());
         }
     }
-
 }
