@@ -28,11 +28,17 @@ public class ControllerFactory {
     }
 
     public static Controller createTangoController() {
-        return new ControllerTango(new UciTango());
+        Function<Config, Tango> tangoFactory = config -> {
+            config.setSyncSearch(true);
+            return Tango.open(config);
+        };
+
+        return new ControllerTango(new UciTango(tangoFactory));
     }
 
     public static Controller createTangoControllerCustomConfig(Consumer<Config> configConsumer) {
         Function<Config, Tango> tangoFactory = config -> {
+            config.setSyncSearch(true);
             configConsumer.accept(config);
             return Tango.open(config);
         };
@@ -45,6 +51,7 @@ public class ControllerFactory {
         Search search = searchMoveSupplier.get();
 
         Function<Config, Tango> tangoFactory = config -> {
+            config.setSyncSearch(true);
             config.setSearch(search);
             return Tango.open(config);
         };
@@ -54,10 +61,11 @@ public class ControllerFactory {
     }
 
 
-    public static Controller createTangoControllerWithEvaluator(Supplier<Evaluator> gameEvaluatorSupplier) {
-        Evaluator evaluator = gameEvaluatorSupplier.get();
+    public static Controller createTangoControllerWithEvaluator(Supplier<Evaluator> evaluatorSupplier) {
+        Evaluator evaluator = evaluatorSupplier.get();
 
         Function<Config, Tango> tangoFactory = config -> {
+            config.setSyncSearch(true);
             config.setSearch(Search.getInstance(evaluator));
             return Tango.open(config);
         };

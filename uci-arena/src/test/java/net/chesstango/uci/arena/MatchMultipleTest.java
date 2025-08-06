@@ -51,7 +51,7 @@ public class MatchMultipleTest {
 
     @Test
     public void testPlay() {
-        MatchMultiple matchMultiple = new MatchMultiple(smartEnginePool, dummyEnginePool, new MatchByDepth(3));
+        MatchMultiple matchMultiple = new MatchMultiple(1, smartEnginePool, dummyEnginePool, new MatchByDepth(3));
         //matchMultiple.setDebugEnabled(true);
 
         List<MatchResult> matchResult = matchMultiple.play(Stream.of(FEN.of(FENParser.INITIAL_FEN)));

@@ -23,6 +23,8 @@ import java.util.stream.Stream;
 public class MatchMultiple {
     private static final Logger logger = LoggerFactory.getLogger(MatchMultiple.class);
 
+    private final int parallelJobs;
+
     private final ObjectPool<Controller> controllerPool1;
 
     private final ObjectPool<Controller> controllerPool2;
@@ -44,7 +46,8 @@ public class MatchMultiple {
     private MatchListener matchListener;
 
 
-    public MatchMultiple(ObjectPool<Controller> controllerPool1, ObjectPool<Controller> controllerPool2, MatchType matchType) {
+    public MatchMultiple(int parallelJobs, ObjectPool<Controller> controllerPool1, ObjectPool<Controller> controllerPool2, MatchType matchType) {
+        this.parallelJobs = parallelJobs;
         this.controllerPool1 = controllerPool1;
         this.controllerPool2 = controllerPool2;
         this.matchType = matchType;
@@ -52,13 +55,11 @@ public class MatchMultiple {
     }
 
     public List<MatchResult> play(Stream<FEN> fenStream) {
-        int availableCores = Runtime.getRuntime().availableProcessors();
-
-        try (ExecutorService executor = Executors.newFixedThreadPool(availableCores - 1)) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(parallelJobs)) {
             fenStream.forEach(fen -> {
-                executor.submit(() -> play(fen, controllerPool1, controllerPool2));
+                executor.execute(() -> play(fen, controllerPool1, controllerPool2));
                 if (switchChairs) {
-                    executor.submit(() -> play(fen, controllerPool1, controllerPool2));
+                    executor.execute(() -> play(fen, controllerPool1, controllerPool2));
                 }
             });
         }

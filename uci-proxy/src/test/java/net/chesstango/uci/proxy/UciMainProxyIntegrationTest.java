@@ -50,7 +50,7 @@ public class UciMainProxyIntegrationTest {
         UciProxy engine = new UciProxy(SpikeProxy.INSTANCE);
 
         UciMain uciMain = new UciMain(engine, new PipedInputStream(outputToEngine), new PrintStream(new PipedOutputStream(inputFromEngine), true));
-        executorService.submit(uciMain);
+        executorService.execute(uciMain);
 
         PrintStream out = new PrintStream(outputToEngine, true);
         BufferedReader in = new BufferedReader(new InputStreamReader(inputFromEngine));

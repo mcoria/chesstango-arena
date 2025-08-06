@@ -4,9 +4,9 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.uci.arena.gui.ControllerPoolFactory;
-import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.arena.listeners.MatchListener;
 import net.chesstango.uci.arena.matchtypes.MatchType;
+import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.slf4j.Logger;
@@ -24,6 +24,8 @@ import java.util.stream.Stream;
 public class Tournament {
     private static final Logger logger = LoggerFactory.getLogger(Tournament.class);
 
+    private final int parallelJobs;
+
     private final MatchType matchType;
 
     private final List<Supplier<Controller>> engineSupplierList;
@@ -32,7 +34,8 @@ public class Tournament {
     @Accessors(chain = true)
     private MatchListener matchListener;
 
-    public Tournament(List<Supplier<Controller>> engineSupplierList, MatchType matchType) {
+    public Tournament(int parallelJobs, List<Supplier<Controller>> engineSupplierList, MatchType matchType) {
+        this.parallelJobs = parallelJobs;
         this.engineSupplierList = engineSupplierList;
         this.matchType = matchType;
     }
@@ -47,7 +50,7 @@ public class Tournament {
             for (Supplier<Controller> opponentEngineSupplier : engineSupplierList) {
                 try (ObjectPool<Controller> opponentPool = new GenericObjectPool<>(new ControllerPoolFactory(opponentEngineSupplier))) {
                     if (mainEngineSupplier != opponentEngineSupplier) {
-                        MatchMultiple matchMultiple = new MatchMultiple(mainPool, opponentPool, matchType)
+                        MatchMultiple matchMultiple = new MatchMultiple(parallelJobs, mainPool, opponentPool, matchType)
                                 .setSwitchChairs(true)
                                 .setMatchListener(matchListener);
                         matchResults.addAll(matchMultiple.play(fenList));
