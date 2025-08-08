@@ -59,7 +59,7 @@ public class MatchMultiple {
             fenStream.forEach(fen -> {
                 executor.execute(() -> play(fen, controllerPool1, controllerPool2));
                 if (switchChairs) {
-                    executor.execute(() -> play(fen, controllerPool1, controllerPool2));
+                    executor.execute(() -> play(fen, controllerPool2, controllerPool1));
                 }
             });
         }
