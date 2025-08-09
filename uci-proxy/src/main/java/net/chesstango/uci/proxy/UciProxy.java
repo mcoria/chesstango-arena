@@ -8,8 +8,6 @@ import net.chesstango.goyeneche.stream.UCIInputStreamFromStringAdapter;
 import net.chesstango.goyeneche.stream.UCIOutputStream;
 import net.chesstango.goyeneche.stream.strings.StringActionSupplier;
 import net.chesstango.goyeneche.stream.strings.StringSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStreamReader;
 import java.util.function.Supplier;
@@ -22,6 +20,7 @@ public class UciProxy implements UCIService {
 
     private final UCIActiveStreamReader pipe;
     private final UciProcess uciProcess;
+    private final String proxyName;
 
     private UCIOutputStream responseOutputStream;
     private Thread readingPipeThread;
@@ -34,6 +33,7 @@ public class UciProxy implements UCIService {
     public UciProxy(ProxyConfig config) {
         this.pipe = new UCIActiveStreamReader();
         this.uciProcess = new UciProcess(config);
+        this.proxyName = config.getName();
     }
 
 
@@ -43,7 +43,7 @@ public class UciProxy implements UCIService {
             uciProcess.waitProcessStart();
         }
 
-        log.trace("proxy >> {}", message);
+        log.trace("{} >> {}", proxyName, message);
 
         uciProcess.outputStreamProcess.println(message);
     }
@@ -54,7 +54,7 @@ public class UciProxy implements UCIService {
 
         Supplier<String> stringSupplier = new StringSupplier(new InputStreamReader(uciProcess.inputStreamProcess));
 
-        stringSupplier = new StringActionSupplier(stringSupplier, line -> log.trace("proxy << {}", line));
+        stringSupplier = new StringActionSupplier(stringSupplier, line -> log.trace("{} << {}", proxyName, line));
 
         pipe.setInputStream(new UCIInputStreamFromStringAdapter(stringSupplier));
         pipe.setOutputStream(responseOutputStream);
