@@ -1,5 +1,6 @@
 package net.chesstango.uci.proxy;
 
+import lombok.extern.slf4j.Slf4j;
 import net.chesstango.goyeneche.UCICommand;
 import net.chesstango.goyeneche.UCIService;
 import net.chesstango.goyeneche.stream.UCIActiveStreamReader;
@@ -16,14 +17,14 @@ import java.util.function.Supplier;
 /**
  * @author Mauricio Coria
  */
+@Slf4j
 public class UciProxy implements UCIService {
-    private static final Logger logger = LoggerFactory.getLogger(UciProxy.class);
 
     private final UCIActiveStreamReader pipe;
+    private final UciProcess uciProcess;
 
     private UCIOutputStream responseOutputStream;
     private Thread readingPipeThread;
-    private UciProcess uciProcess;
 
 
     /**
@@ -42,7 +43,7 @@ public class UciProxy implements UCIService {
             uciProcess.waitProcessStart();
         }
 
-        logger.trace("proxy >> {}", message);
+        log.trace("proxy >> {}", message);
 
         uciProcess.outputStreamProcess.println(message);
     }
@@ -53,7 +54,7 @@ public class UciProxy implements UCIService {
 
         Supplier<String> stringSupplier = new StringSupplier(new InputStreamReader(uciProcess.inputStreamProcess));
 
-        stringSupplier = new StringActionSupplier(stringSupplier, line -> logger.trace("proxy << {}", line));
+        stringSupplier = new StringActionSupplier(stringSupplier, line -> log.trace("proxy << {}", line));
 
         pipe.setInputStream(new UCIInputStreamFromStringAdapter(stringSupplier));
         pipe.setOutputStream(responseOutputStream);
@@ -83,8 +84,8 @@ public class UciProxy implements UCIService {
     }
 
     private void readFromProcess() {
-        logger.debug("readFromPipe(): start reading engine output");
+        log.debug("readFromPipe(): start reading engine output");
         pipe.run();
-        logger.debug("readFromPipe():end reading engine output");
+        log.debug("readFromPipe():end reading engine output");
     }
 }

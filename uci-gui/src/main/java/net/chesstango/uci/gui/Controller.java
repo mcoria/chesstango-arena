@@ -8,7 +8,7 @@ import net.chesstango.goyeneche.responses.RspBestMove;
 /**
  * Controller interface for managing UCI (Universal Chess Interface) chess engine interactions.
  * Provides methods to control engine lifecycle, send commands and receive responses.
- * 
+ *
  * @author Mauricio Coria
  */
 public interface Controller {
@@ -69,7 +69,11 @@ public interface Controller {
     default void startEngine() {
         open();
         send_ReqUci();
+        send_ReqOptions();
         send_ReqIsReady();
+    }
+
+    default void send_ReqOptions() {
     }
 
     /**

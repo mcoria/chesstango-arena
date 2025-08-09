@@ -1,46 +1,27 @@
 package net.chesstango.uci.proxy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Mauricio Coria
  */
+@Slf4j
 class UciProcess {
-    private static final Logger logger = LoggerFactory.getLogger(UciProcess.class);
-    private final ProxyConfig config;
+    private final ProcessBuilder processBuilder;
     private Process process;
 
     InputStream inputStreamProcess;
     PrintStream outputStreamProcess;
 
     UciProcess(ProxyConfig config) {
-        this.config = config;
+        this.processBuilder = config.processBuilder();
     }
 
     void startProcess() {
-        List<String> commandAndArguments = new ArrayList<>();
-
-        commandAndArguments.add(config.getExe());
-
-        if (config.getParams() != null) {
-            String[] parameters = config.getParams().split(" ");
-            if (parameters.length > 0) {
-                commandAndArguments.addAll(Arrays.stream(parameters).toList());
-            }
-        }
-
-        ProcessBuilder processBuilder = new ProcessBuilder(commandAndArguments);
-        processBuilder.directory(new File(config.getDirectory()));
-
         try {
             synchronized (this) {
                 process = processBuilder.start();
@@ -53,7 +34,7 @@ class UciProcess {
     }
 
     void stopProcess() {
-        logger.debug("stopProcess() invoked");
+        log.debug("stopProcess() invoked");
 
         try {
             process.waitFor();
@@ -61,7 +42,7 @@ class UciProcess {
             throw new RuntimeException(e);
         }
 
-        logger.debug("stopProcess() finished");
+        log.debug("stopProcess() finished");
     }
 
     void waitProcessStart() {
@@ -86,7 +67,7 @@ class UciProcess {
             outputStreamProcess.close();
             inputStreamProcess.close();
         } catch (IOException e) {
-            logger.error("Error:", e);
+            log.error("Error:", e);
         }
     }
 }

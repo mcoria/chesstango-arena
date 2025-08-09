@@ -6,11 +6,14 @@ import net.chesstango.goyeneche.UCIGui;
 import net.chesstango.goyeneche.UCIService;
 import net.chesstango.goyeneche.requests.ReqGo;
 import net.chesstango.goyeneche.requests.ReqPosition;
+import net.chesstango.goyeneche.requests.ReqSetOption;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.*;
 import net.chesstango.goyeneche.stream.UCIOutputStreamGuiExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * @author Mauricio Coria
@@ -30,6 +33,8 @@ public abstract class ControllerAbstract implements Controller {
     private String engineAuthor;
 
     private ReqGo cmdGo;
+
+    private List<ReqSetOption> reqSetOptions;
 
     public ControllerAbstract(UCIService service) {
         UCIGui messageExecutor = new UCIGui() {
@@ -135,6 +140,18 @@ public abstract class ControllerAbstract implements Controller {
         return this;
     }
 
+    @Override
+    public void send_ReqOptions() {
+        if (reqSetOptions != null) {
+            reqSetOptions.forEach(this::sendRequestNoWaitResponse);
+        }
+    }
+
+    public Controller setOptionsCommands(List<ReqSetOption> reqSetOptions) {
+        this.reqSetOptions = reqSetOptions;
+        return this;
+    }
+
     public synchronized void sendRequestNoWaitResponse(UCIRequest request) {
         this.response = null;
         this.currentState = new StateNoWaitRsp();
@@ -168,6 +185,5 @@ public abstract class ControllerAbstract implements Controller {
         this.response = response;
         notifyAll();
     }
-
 
 }

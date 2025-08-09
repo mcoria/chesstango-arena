@@ -3,11 +3,13 @@ package net.chesstango.uci.arena.gui;
 import net.chesstango.engine.Config;
 import net.chesstango.engine.Tango;
 import net.chesstango.evaluation.Evaluator;
+import net.chesstango.goyeneche.requests.ReqSetOption;
 import net.chesstango.search.Search;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerProxy;
 import net.chesstango.uci.gui.ControllerTango;
+import net.chesstango.uci.proxy.ProxyConfig;
 import net.chesstango.uci.proxy.ProxyConfigLoader;
 import net.chesstango.uci.proxy.UciProxy;
 
@@ -19,12 +21,11 @@ import java.util.function.Supplier;
  * @author Mauricio Coria
  */
 public class ControllerFactory {
-    public static Controller createProxyController(String proxyName, Consumer<UciProxy> fnProxySetup) {
-        UciProxy proxy = new UciProxy(ProxyConfigLoader.loadEngineConfig(proxyName));
-        if (fnProxySetup != null) {
-            fnProxySetup.accept(proxy);
-        }
-        return new ControllerProxy(proxy);
+    public static Controller createProxyController(String proxyName) {
+        ProxyConfig config = ProxyConfigLoader.loadEngineConfig(proxyName);
+        UciProxy proxy = new UciProxy(config);
+        return new ControllerProxy(proxy)
+                .setOptionsCommands(config.uciOptionCommands());
     }
 
     public static Controller createTangoController() {

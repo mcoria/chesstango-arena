@@ -28,11 +28,26 @@
     "name": "GameEvaluatorImp02",
     "directory": "C:\\Java\\projects\\chess\\chess-utils\\tangoengines\\13-GameEvaluatorImp02",
     "exe": "C:\\Java\\jdk-17.0.5\\bin\\java",
-    "params": "-jar uci-engine-0.0.10-SNAPSHOT.jar"
+    "params": ["-jar",  "uci-engine-0.0.10-SNAPSHOT.jar"]
   },
   {
     "name": "tango-v0.0.11",
     "directory": "C:\\java\\projects\\chess\\chess-utils\\engines\\Tango\\15-Tango-v0.0.11",
     "exe": "C:\\java\\projects\\chess\\chess-utils\\engines\\Tango\\15-Tango-v0.0.11\\tango-v0.0.11.exe"
+  },
+  {
+    "name": "Tango-v1.1.0",
+    "directory": "C:\\java\\projects\\chess\\chess-utils\\engines\\Tango\\Tango-v1.1.0",
+    "exe": "C:\\java\\projects\\chess\\chess-utils\\engines\\Tango\\Tango-v1.1.0\\chesstango-uci.exe",
+    "options": [
+      {
+        "name": "PolyglotFile",
+        "value": "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin"
+      },
+      {
+        "name": "SyzygyDirectory",
+        "value": "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5"
+      }
+    ]
   }
 ]
