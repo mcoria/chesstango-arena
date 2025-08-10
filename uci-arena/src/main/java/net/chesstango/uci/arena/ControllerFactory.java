@@ -1,4 +1,4 @@
-package net.chesstango.uci.arena.gui;
+package net.chesstango.uci.arena;
 
 import net.chesstango.engine.Config;
 import net.chesstango.engine.Tango;

@@ -63,7 +63,7 @@ public class MatchTest {
     @Test
     public void testPlay() {
         Match match = new Match(smartEngine, dummyEngine, new MatchByDepth(3));
-        //match.setDebugEnabled(true);
+        //match.setPrintPGN(true);
 
         MatchResult matchResult = match.play(FEN.of(FENParser.INITIAL_FEN));
 

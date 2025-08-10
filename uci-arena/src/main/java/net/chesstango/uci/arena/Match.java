@@ -2,6 +2,7 @@ package net.chesstango.uci.arena;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import net.chesstango.board.Color;
 import net.chesstango.board.Game;
 import net.chesstango.board.Status;
@@ -16,8 +17,6 @@ import net.chesstango.goyeneche.responses.RspBestMove;
 import net.chesstango.uci.arena.listeners.MatchListener;
 import net.chesstango.uci.arena.matchtypes.MatchType;
 import net.chesstango.uci.gui.Controller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -27,8 +26,8 @@ import java.util.UUID;
 /**
  * @author Mauricio Coria
  */
-class Match {
-    private static final Logger logger = LoggerFactory.getLogger(Match.class);
+@Slf4j
+public class Match {
     private final Controller white;
     private final Controller black;
     private final MatchType matchType;
@@ -44,7 +43,7 @@ class Match {
 
     @Setter
     @Accessors(chain = true)
-    private boolean debugEnabled;
+    private boolean printPGN;
 
     @Setter
     @Accessors(chain = true)
@@ -71,9 +70,9 @@ class Match {
         } catch (RuntimeException e) {
             e.printStackTrace(System.err);
 
-            logger.error("Error playing fen: {}", fen);
+            log.error("Error playing fen: {}", fen);
 
-            logger.error("PGN: {}", createPGN());
+            log.error("PGN: {}", createPGN());
 
             throw e;
         }
@@ -135,21 +134,21 @@ class Match {
         Controller winner = null;
 
         if (Status.DRAW_BY_FOLD_REPETITION.equals(game.getStatus())) {
-            logger.info("[{}] DRAW (por fold repetition)", mathId);
+            log.info("[{}] DRAW (por fold repetition)", mathId);
 
         } else if (Status.DRAW_BY_FIFTY_RULE.equals(game.getStatus())) {
-            logger.info("[{}] DRAW (por fold fiftyMoveRule)", mathId);
+            log.info("[{}] DRAW (por fold fiftyMoveRule)", mathId);
 
         } else if (Status.STALEMATE.equals(game.getStatus())) {
-            logger.info("[{}] DRAW", mathId);
+            log.info("[{}] DRAW", mathId);
 
         } else if (Status.MATE.equals(game.getStatus())) {
             if (Color.WHITE.equals(game.getPosition().getCurrentTurn())) {
-                logger.info("[{}] BLACK WON {}", mathId, black.getEngineName());
+                log.info("[{}] BLACK WON {}", mathId, black.getEngineName());
                 winner = black;
 
             } else if (Color.BLACK.equals(game.getPosition().getCurrentTurn())) {
-                logger.info("[{}] WHITE WON {}", mathId, white.getEngineName());
+                log.info("[{}] WHITE WON {}", mathId, white.getEngineName());
                 winner = white;
 
             }
@@ -158,7 +157,7 @@ class Match {
             throw new RuntimeException("Game is still in progress.");
         }
 
-        if (debugEnabled) {
+        if (printPGN) {
             printGameForDebug(System.out);
         }
 

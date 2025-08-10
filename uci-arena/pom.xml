@@ -34,10 +34,6 @@
             <groupId>net.chesstango</groupId>
             <artifactId>uci-arena-ipc</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>

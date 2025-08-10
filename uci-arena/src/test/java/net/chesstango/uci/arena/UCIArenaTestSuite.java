@@ -9,6 +9,6 @@ import org.junit.platform.suite.api.Suite;
  *
  */
 @Suite
-@SelectClasses({ MatchTest.class, MatchMultipleTest.class })
+@SelectClasses({MatchTest.class})
 public class UCIArenaTestSuite {
 }
