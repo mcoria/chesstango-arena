@@ -20,9 +20,11 @@ public class ControllerProxyIntegrationTest {
 
     @Test
     public void test_Proxy() {
-        UciProxy engine = new UciProxy(ProxyConfigLoader.loadEngineConfig("Spike"));
+        UciProxy engine = new UciProxy(SpikeProxy.INSTANCE);
 
         ControllerAbstract client = new ControllerProxy(engine);
+
+        client.open();
 
         client.send_ReqUci();
 

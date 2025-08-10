@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Path;
 
 /**
  * @author Mauricio Coria
@@ -25,7 +26,13 @@ public class UciMain implements Runnable {
     private volatile boolean isRunning;
 
     public static void main(String[] args) {
-        UciMain uciMain = new UciMain(new UciProxy(ProxyConfigLoader.loadEngineConfig("Spike")), System.in, System.out);
+        Path configFile = Path.of(args[0]);
+        UciMain uciMain = null;
+        try {
+            uciMain = new UciMain(new UciProxy(ProxyConfigLoader.loadEngine(configFile)), System.in, System.out);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         uciMain.run();
     }
 

@@ -1,0 +1,17 @@
+{
+  "name": "EngineName",
+  "directory": "C:\\directory",
+  "exe": "C:\\directory\\engine.exe",
+  "params": ["-first",  "-second"],
+  "options": [
+    {
+      "name": "PolyglotFile",
+      "value": "C:\\Polyglot\\file.bin"
+    },
+    {
+      "name": "SyzygyDirectory",
+      "value": "C:\\SyzygyDirectory"
+    }
+  ]
+}
+
