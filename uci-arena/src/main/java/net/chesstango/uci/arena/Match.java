@@ -27,19 +27,16 @@ import java.util.UUID;
  * @author Mauricio Coria
  */
 @Slf4j
-public class Match {
+public final class Match {
     private final Controller white;
     private final Controller black;
     private final MatchType matchType;
     private final String mathId;
+    private final FEN fen;
     private final SimpleMoveDecoder simpleMoveDecoder = new SimpleMoveDecoder();
 
     private Game game;
     private MatchResult matchResult;
-
-    @Setter
-    @Accessors(chain = true)
-    private FEN fen;
 
     @Setter
     @Accessors(chain = true)
@@ -49,17 +46,16 @@ public class Match {
     @Accessors(chain = true)
     private MatchListener matchListener;
 
-
-    public Match(Controller white, Controller black, MatchType matchType) {
+    public Match(Controller white, Controller black, FEN fen, MatchType matchType) {
         this.white = white;
         this.black = black;
+        this.fen = fen;
         this.matchType = matchType;
         this.mathId = UUID.randomUUID().toString();
     }
 
-    public MatchResult play(FEN fen) {
+    public MatchResult play() {
         try {
-            setFen(fen);
 
             startNewGame();
 
@@ -79,7 +75,7 @@ public class Match {
     }
 
 
-    protected void compete() {
+    void compete() {
         setGame(Game.from(fen));
 
         final List<String> executedMovesStr = new ArrayList<>();
@@ -125,12 +121,12 @@ public class Match {
         }
     }
 
-    protected void setGame(Game game) {
+    void setGame(Game game) {
         this.game = game;
     }
 
 
-    protected MatchResult createResult() {
+    MatchResult createResult() {
         Controller winner = null;
 
         if (Status.DRAW_BY_FOLD_REPETITION.equals(game.getStatus())) {
