@@ -127,8 +127,6 @@ public final class Match {
 
 
     MatchResult createResult() {
-        Controller winner = null;
-
         if (Status.DRAW_BY_FOLD_REPETITION.equals(game.getStatus())) {
             log.info("[{}] DRAW (por fold repetition)", mathId);
 
@@ -141,12 +139,8 @@ public final class Match {
         } else if (Status.MATE.equals(game.getStatus())) {
             if (Color.WHITE.equals(game.getPosition().getCurrentTurn())) {
                 log.info("[{}] BLACK WON {}", mathId, black.getEngineName());
-                winner = black;
-
             } else if (Color.BLACK.equals(game.getPosition().getCurrentTurn())) {
                 log.info("[{}] WHITE WON {}", mathId, white.getEngineName());
-                winner = white;
-
             }
         } else {
             printGameForDebug(System.err);
@@ -157,7 +151,7 @@ public final class Match {
             printGameForDebug(System.out);
         }
 
-        return new MatchResult(mathId, createPGN(), white, black, winner);
+        return new MatchResult(mathId, createPGN(), white, black);
     }
 
     private void startNewGame() {

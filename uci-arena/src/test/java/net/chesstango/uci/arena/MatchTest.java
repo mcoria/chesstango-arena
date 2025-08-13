@@ -4,6 +4,7 @@ import net.chesstango.board.Game;
 import net.chesstango.engine.Tango;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
+import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.search.dummy.Dummy;
 import net.chesstango.uci.arena.matchtypes.MatchByDepth;
 import net.chesstango.uci.engine.UciTango;
@@ -20,6 +21,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class MatchTest {
 
+    public static final String SMART = "Smart";
+    public static final String DUMMY = "Dummy";
+
     private Controller smartEngine;
 
     private Controller dummyEngine;
@@ -27,13 +31,13 @@ public class MatchTest {
     @BeforeEach
     public void setup() {
         smartEngine = new ControllerTango(new UciTango())
-                .overrideEngineName("Smart");
+                .overrideEngineName(SMART);
 
         dummyEngine = new ControllerTango(new UciTango(config -> {
             config.setSearch(new Dummy());
             return Tango.open(config);
         }))
-                .overrideEngineName("Dummy");
+                .overrideEngineName(DUMMY);
 
         smartEngine.startEngine();
         dummyEngine.startEngine();
@@ -54,8 +58,12 @@ public class MatchTest {
 
         assertNotNull(matchResult);
 
+        PGN pgn = matchResult.getPgn();
+
         // Deberia ganar el engine smartEngine
-        assertEquals(smartEngine, matchResult.getEngineWhite());
+        assertEquals(SMART, pgn.getWhite());
+        assertEquals(DUMMY, pgn.getBlack());
+        assertEquals(PGN.Result.WHITE_WINS, pgn.getResult());
     }
 
     @Test
@@ -66,9 +74,12 @@ public class MatchTest {
 
         MatchResult result = match.createResult();
 
-        assertEquals(smartEngine, result.getEngineWhite());
-        assertEquals(dummyEngine, result.getEngineBlack());
-        assertEquals(smartEngine, result.getWinner());
+        PGN pgn = result.getPgn();
+
+        // Deberia ganar el engine smartEngine
+        assertEquals(SMART, pgn.getWhite());
+        assertEquals(DUMMY, pgn.getBlack());
+        assertEquals(PGN.Result.WHITE_WINS, pgn.getResult());
     }
 
     @Test
@@ -79,9 +90,12 @@ public class MatchTest {
 
         MatchResult result = match.createResult();
 
-        assertEquals(smartEngine, result.getEngineWhite());
-        assertEquals(dummyEngine, result.getEngineBlack());
-        assertEquals(dummyEngine, result.getWinner());
+        PGN pgn = result.getPgn();
+
+        // Deberia ganar el engine smartEngine
+        assertEquals(SMART, pgn.getWhite());
+        assertEquals(DUMMY, pgn.getBlack());
+        assertEquals(PGN.Result.BLACK_WINS, pgn.getResult());
     }
 
 
@@ -93,9 +107,12 @@ public class MatchTest {
 
         MatchResult result = match.createResult();
 
-        assertEquals(smartEngine, result.getEngineWhite());
-        assertEquals(dummyEngine, result.getEngineBlack());
-        assertNull(result.getWinner());
+        PGN pgn = result.getPgn();
+
+        // Deberia ganar el engine smartEngine
+        assertEquals(SMART, pgn.getWhite());
+        assertEquals(DUMMY, pgn.getBlack());
+        assertEquals(PGN.Result.DRAW, pgn.getResult());
     }
 
     @Test
@@ -106,9 +123,12 @@ public class MatchTest {
 
         MatchResult result = match.createResult();
 
-        assertEquals(smartEngine, result.getEngineWhite());
-        assertEquals(dummyEngine, result.getEngineBlack());
-        assertNull(result.getWinner());
+        PGN pgn = result.getPgn();
+
+        // Deberia ganar el engine smartEngine
+        assertEquals(SMART, pgn.getWhite());
+        assertEquals(DUMMY, pgn.getBlack());
+        assertEquals(PGN.Result.DRAW, pgn.getResult());
     }
 
 }

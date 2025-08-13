@@ -17,19 +17,13 @@ import java.util.function.Consumer;
 public class MatchResult {
     private final String mathId;
     private final PGN pgn;
-    private final Controller engineWhite;
-    private final Controller engineBlack;
-    private final Controller winner;
 
     private Session sessionWhite;
     private Session sessionBlack;
 
-    public MatchResult(String mathId, PGN pgn, Controller engineWhite, Controller engineBlack, Controller winner) {
+    public MatchResult(String mathId, PGN pgn, Controller engineWhite, Controller engineBlack) {
         this.mathId = mathId;
         this.pgn = pgn;
-        this.engineWhite = engineWhite;
-        this.engineBlack = engineBlack;
-        this.winner = winner;
         this.sessionWhite = null;
         this.sessionBlack = null;
 
