@@ -25,7 +25,7 @@ public class SavePGNGame implements MatchListener {
 
     @Override
     public void notifyEndGame(Game game, MatchResult matchResult) {
-        save(matchResult.getPgn());
+        save(matchResult.pgn());
     }
 
 

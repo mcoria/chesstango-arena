@@ -9,19 +9,25 @@ import net.chesstango.board.Status;
 import net.chesstango.board.moves.Move;
 import net.chesstango.board.representations.GameDebugEncoder;
 import net.chesstango.board.representations.move.SimpleMoveDecoder;
+import net.chesstango.engine.Session;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
+import net.chesstango.search.SearchResult;
 import net.chesstango.uci.arena.listeners.MatchListener;
 import net.chesstango.uci.arena.matchtypes.MatchType;
+import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
+import net.chesstango.uci.gui.ControllerVisitor;
+import net.chesstango.uci.proxy.UciProxy;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Mauricio Coria
@@ -151,7 +157,7 @@ public final class Match {
             printGameForDebug(System.out);
         }
 
-        return new MatchResult(mathId, createPGN(), white, black);
+        return new MatchResult(mathId, createPGN(), discoverEngineController(white), discoverEngineController(black));
     }
 
     private void startNewGame() {
@@ -193,5 +199,28 @@ public final class Match {
         pgn.setWhite(white.getEngineName());
         pgn.setBlack(black.getEngineName());
         return pgn;
+    }
+
+    private static List<SearchResult> discoverEngineController(Controller controller) {
+        AtomicReference<Session> sessionRef = new AtomicReference<>();
+
+        controller.accept(new ControllerVisitor() {
+            @Override
+            public void visit(UciTango uciTango) {
+                sessionRef.set(uciTango.getSession());
+            }
+
+            @Override
+            public void visit(UciProxy uciProxy) {
+            }
+        });
+
+        Session session = sessionRef.get();
+
+        if (session != null) {
+            return session.getSearches();
+        }
+
+        return null;
     }
 }

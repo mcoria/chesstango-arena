@@ -58,7 +58,7 @@ public class MatchTest {
 
         assertNotNull(matchResult);
 
-        PGN pgn = matchResult.getPgn();
+        PGN pgn = matchResult.pgn();
 
         // Deberia ganar el engine smartEngine
         assertEquals(SMART, pgn.getWhite());
@@ -74,7 +74,7 @@ public class MatchTest {
 
         MatchResult result = match.createResult();
 
-        PGN pgn = result.getPgn();
+        PGN pgn = result.pgn();
 
         // Deberia ganar el engine smartEngine
         assertEquals(SMART, pgn.getWhite());
@@ -90,7 +90,7 @@ public class MatchTest {
 
         MatchResult result = match.createResult();
 
-        PGN pgn = result.getPgn();
+        PGN pgn = result.pgn();
 
         // Deberia ganar el engine smartEngine
         assertEquals(SMART, pgn.getWhite());
@@ -107,7 +107,7 @@ public class MatchTest {
 
         MatchResult result = match.createResult();
 
-        PGN pgn = result.getPgn();
+        PGN pgn = result.pgn();
 
         // Deberia ganar el engine smartEngine
         assertEquals(SMART, pgn.getWhite());
@@ -123,7 +123,7 @@ public class MatchTest {
 
         MatchResult result = match.createResult();
 
-        PGN pgn = result.getPgn();
+        PGN pgn = result.pgn();
 
         // Deberia ganar el engine smartEngine
         assertEquals(SMART, pgn.getWhite());
