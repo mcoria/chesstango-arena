@@ -9,7 +9,7 @@ import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerProxy;
 import net.chesstango.uci.gui.ControllerTango;
 import net.chesstango.uci.proxy.ProxyConfig;
-import net.chesstango.uci.proxy.ProxyConfigLoader;
+import net.chesstango.uci.proxy.ProxyConfigReader;
 import net.chesstango.uci.proxy.UciProxy;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public class ControllerFactory {
     public static Controller createProxyController(Path configFile) {
         try {
-            ProxyConfig config = ProxyConfigLoader.loadEngine(configFile);
+            ProxyConfig config = ProxyConfigReader.readConfig(configFile);
             UciProxy proxy = new UciProxy(config);
             return new ControllerProxy(proxy)
                         .setOptionsCommands(config.uciOptionCommands());

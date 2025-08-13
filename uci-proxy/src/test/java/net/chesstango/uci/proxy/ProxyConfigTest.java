@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,7 +18,7 @@ public class ProxyConfigTest {
     public void testReadConfig() throws IOException {
         InputStream inputStream = ProxyConfigTest.class.getClassLoader().getResourceAsStream("sample_config.json");
 
-        ProxyConfig config = ProxyConfigLoader.loadEngine(inputStream);
+        ProxyConfig config = ProxyConfigReader.readConfig(inputStream);
 
         assertEquals("EngineName", config.getName());
     }

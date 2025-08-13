@@ -12,15 +12,15 @@ import java.nio.file.Path;
 /**
  * @author Mauricio Coria
  */
-public class ProxyConfigLoader {
+public class ProxyConfigReader {
 
-    public static ProxyConfig loadEngine(Path configFile) throws IOException {
+    public static ProxyConfig readConfig(Path configFile) throws IOException {
         try (InputStream inputStream = Files.newInputStream(configFile)) {
-            return loadEngine(inputStream);
+            return readConfig(inputStream);
         }
     }
 
-    protected static ProxyConfig loadEngine(InputStream inputStream) throws IOException {
+    protected static ProxyConfig readConfig(InputStream inputStream) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
 
             ObjectMapper objectMapper = new ObjectMapper();

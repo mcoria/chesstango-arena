@@ -23,9 +23,9 @@ public class ProxyConfig {
 
     private String exe;
 
-    private List<String> params;
+    private List<String> arguments;
 
-    private List<UciOption> options;
+    private List<UciOption> uci_options;
 
     @Getter
     @Setter
@@ -40,8 +40,8 @@ public class ProxyConfig {
 
         commandAndArguments.add(getExe());
 
-        if (getParams() != null) {
-            commandAndArguments.addAll(getParams());
+        if (getArguments() != null) {
+            commandAndArguments.addAll(getArguments());
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder(commandAndArguments);
@@ -51,8 +51,8 @@ public class ProxyConfig {
     }
 
     public List<ReqSetOption> uciOptionCommands() {
-        if (getOptions() != null) {
-            return options.stream()
+        if (getUci_options() != null) {
+            return uci_options.stream()
                     .map(option -> UCIRequest.setOption(option.getName(), option.getValue()))
                     .toList();
         }

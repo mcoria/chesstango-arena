@@ -2,8 +2,8 @@
   "name": "EngineName",
   "directory": "C:\\directory",
   "exe": "C:\\directory\\engine.exe",
-  "params": ["-first",  "-second"],
-  "options": [
+  "arguments": ["-first",  "-second"],
+  "uci_options": [
     {
       "name": "PolyglotFile",
       "value": "C:\\Polyglot\\file.bin"

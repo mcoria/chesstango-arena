@@ -3,7 +3,6 @@ package net.chesstango.uci.gui;
 
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
-import net.chesstango.uci.proxy.ProxyConfigLoader;
 import net.chesstango.uci.proxy.UciProxy;
 import org.junit.jupiter.api.Test;
 
