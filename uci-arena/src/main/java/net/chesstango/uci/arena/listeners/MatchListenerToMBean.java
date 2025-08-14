@@ -82,7 +82,7 @@ public class MatchListenerToMBean implements MatchListener {
 
     // TODO: obviously some moves are not encoded properly
     protected static String encodeMove(Move move) {
-        return String.format("%s-%s", move.getFrom().getSquare(), move.getTo().getSquare());
+        return String.format("%s-%s", move.getFrom().square(), move.getTo().square());
     }
 
 }
