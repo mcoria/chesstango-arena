@@ -9,5 +9,5 @@ import java.util.List;
 /**
  * @author Mauricio Coria
  */
-public record MatchResult(String mathId, PGN pgn, List<SearchResult> whiteSearches, List<SearchResult> blackSearches) implements Serializable {
+public record MatchResult(PGN pgn, List<SearchResult> whiteSearches, List<SearchResult> blackSearches) implements Serializable {
 }

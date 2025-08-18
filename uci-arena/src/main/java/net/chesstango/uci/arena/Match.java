@@ -37,7 +37,6 @@ public final class Match {
     private final Controller white;
     private final Controller black;
     private final MatchType matchType;
-    private final String mathId;
     private final FEN fen;
     private final SimpleMoveDecoder simpleMoveDecoder = new SimpleMoveDecoder();
 
@@ -52,16 +51,23 @@ public final class Match {
     @Accessors(chain = true)
     private MatchListener matchListener;
 
+    private String mathId;
+
     public Match(Controller white, Controller black, FEN fen, MatchType matchType) {
         this.white = white;
         this.black = black;
         this.fen = fen;
         this.matchType = matchType;
-        this.mathId = UUID.randomUUID().toString();
     }
 
     public MatchResult play() {
+        return play(UUID.randomUUID().toString());
+    }
+
+    public MatchResult play(String mathId) {
         try {
+
+            this.mathId = mathId;
 
             startNewGame();
 
@@ -157,7 +163,7 @@ public final class Match {
             printGameForDebug(System.out);
         }
 
-        return new MatchResult(mathId, createPGN(), discoverEngineController(white), discoverEngineController(black));
+        return new MatchResult(createPGN(), discoverEngineController(white), discoverEngineController(black));
     }
 
     private void startNewGame() {
