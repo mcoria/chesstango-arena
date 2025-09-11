@@ -88,6 +88,8 @@ public final class Match {
 
 
     void compete() {
+        log.info("[{}] WHITE={} BLACK={}", mathId, white.getEngineName(), black.getEngineName());
+
         setGame(Game.from(fen));
 
         final List<String> executedMovesStr = new ArrayList<>();
@@ -163,7 +165,7 @@ public final class Match {
             printGameForDebug(System.out);
         }
 
-        return new MatchResult(createPGN(), discoverEngineController(white), discoverEngineController(black));
+        return new MatchResult(createPGN(), visitEngineController(white), visitEngineController(black));
     }
 
     private void startNewGame() {
@@ -207,7 +209,7 @@ public final class Match {
         return pgn;
     }
 
-    private static List<SearchResult> discoverEngineController(Controller controller) {
+    private static List<SearchResult> visitEngineController(Controller controller) {
         AtomicReference<Session> sessionRef = new AtomicReference<>();
 
         controller.accept(new ControllerVisitor() {
