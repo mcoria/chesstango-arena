@@ -4,7 +4,7 @@
     <groupId>net.chesstango</groupId>
     <artifactId>uci-arena-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
 
     <scm>
         <developerConnection>scm:git:https://github.com/mcoria/chesstango-arena.git</developerConnection>
@@ -47,10 +47,10 @@
         <chesstango-engine.version>1.2.0-SNAPSHOT</chesstango-engine.version>
 
         <!-- Decoding/encoding to different chess representations: FEN, EPD, PGN, SAN, LAN -->
-        <gardel.version>1.0.7-SNAPSHOT</gardel.version>
+        <gardel.version>1.0.10</gardel.version>
 
         <!-- UCI communication protocol-->
-        <goyeneche.version>1.0.8-SNAPSHOT</goyeneche.version>
+        <goyeneche.version>1.0.9</goyeneche.version>
     </properties>
 
     <build>
