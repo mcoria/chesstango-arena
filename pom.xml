@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -33,28 +34,28 @@
     </properties>
 
     <dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>net.chesstango</groupId>
-            <artifactId>uci-arena-ipc</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.chesstango</groupId>
-            <artifactId>uci-proxy</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.chesstango</groupId>
-            <artifactId>uci-gui</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.chesstango</groupId>
-            <artifactId>uci-arena</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+        <dependencies>
+            <dependency>
+                <groupId>net.chesstango</groupId>
+                <artifactId>uci-arena-ipc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.chesstango</groupId>
+                <artifactId>uci-proxy</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.chesstango</groupId>
+                <artifactId>uci-gui</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.chesstango</groupId>
+                <artifactId>uci-arena</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
 
     <build>
