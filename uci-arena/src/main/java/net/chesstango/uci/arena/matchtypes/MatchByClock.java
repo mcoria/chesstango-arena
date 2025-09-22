@@ -49,4 +49,14 @@ public class MatchByClock implements MatchType {
 
         return bestMove;
     }
+
+    @Override
+    public String toString() {
+        return "MatchByClock{" +
+                "wTime=" + wTime +
+                ", bTime=" + bTime +
+                ", inc=" + inc +
+                '}';
+    }
+
 }

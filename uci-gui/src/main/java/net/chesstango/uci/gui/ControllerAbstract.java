@@ -2,6 +2,7 @@ package net.chesstango.uci.gui;
 
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import net.chesstango.goyeneche.UCIGui;
 import net.chesstango.goyeneche.UCIService;
 import net.chesstango.goyeneche.requests.ReqGo;
@@ -18,8 +19,8 @@ import java.util.List;
 /**
  * @author Mauricio Coria
  */
+@Slf4j
 public abstract class ControllerAbstract implements Controller {
-    private static final Logger logger = LoggerFactory.getLogger(ControllerAbstract.class);
 
     private final UCIService service;
 
@@ -171,7 +172,7 @@ public abstract class ControllerAbstract implements Controller {
                 wait(20000);
             }
             if (response == null) {
-                logger.error("Engine {} has not provided any response after sending: {}", engineName, request);
+                log.error("Engine {} has not provided any response after sending: {}", engineName, request);
                 throw new RuntimeException("Perhaps engine has closed its output");
             }
         } catch (InterruptedException e) {
