@@ -2,9 +2,9 @@ package net.chesstango.uci.proxy;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
+
+import static java.lang.ProcessBuilder.Redirect.INHERIT;
 
 /**
  * @author Mauricio Coria
@@ -24,6 +24,7 @@ class UciProcess {
     void startProcess() {
         try {
             synchronized (this) {
+                processBuilder.redirectError(INHERIT);
                 process = processBuilder.start();
                 inputStreamProcess = process.getInputStream();
                 outputStreamProcess = new PrintStream(process.getOutputStream(), true);

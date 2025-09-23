@@ -1,13 +1,12 @@
 package net.chesstango.uci.proxy;
 
+import lombok.extern.slf4j.Slf4j;
 import net.chesstango.goyeneche.UCIService;
 import net.chesstango.goyeneche.stream.UCIActiveStreamReader;
 import net.chesstango.goyeneche.stream.UCIInputStreamFromStringAdapter;
 import net.chesstango.goyeneche.stream.UCIOutputStreamToStringAdapter;
 import net.chesstango.goyeneche.stream.strings.StringConsumer;
 import net.chesstango.goyeneche.stream.strings.StringSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -15,8 +14,8 @@ import java.nio.file.Path;
 /**
  * @author Mauricio Coria
  */
+@Slf4j
 public class UciMain implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(UciMain.class);
     private final UCIService service;
     private final InputStream in;
 
@@ -59,13 +58,13 @@ public class UciMain implements Runnable {
 
             service.close();
         } catch (RuntimeException e) {
-            logger.error("Error:", e);
+            log.error("Error:", e);
             throw e;
         } finally {
             try {
                 in.close();
             } catch (IOException e) {
-                logger.error("Error:", e);
+                log.error("Error:", e);
             }
             out.close();
         }

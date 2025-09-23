@@ -84,8 +84,8 @@ public class UciProxy implements UCIService {
     }
 
     private void readFromProcess() {
-        log.debug("readFromPipe(): start reading engine output");
+        log.debug("{} Start reading engine output", proxyName);
         pipe.run();
-        log.debug("readFromPipe():end reading engine output");
+        log.debug("{} Stop reading engine output", proxyName);
     }
 }
