@@ -1,7 +1,7 @@
 package net.chesstango.uci.arena;
 
 import net.chesstango.board.Game;
-import net.chesstango.engine.Tango;
+import net.chesstango.engine.Config;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
@@ -14,7 +14,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Mauricio Coria
@@ -33,11 +34,12 @@ public class MatchTest {
         smartEngine = new ControllerTango(new UciTango())
                 .overrideEngineName(SMART);
 
-        dummyEngine = new ControllerTango(new UciTango(config -> {
-            config.setSearch(new Dummy());
-            return Tango.open(config);
-        }))
-                .overrideEngineName(DUMMY);
+
+        dummyEngine = new ControllerTango(
+                new UciTango(new Config()
+                        .setSearch(new Dummy())
+                )
+        ).overrideEngineName(DUMMY);
 
         smartEngine.startEngine();
         dummyEngine.startEngine();
@@ -118,7 +120,7 @@ public class MatchTest {
     @Test
     public void testCreateResultDraw02() {
         Match match = new Match(smartEngine, dummyEngine, FEN.of("3k4/5p2/1p1bp3/3p3p/3P3P/7K/p7/6q1 w - - 5 48"), new MatchByDepth(1));
-        
+
         match.setGame(Game.from(FEN.of("3k4/5p2/1p1bp3/3p3p/3P3P/7K/p7/6q1 w - - 5 48")));
 
         MatchResult result = match.createResult();
