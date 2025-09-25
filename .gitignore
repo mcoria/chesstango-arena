@@ -5,3 +5,6 @@ uci-gui/target/
 uci-proxy/target/
 matches.pgn
 .idea/
+uci-arena-master/target/
+uci-arena-worker/target/
+uci-arena-core/target/

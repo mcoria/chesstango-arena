@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uci-arena-worker
+  labels:
+    app: uci-arena-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uci-arena-worker
+  template:
+    metadata:
+      name: uci-arena-worker
+      labels:
+        app: uci-arena-worker
+    spec:
+      containers:
+        - name: uci-arena-worker
+          image: coriamauricio/uci-arena-worker:1.2.0-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RABBIT_HOST
+              value: "chesstango-rabbit-svc.default.svc.cluster.local"
+            - name: ENGINE_CATALOG
+              value: "/engines/catalog_linux"
+          volumeMounts:
+            - name: engine-volume
+              mountPath: /engines
+      volumes:
+        - name: engine-volume
+          hostPath:
+            path: /run/desktop/mnt/host/c/java/projects/chess/chess-utils/engines
+      restartPolicy: Always
+      

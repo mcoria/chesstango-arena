@@ -1,0 +1,18 @@
+<configuration>
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <logger level="INFO" name="net.chesstango"/>
+
+    <logger level="DEBUG" name="net.chesstango.engine"/>
+    <!--logger level="TRACE" name="net.chesstango.uci.proxy"/ -->
+    <!--logger level="TRACE" name="net.chesstango.uci.engine"/ -->
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %-25.25logger{25} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+</configuration>

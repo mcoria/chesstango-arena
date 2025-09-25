@@ -21,8 +21,10 @@
         <module>uci-arena-ipc</module>
         <module>uci-proxy</module>
         <module>uci-gui</module>
-        <module>uci-arena</module>
+        <module>uci-arena-core</module>
         <module>uci-arena-web</module>
+        <module>uci-arena-worker</module>
+        <module>uci-arena-master</module>
     </modules>
 
     <properties>
@@ -31,6 +33,10 @@
         <java.version>21</java.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+
+        <commons-cli.version>1.8.0</commons-cli.version>
+        <commons-pool2.version>2.11.1</commons-pool2.version>
+        <rabitmq.verison>5.26.0</rabitmq.verison>
     </properties>
 
     <dependencyManagement>
@@ -52,8 +58,29 @@
             </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
-                <artifactId>uci-arena</artifactId>
+                <artifactId>uci-arena-core</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.chesstango</groupId>
+                <artifactId>uci-arena-worker</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-cli</groupId>
+                <artifactId>commons-cli</artifactId>
+                <version>${commons-cli.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>${rabitmq.verison}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -70,5 +97,82 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <properties>
+                <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>exec-maven-plugin</artifactId>
+                            <version>${exec-maven-plugin.version}</version>
+                            <executions>
+                                <!-- Remove existing image from local repo -->
+                                <execution>
+                                    <id>docker-clean</id>
+                                    <phase>install</phase>
+                                    <goals>
+                                        <goal>exec</goal>
+                                    </goals>
+                                    <configuration>
+                                        <executable>docker</executable>
+                                        <workingDirectory>${project.basedir}</workingDirectory>
+                                        <arguments>
+                                            <argument>rmi</argument>
+                                            <argument>-f</argument>
+                                            <argument>coriamauricio/${project.artifactId}:${project.version}
+                                            </argument>
+                                        </arguments>
+                                    </configuration>
+                                </execution>
+                                <!--
+                                  Create new docker image using Dockerfile which must be present in current working directory.
+                                  Tag the image using maven project version information.
+                                -->
+                                <execution>
+                                    <id>docker-build</id>
+                                    <phase>install</phase>
+                                    <goals>
+                                        <goal>exec</goal>
+                                    </goals>
+                                    <configuration>
+                                        <executable>docker</executable>
+                                        <workingDirectory>${project.basedir}</workingDirectory>
+                                        <arguments>
+                                            <argument>build</argument>
+                                            <argument>-t</argument>
+                                            <argument>coriamauricio/${project.artifactId}:${project.version}
+                                            </argument>
+                                            <argument>.</argument>
+                                        </arguments>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>docker-push</id>
+                                    <phase>deploy</phase>
+                                    <goals>
+                                        <goal>exec</goal>
+                                    </goals>
+                                    <configuration>
+                                        <executable>docker</executable>
+                                        <workingDirectory>${project.basedir}</workingDirectory>
+                                        <arguments>
+                                            <argument>push</argument>
+                                            <argument>coriamauricio/${project.artifactId}:${project.version}</argument>
+                                        </arguments>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
