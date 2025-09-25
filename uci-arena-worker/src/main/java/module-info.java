@@ -1,5 +1,5 @@
-module net.chesstango.tools.worker.match {
-    exports net.chesstango.tools.worker.match;
+module net.chesstango.arena.worker {
+    exports net.chesstango.arena.worker;
 
     requires net.chesstango.arena.core;
     requires net.chesstango.uci.gui;

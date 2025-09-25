@@ -7,7 +7,7 @@ import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
 import net.chesstango.tools.arena.common.ControllerPoolFactory;
 import net.chesstango.tools.arena.common.MatchMultiple;
-import net.chesstango.tools.worker.match.ControllerFactory;
+import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;

@@ -1,16 +1,13 @@
-package net.chesstango.tools.worker.match;
+package net.chesstango.arena.worker;
 
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
-import com.rabbitmq.client.ShutdownSignalException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
-import static net.chesstango.tools.worker.match.MatchRequest.MATCH_REQUESTS_QUEUE_NAME;
+import static net.chesstango.arena.worker.MatchRequest.MATCH_REQUESTS_QUEUE_NAME;
 
 /**
  * @author Mauricio Coria

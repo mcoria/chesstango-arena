@@ -1,4 +1,4 @@
-package net.chesstango.tools.worker.match;
+package net.chesstango.arena.worker;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-import static net.chesstango.tools.worker.match.MatchResponse.MATCH_RESPONSES_QUEUE_NAME;
+import static net.chesstango.arena.worker.MatchResponse.MATCH_RESPONSES_QUEUE_NAME;
 
 
 /**

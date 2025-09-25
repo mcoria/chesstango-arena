@@ -3,7 +3,7 @@ package net.chesstango.tools.arena;
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.tools.arena.common.Common;
-import net.chesstango.tools.worker.match.MatchResponse;
+import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package net.chesstango.tools.worker.match;
+package net.chesstango.arena.worker;
 
 import net.chesstango.engine.Config;
 import net.chesstango.evaluation.Evaluator;

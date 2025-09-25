@@ -5,12 +5,12 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
-import net.chesstango.tools.worker.match.MatchRequest;
+import net.chesstango.arena.worker.MatchRequest;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import static net.chesstango.tools.worker.match.MatchRequest.MATCH_REQUESTS_QUEUE_NAME;
+import static net.chesstango.arena.worker.MatchRequest.MATCH_REQUESTS_QUEUE_NAME;
 
 /**
  * @author Mauricio Coria

@@ -1,4 +1,4 @@
-package net.chesstango.tools.worker.match;
+package net.chesstango.arena.worker;
 
 import lombok.Getter;
 import lombok.Setter;

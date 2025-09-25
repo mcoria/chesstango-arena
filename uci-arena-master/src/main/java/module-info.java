@@ -6,11 +6,12 @@ module net.chesstango.tools {
     requires net.chesstango.gardel;
     requires net.chesstango.piazzolla;
     requires net.chesstango.search;
-    requires net.chesstango.arena.core;
     requires net.chesstango.uci.engine;
     requires net.chesstango.uci.gui;
+    requires net.chesstango.arena.core;
+    requires net.chesstango.arena.worker;
     requires net.chesstango.mbeans;
-    requires net.chesstango.tools.worker.match;
+
 
     requires org.slf4j;
     requires org.apache.commons.pool2;

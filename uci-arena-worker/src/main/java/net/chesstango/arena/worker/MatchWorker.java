@@ -1,4 +1,4 @@
-package net.chesstango.tools.worker.match;
+package net.chesstango.arena.worker;
 
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.gardel.fen.FEN;
