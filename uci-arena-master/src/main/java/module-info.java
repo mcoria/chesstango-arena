@@ -1,4 +1,7 @@
 module net.chesstango.arena.master {
+    exports net.chesstango.arena.master;
+    exports net.chesstango.arena.master.common;
+
     requires net.chesstango.board;
     requires net.chesstango.engine;
     requires net.chesstango.evaluation;

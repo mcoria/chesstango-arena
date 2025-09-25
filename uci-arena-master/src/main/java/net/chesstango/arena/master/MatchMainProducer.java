@@ -65,10 +65,12 @@ public class MatchMainProducer implements Runnable {
         String player1 = "class:WithTables";
         //String player1 = "file:Tango-v1.2.0";
         String player2 = "file:Spike";
-        String matchId = UUID.randomUUID().toString();
 
+        /*
+        String matchId = UUID.randomUUID().toString();
         String player1Name = player1.replace("file:", "").replace("class:", "");
         String player2Name = player2.replace("file:", "").replace("class:", "");
+         */
 
         Stream<MatchRequest> result = fenList.stream()
                 .map(fen -> new MatchRequest()
@@ -76,7 +78,7 @@ public class MatchMainProducer implements Runnable {
                         .setBlackEngine(player2)
                         .setFen(fen)
                         .setMatchType(match)
-                        .setMatchId(String.format("%s-%s-vs-%s", matchId, player1Name, player2Name))
+                        .setMatchId(UUID.randomUUID().toString())
                         .setSessionId(SESSION_DATE)
                 );
 
@@ -87,7 +89,7 @@ public class MatchMainProducer implements Runnable {
                             .setBlackEngine(player1)
                             .setFen(fen)
                             .setMatchType(match)
-                            .setMatchId(String.format("%s-%s-vs-%s", matchId, player2Name, player1Name))
+                            .setMatchId(UUID.randomUUID().toString())
                             .setSessionId(SESSION_DATE)
                     );
 
