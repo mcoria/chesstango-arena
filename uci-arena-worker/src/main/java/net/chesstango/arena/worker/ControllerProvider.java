@@ -14,6 +14,8 @@ import java.util.function.Supplier;
 @Slf4j
 class ControllerProvider implements AutoCloseable {
 
+    public static final String FACTORY_PACKAGE = "net.chesstango.arena.worker.factories";
+
     private final Path catalogDirectory;
 
     /**
@@ -66,7 +68,7 @@ class ControllerProvider implements AutoCloseable {
 
     private Supplier<Controller> instantiateSupplier(String className) {
         try {
-            Class<?> clazz = Class.forName(String.format("%s.%s", "net.chesstango.tools.worker.match.factories", className));
+            Class<?> clazz = Class.forName(String.format("%s.%s", FACTORY_PACKAGE, className));
             if (!Supplier.class.isAssignableFrom(clazz)) {
                 throw new RuntimeException("Class must implement Supplier<Controller>: " + className);
             }

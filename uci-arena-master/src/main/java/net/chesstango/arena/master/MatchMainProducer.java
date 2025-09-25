@@ -41,7 +41,7 @@ public class MatchMainProducer implements Runnable {
     public void run() {
         log.info("Starting");
 
-        List<MatchRequest> matchRequests = createMatchRequests(new MatchByDepth(4), getFEN(), true);
+        List<MatchRequest> matchRequests = createMatchRequests(new MatchByDepth(4), getFEN_FromPGN(), true);
 
         try (ExecutorService executorService = Executors.newSingleThreadExecutor()) {
             ConnectionFactory factory = new ConnectionFactory();

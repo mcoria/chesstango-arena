@@ -112,7 +112,7 @@
                                     </excludes>
                                 </filter>
                             </filters>
-                            <finalName>chesstango-match-worker</finalName>
+                            <finalName>uci-arena-worker</finalName>
                         </configuration>
                     </plugin>
                 </plugins>

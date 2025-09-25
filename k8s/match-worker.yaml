@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chesstango-match-worker
+  name: uci-arena-worker
   labels:
-    app: chesstango-match-worker
+    app: uci-arena-worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: chesstango-match-worker
+      app: uci-arena-worker
   template:
     metadata:
-      name: chesstango-match-worker
+      name: uci-arena-worker
       labels:
-        app: chesstango-match-worker
+        app: uci-arena-worker
     spec:
       containers:
-        - name: chesstango-match-worker
-          image: coriamauricio/match-worker:1.2.0-SNAPSHOT
+        - name: uci-arena-worker
+          image: coriamauricio/uci-arena-worker:1.2.0-SNAPSHOT
           imagePullPolicy: IfNotPresent
           env:
             - name: RABBIT_HOST
