@@ -1,4 +1,4 @@
-package net.chesstango.tools.arena;
+package net.chesstango.arena.master;
 
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
-import static net.chesstango.tools.arena.common.Common.SESSION_DATE;
+import static net.chesstango.arena.master.common.Common.SESSION_DATE;
 
 /**
  * @author Mauricio Coria

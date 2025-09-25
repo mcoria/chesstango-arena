@@ -1,4 +1,4 @@
-package net.chesstango.tools.arena.common;
+package net.chesstango.arena.master.common;
 
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.engine.Tango;

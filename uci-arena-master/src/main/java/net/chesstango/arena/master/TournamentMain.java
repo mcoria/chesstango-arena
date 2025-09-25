@@ -1,4 +1,4 @@
-package net.chesstango.tools.arena;
+package net.chesstango.arena.master;
 
 import net.chesstango.board.Game;
 import net.chesstango.gardel.fen.FEN;
@@ -6,8 +6,8 @@ import net.chesstango.evaluation.evaluators.EvaluatorByMaterialAndPST;
 import net.chesstango.evaluation.evaluators.EvaluatorImp02;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
-import net.chesstango.tools.arena.common.MatchListenerToMBeans;
-import net.chesstango.tools.arena.common.Tournament;
+import net.chesstango.arena.master.common.MatchListenerToMBeans;
+import net.chesstango.arena.master.common.Tournament;
 import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.uci.gui.Controller;

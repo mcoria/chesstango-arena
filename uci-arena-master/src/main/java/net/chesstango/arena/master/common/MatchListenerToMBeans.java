@@ -1,4 +1,4 @@
-package net.chesstango.tools.arena.common;
+package net.chesstango.arena.master.common;
 
 import net.chesstango.board.Game;
 import net.chesstango.board.moves.Move;

@@ -1,12 +1,12 @@
-package net.chesstango.tools.arena;
+package net.chesstango.arena.master;
 
 import net.chesstango.engine.Config;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.search.dummy.Dummy;
-import net.chesstango.tools.arena.common.ControllerPoolFactory;
-import net.chesstango.tools.arena.common.MatchMultiple;
+import net.chesstango.arena.master.common.ControllerPoolFactory;
+import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.uci.engine.UciTango;

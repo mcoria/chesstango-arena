@@ -1,12 +1,12 @@
-package net.chesstango.tools.arena;
+package net.chesstango.arena.master;
 
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.board.Game;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
-import net.chesstango.tools.arena.common.ControllerPoolFactory;
-import net.chesstango.tools.arena.common.MatchMultiple;
+import net.chesstango.arena.master.common.ControllerPoolFactory;
+import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;

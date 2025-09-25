@@ -1,8 +1,8 @@
-package net.chesstango.tools.arena;
+package net.chesstango.arena.master;
 
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
-import net.chesstango.tools.arena.common.Common;
+import net.chesstango.arena.master.common.Common;
 import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.FileOutputStream;

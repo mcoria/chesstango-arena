@@ -1,4 +1,4 @@
-package net.chesstango.tools.arena.common;
+package net.chesstango.arena.master.common;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;

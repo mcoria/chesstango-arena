@@ -1,4 +1,4 @@
-package net.chesstango.tools.arena;
+package net.chesstango.arena.master;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
