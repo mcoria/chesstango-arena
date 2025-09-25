@@ -1,4 +1,4 @@
-package net.chesstango.uci.arena.listeners;
+package net.chesstango.arena.core.listeners;
 
 import lombok.Getter;
 import net.chesstango.board.Color;
@@ -8,7 +8,7 @@ import net.chesstango.board.position.GameHistoryRecord;
 import net.chesstango.mbeans.Arena;
 import net.chesstango.mbeans.GameDescriptionCurrent;
 import net.chesstango.mbeans.GameDescriptionInitial;
-import net.chesstango.uci.arena.MatchResult;
+import net.chesstango.arena.core.MatchResult;
 import net.chesstango.uci.gui.Controller;
 
 import java.util.ArrayList;

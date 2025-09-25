@@ -9,12 +9,12 @@ import net.chesstango.gardel.pgn.PGNStringDecoder;
 import net.chesstango.tools.arena.common.MatchListenerToMBeans;
 import net.chesstango.tools.arena.common.Tournament;
 import net.chesstango.tools.worker.match.ControllerFactory;
-import net.chesstango.uci.arena.MatchResult;
+import net.chesstango.arena.core.MatchResult;
 import net.chesstango.uci.gui.Controller;
-import net.chesstango.uci.arena.listeners.CaptureMatchResult;
-import net.chesstango.uci.arena.listeners.MatchBroadcaster;
-import net.chesstango.uci.arena.listeners.SavePGNGame;
-import net.chesstango.uci.arena.matchtypes.MatchByDepth;
+import net.chesstango.arena.core.listeners.CaptureMatchResult;
+import net.chesstango.arena.core.listeners.MatchBroadcaster;
+import net.chesstango.arena.core.listeners.SavePGNGame;
+import net.chesstango.arena.core.matchtypes.MatchByDepth;
 
 import java.nio.file.Path;
 import java.time.Duration;

@@ -39,7 +39,7 @@
 
         <dependency>
             <groupId>net.chesstango</groupId>
-            <artifactId>uci-arena</artifactId>
+            <artifactId>uci-arena-core</artifactId>
         </dependency>
         <dependency>
             <groupId>net.chesstango</groupId>

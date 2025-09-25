@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.chesstango.gardel.fen.FEN;
-import net.chesstango.uci.arena.matchtypes.MatchType;
+import net.chesstango.arena.core.matchtypes.MatchType;
 
 import java.io.*;
 

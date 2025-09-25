@@ -1,7 +1,7 @@
-module net.chesstango.uci.arena {
-    exports net.chesstango.uci.arena;
-    exports net.chesstango.uci.arena.listeners;
-    exports net.chesstango.uci.arena.matchtypes;
+module net.chesstango.arena.core {
+    exports net.chesstango.arena.core;
+    exports net.chesstango.arena.core.listeners;
+    exports net.chesstango.arena.core.matchtypes;
 
     requires net.chesstango.goyeneche;
     requires net.chesstango.gardel;

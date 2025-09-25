@@ -1,7 +1,7 @@
 module net.chesstango.tools.worker.match {
     exports net.chesstango.tools.worker.match;
 
-    requires net.chesstango.uci.arena;
+    requires net.chesstango.arena.core;
     requires net.chesstango.uci.gui;
     requires net.chesstango.uci.engine;
     requires net.chesstango.uci.proxy;

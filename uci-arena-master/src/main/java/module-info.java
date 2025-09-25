@@ -6,7 +6,7 @@ module net.chesstango.tools {
     requires net.chesstango.gardel;
     requires net.chesstango.piazzolla;
     requires net.chesstango.search;
-    requires net.chesstango.uci.arena;
+    requires net.chesstango.arena.core;
     requires net.chesstango.uci.engine;
     requires net.chesstango.uci.gui;
     requires net.chesstango.mbeans;

@@ -2,9 +2,9 @@ package net.chesstango.tools.worker.match;
 
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.gardel.fen.FEN;
-import net.chesstango.uci.arena.Match;
-import net.chesstango.uci.arena.MatchResult;
-import net.chesstango.uci.arena.matchtypes.MatchType;
+import net.chesstango.arena.core.Match;
+import net.chesstango.arena.core.MatchResult;
+import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.uci.gui.Controller;
 
 import java.util.function.Function;

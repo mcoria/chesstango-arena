@@ -3,11 +3,9 @@ package net.chesstango.tools.worker.match;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.chesstango.uci.arena.MatchResult;
+import net.chesstango.arena.core.MatchResult;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * @author Mauricio Coria

@@ -7,3 +7,4 @@ matches.pgn
 .idea/
 uci-arena-master/target/
 uci-arena-worker/target/
+uci-arena-core/target/

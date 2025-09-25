@@ -1,8 +1,8 @@
-package net.chesstango.uci.arena.listeners;
+package net.chesstango.arena.core.listeners;
 
 import net.chesstango.board.Game;
 import net.chesstango.board.moves.Move;
-import net.chesstango.uci.arena.MatchResult;
+import net.chesstango.arena.core.MatchResult;
 import net.chesstango.uci.gui.Controller;
 
 /**

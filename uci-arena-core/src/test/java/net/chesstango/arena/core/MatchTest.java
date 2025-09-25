@@ -1,4 +1,4 @@
-package net.chesstango.uci.arena;
+package net.chesstango.arena.core;
 
 import net.chesstango.board.Game;
 import net.chesstango.engine.Config;
@@ -6,7 +6,7 @@ import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.search.dummy.Dummy;
-import net.chesstango.uci.arena.matchtypes.MatchByDepth;
+import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerTango;

@@ -1,4 +1,4 @@
-package net.chesstango.uci.arena;
+package net.chesstango.arena.core;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -16,8 +16,8 @@ import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
 import net.chesstango.search.SearchResult;
-import net.chesstango.uci.arena.listeners.MatchListener;
-import net.chesstango.uci.arena.matchtypes.MatchType;
+import net.chesstango.arena.core.listeners.MatchListener;
+import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerVisitor;

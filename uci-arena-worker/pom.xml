@@ -22,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>net.chesstango</groupId>
-            <artifactId>uci-arena</artifactId>
+            <artifactId>uci-arena-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

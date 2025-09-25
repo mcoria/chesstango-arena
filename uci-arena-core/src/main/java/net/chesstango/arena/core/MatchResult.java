@@ -1,4 +1,4 @@
-package net.chesstango.uci.arena;
+package net.chesstango.arena.core;
 
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.search.SearchResult;

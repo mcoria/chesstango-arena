@@ -1,4 +1,4 @@
-package net.chesstango.uci.arena.matchtypes;
+package net.chesstango.arena.core.matchtypes;
 
 import net.chesstango.goyeneche.requests.ReqGo;
 import net.chesstango.goyeneche.requests.UCIRequest;

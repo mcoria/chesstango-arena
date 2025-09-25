@@ -1,4 +1,4 @@
-package net.chesstango.uci.arena;
+package net.chesstango.arena.core;
 
 
 import org.junit.platform.suite.api.SelectClasses;
