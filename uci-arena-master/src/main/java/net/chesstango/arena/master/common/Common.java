@@ -33,18 +33,15 @@ public class Common {
     public static Path createSessionDirectory(Path suiteDirectory, String sessionId) {
         Path sessionDirectory = suiteDirectory.resolve(sessionId);
 
-        if (Files.exists(sessionDirectory)) {
-            log.warn("Session directory already exists {}", sessionDirectory.getFileName().toString());
-            return sessionDirectory;
+        if (!Files.exists(sessionDirectory)) {
+            try {
+                log.info("Creating session directory {}", sessionDirectory.getFileName().toString());
+                Files.createDirectory(sessionDirectory);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-
-
-        try {
-            log.info("Creating session directory {}", sessionDirectory.getFileName().toString());
-            return Files.createDirectory(sessionDirectory);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return sessionDirectory;
     }
 
     public static List<Path> listEpdFiles(Path suiteDirectory, String filePattern) {
