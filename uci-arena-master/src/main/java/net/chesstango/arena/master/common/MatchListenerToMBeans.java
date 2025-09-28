@@ -1,11 +1,11 @@
 package net.chesstango.arena.master.common;
 
-import net.chesstango.board.Game;
-import net.chesstango.board.moves.Move;
-import net.chesstango.mbeans.Arena;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchListener;
 import net.chesstango.arena.core.listeners.MatchListenerToMBean;
+import net.chesstango.board.Game;
+import net.chesstango.board.moves.Move;
+import net.chesstango.mbeans.Arena;
 import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;

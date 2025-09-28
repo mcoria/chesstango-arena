@@ -2,8 +2,6 @@ package net.chesstango.arena.master;
 
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
-import net.chesstango.arena.core.listeners.MatchBroadcaster;
-import net.chesstango.arena.core.listeners.SavePGNGame;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
@@ -37,7 +35,7 @@ public class MatchMain {
     //private static final MatchType MATCH_TYPE = new MatchByTime(2000);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
 
-    private static final boolean MATCH_DEBUG = false;
+    private static final boolean PRINT_PGN = false;
     private static final boolean MATCH_SWITCH_CHAIRS = true;
 
     private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
@@ -132,11 +130,13 @@ public class MatchMain {
              ObjectPool<Controller> opponentPool = new GenericObjectPool<>(new ControllerPoolFactory(engine2Supplier))) {
 
             MatchMultiple match = new MatchMultiple(parallelJobs, mainPool, opponentPool, MATCH_TYPE)
-                    .setPrintPGN(MATCH_DEBUG)
+                    .setPrintPGN(PRINT_PGN)
                     .setSwitchChairs(MATCH_SWITCH_CHAIRS)
-                    .setMatchListener(new MatchBroadcaster()
+                    //.setMatchListener(new MatchBroadcaster()
                             //         .addListener(new MatchListenerToMBean())
-                            .addListener(new SavePGNGame()));
+                            //         .addListener(new SavePGNGame())
+                    //         )
+                    ;
 
             Instant start = Instant.now();
 

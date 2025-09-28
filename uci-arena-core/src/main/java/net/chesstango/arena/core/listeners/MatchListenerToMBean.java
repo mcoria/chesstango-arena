@@ -1,6 +1,7 @@
 package net.chesstango.arena.core.listeners;
 
 import lombok.Getter;
+import net.chesstango.arena.core.MatchResult;
 import net.chesstango.board.Color;
 import net.chesstango.board.Game;
 import net.chesstango.board.moves.Move;
@@ -8,7 +9,6 @@ import net.chesstango.board.position.GameHistoryRecord;
 import net.chesstango.mbeans.Arena;
 import net.chesstango.mbeans.GameDescriptionCurrent;
 import net.chesstango.mbeans.GameDescriptionInitial;
-import net.chesstango.arena.core.MatchResult;
 import net.chesstango.uci.gui.Controller;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class MatchListenerToMBean implements MatchListener {
     public MatchListenerToMBean() {
         this(Arena.createAndRegisterMBean());
     }
-    
+
     public MatchListenerToMBean(Arena arena) {
         this.arena = arena;
     }
