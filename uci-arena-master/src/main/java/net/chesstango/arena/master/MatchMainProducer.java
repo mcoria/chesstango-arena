@@ -12,6 +12,8 @@ import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
 import org.apache.commons.cli.*;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -26,14 +28,20 @@ import static net.chesstango.arena.master.common.Common.SESSION_DATE;
 @Slf4j
 public class MatchMainProducer implements Runnable {
 
+    /**
+     * Example: -d 2 -e "class:WithTables" -o "file:Spike"
+     */
     public static void main(String[] args) {
         CommandLine parsedArgs = parseArguments(args);
 
         String rabbitHost = parsedArgs.getOptionValue("r", "localhost");
-        log.info("Rabbit host: {}", rabbitHost);
+        log.info("Rabbit: {}", rabbitHost);
 
         String engine = parsedArgs.getOptionValue("e");
         log.info("Engine: {}", engine);
+
+        String[] opponents = parsedArgs.getOptionValues("o");
+        log.info("Opponents: {}", Arrays.toString(opponents));
 
         MatchType matchType = null;
         if (parsedArgs.hasOption('d')) {
@@ -41,73 +49,68 @@ public class MatchMainProducer implements Runnable {
             log.info("Match: {}", matchType);
         }
 
-        new MatchMainProducer(rabbitHost, engine, matchType)
+        new MatchMainProducer(rabbitHost, engine, opponents, matchType)
                 .run();
     }
 
     private final String rabbitHost;
     private final String engine;
     private final MatchType matchType;
+    private final String[] opponents;
 
-    public MatchMainProducer(String rabbitHost, String engine, MatchType matchType) {
+    public MatchMainProducer(String rabbitHost, String engine, String[] opponents, MatchType matchType) {
         this.rabbitHost = rabbitHost;
         this.engine = engine;
         this.matchType = matchType;
+        this.opponents = opponents;
     }
 
     @Override
     public void run() {
-        log.info("Starting");
-
         List<MatchRequest> matchRequests = createMatchRequests(fromPGN());
-
         try (ExecutorService executorService = Executors.newSingleThreadExecutor()) {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(rabbitHost);
             factory.setSharedExecutor(executorService);
-
             try (RequestProducer requestProducer = RequestProducer.open(factory)) {
-
                 matchRequests.forEach(requestProducer::publish);
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-
-        log.info("Finished");
     }
 
 
     private List<MatchRequest> createMatchRequests(List<FEN> fenList) {
-        String player2 = "file:Spike";
+        List<MatchRequest> matchRequests = new LinkedList<>();
 
-        Stream<MatchRequest> result = fenList.stream()
-                .map(fen -> new MatchRequest()
-                        .setWhiteEngine(engine)
-                        .setBlackEngine(player2)
-                        .setFen(fen)
-                        .setMatchType(matchType)
-                        .setMatchId(UUID.randomUUID().toString())
-                        .setSessionId(SESSION_DATE)
-                );
+        for (String opponent : opponents) {
+            fenList.stream()
+                    .map(fen -> new MatchRequest()
+                            .setWhiteEngine(engine)
+                            .setBlackEngine(opponent)
+                            .setFen(fen)
+                            .setMatchType(matchType)
+                            .setMatchId(UUID.randomUUID().toString())
+                            .setSessionId(SESSION_DATE)
+                    )
+                    .peek(request -> log.info("{}", request.toString()))
+                    .forEach(matchRequests::add);
 
+            fenList.stream()
+                    .map(fen -> new MatchRequest()
+                            .setWhiteEngine(opponent)
+                            .setBlackEngine(engine)
+                            .setFen(fen)
+                            .setMatchType(matchType)
+                            .setMatchId(UUID.randomUUID().toString())
+                            .setSessionId(SESSION_DATE)
+                    )
+                    .peek(request -> log.info("{}", request.toString()))
+                    .forEach(matchRequests::add);
+        }
 
-        Stream<MatchRequest> switchStream = fenList.stream()
-                .map(fen -> new MatchRequest()
-                        .setWhiteEngine(player2)
-                        .setBlackEngine(engine)
-                        .setFen(fen)
-                        .setMatchType(matchType)
-                        .setMatchId(UUID.randomUUID().toString())
-                        .setSessionId(SESSION_DATE)
-                );
-
-        result = Stream.concat(result, switchStream);
-
-        return result
-                .peek(request -> log.info("{}", request.toString()))
-                .toList();
+        return matchRequests;
     }
 
 
@@ -155,6 +158,16 @@ public class MatchMainProducer implements Runnable {
                 .build();
         options.addOption(mainEngineOpt);
 
+        Option opponents = Option
+                .builder("o")
+                .longOpt("opponents")
+                .required()
+                .hasArgs()
+                .argName("OPPONENT1 OPPONENT2")
+                .desc("opponents list")
+                .build();
+        options.addOption(opponents);
+
         Option matchTypeByDepth = Option
                 .builder("d")
                 .longOpt("MatchByDepth")
@@ -163,7 +176,6 @@ public class MatchMainProducer implements Runnable {
                 .desc("match by depth")
                 .build();
         options.addOption(matchTypeByDepth);
-
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -188,10 +200,8 @@ public class MatchMainProducer implements Runnable {
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
 
-        // Custom settings (optional)
         formatter.setWidth(100); // Set the display width
 
-        // 3. Call printHelp()
         String cmdName = "my-cli-tool";
         String header = "\nCommand line utility for queueing matches.\n\nOptions:";
         String footer = "\nPlease report issues on GitHub.";
