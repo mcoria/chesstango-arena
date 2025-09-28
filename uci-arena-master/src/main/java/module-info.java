@@ -12,7 +12,7 @@ module net.chesstango.arena.master {
     requires net.chesstango.uci.gui;
     requires net.chesstango.arena.core;
     requires net.chesstango.arena.worker;
-    requires net.chesstango.mbeans;
+    requires net.chesstango.arena.ipc;
 
     requires org.slf4j;
     requires org.apache.commons.pool2;

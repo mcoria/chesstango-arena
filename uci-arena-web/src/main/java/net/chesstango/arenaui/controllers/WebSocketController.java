@@ -1,8 +1,8 @@
 package net.chesstango.arenaui.controllers;
 
 import net.chesstango.arenaui.services.ArenaMBeanClient;
-import net.chesstango.mbeans.GameDescriptionCurrent;
-import net.chesstango.mbeans.GameDescriptionInitial;
+import net.chesstango.arena.ipc.GameDescriptionCurrent;
+import net.chesstango.arena.ipc.GameDescriptionInitial;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

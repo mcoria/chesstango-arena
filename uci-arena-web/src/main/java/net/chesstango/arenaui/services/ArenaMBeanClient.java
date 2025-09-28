@@ -2,7 +2,7 @@ package net.chesstango.arenaui.services;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import net.chesstango.mbeans.*;
+import net.chesstango.arena.ipc.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

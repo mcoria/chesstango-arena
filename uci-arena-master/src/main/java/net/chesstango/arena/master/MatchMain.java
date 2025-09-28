@@ -58,8 +58,6 @@ public class MatchMain {
     public static void main(String[] args) {
         //Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
 
-
-
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
                 AlphaBetaBuilder
                         .createDefaultBuilderInstance()

@@ -1,4 +1,4 @@
-package net.chesstango.mbeans;
+package net.chesstango.arena.ipc;
 
 /**
  * @author Mauricio Coria

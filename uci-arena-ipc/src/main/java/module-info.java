@@ -1,5 +1,5 @@
-module net.chesstango.mbeans {
-    exports  net.chesstango.mbeans;
+module net.chesstango.arena.ipc {
+    exports net.chesstango.arena.ipc;
 
     requires java.management;
 

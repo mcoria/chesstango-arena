@@ -6,7 +6,7 @@ module net.chesstango.arena.core {
 
     requires net.chesstango.goyeneche;
     requires net.chesstango.gardel;
-    requires net.chesstango.mbeans;
+    requires net.chesstango.arena.ipc;
     requires net.chesstango.board;
     requires net.chesstango.engine;
     requires net.chesstango.evaluation;

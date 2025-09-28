@@ -6,9 +6,9 @@ import net.chesstango.board.Color;
 import net.chesstango.board.Game;
 import net.chesstango.board.moves.Move;
 import net.chesstango.board.position.GameHistoryRecord;
-import net.chesstango.mbeans.Arena;
-import net.chesstango.mbeans.GameDescriptionCurrent;
-import net.chesstango.mbeans.GameDescriptionInitial;
+import net.chesstango.arena.ipc.Arena;
+import net.chesstango.arena.ipc.GameDescriptionCurrent;
+import net.chesstango.arena.ipc.GameDescriptionInitial;
 import net.chesstango.uci.gui.Controller;
 
 import java.util.ArrayList;
