@@ -43,6 +43,11 @@
         <dependencies>
             <dependency>
                 <groupId>net.chesstango</groupId>
+                <artifactId>engine-reports</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.chesstango</groupId>
                 <artifactId>uci-arena-ipc</artifactId>
                 <version>${project.version}</version>
             </dependency>

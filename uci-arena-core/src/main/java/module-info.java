@@ -2,6 +2,7 @@ module net.chesstango.arena.core {
     exports net.chesstango.arena.core;
     exports net.chesstango.arena.core.listeners;
     exports net.chesstango.arena.core.matchtypes;
+    exports net.chesstango.arena.core.reports;
 
     requires net.chesstango.goyeneche;
     requires net.chesstango.gardel;
@@ -18,4 +19,5 @@ module net.chesstango.arena.core {
     requires org.slf4j;
 
     requires static lombok;
+    requires net.chesstango.reports;
 }
