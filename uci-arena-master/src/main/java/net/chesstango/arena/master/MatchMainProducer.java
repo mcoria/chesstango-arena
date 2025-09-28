@@ -138,7 +138,7 @@ public class MatchMainProducer implements Runnable {
                 .required()
                 .hasArg()
                 .argName("HOSTNAME/IP")
-                .desc("rabbit host")
+                .desc("Rabbit host where messages are sent")
                 .build();
         options.addOption(inputOpt);
 
@@ -166,8 +166,23 @@ public class MatchMainProducer implements Runnable {
         } catch (ParseException exp) {
             // oops, something went wrong
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
+            printHelp(options);
             System.exit(-1);
         }
         return null;
+    }
+
+    private static void printHelp(Options options){
+        HelpFormatter formatter = new HelpFormatter();
+
+        // Custom settings (optional)
+        formatter.setWidth(100); // Set the display width
+
+        // 3. Call printHelp()
+        String cmdName = "my-cli-tool";
+        String header = "\nA simple command line utility for file processing.\n\nOptions:";
+        String footer = "\nPlease report issues on GitHub.";
+
+        formatter.printHelp(cmdName, header, options, footer, true);
     }
 }
