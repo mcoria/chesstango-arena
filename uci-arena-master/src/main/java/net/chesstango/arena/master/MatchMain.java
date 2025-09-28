@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
+import net.chesstango.arena.core.reports.MatchesReport;
+import net.chesstango.arena.core.reports.SearchesReport;
+import net.chesstango.arena.core.reports.SessionReport;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.worker.ControllerFactory;
@@ -11,6 +14,7 @@ import net.chesstango.board.Game;
 import net.chesstango.evaluation.Evaluator;
 import net.chesstango.evaluation.evaluators.EvaluatorByMaterial;
 import net.chesstango.gardel.fen.FEN;
+import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
 import net.chesstango.search.builders.AlphaBetaBuilder;
@@ -45,7 +49,7 @@ public class MatchMain {
     private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.2.0-CHT-328.json");
 
     //private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
-    private static final int parallelJobs = 1;
+    private static final int parallelJobs = 2;
 
     /**
      * Add the following JVM parameters:
@@ -88,7 +92,29 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(getFromPGN());
+                .play(getFEN());
+
+        new MatchesReport()
+                .withMatchResults(matchResult)
+                .printReport(System.out);
+
+        /*
+        new SearchesReport()
+                .withCutoffStatistics()
+                .withNodesVisitedStatistics()
+                .withPrincipalVariation()
+                .withEvaluationReport()
+                .withMathResults(matchResult)
+                .printReport(System.out);
+
+
+        new SessionReport()
+                .withNodesVisitedStatistics()
+                .withCutoffStatistics()
+                .breakByColor()
+                .withMathResults(matchResult)
+                .printReport(System.out);
+         */
     }
 
     private static Stream<FEN> getFromPGN() {
@@ -106,9 +132,9 @@ public class MatchMain {
 
     private static Stream<FEN> getFEN() {
         //List<String> fenList = List.of(FENParser.INITIAL_FEN);
-        List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
+        //List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
         //List<String> fenList =  List.of("1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
-        //List<String> fenList =  List.of(FENDecoder.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
+        List<String> fenList =  List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
 
         return fenList
                 .stream()
@@ -131,8 +157,8 @@ public class MatchMain {
                     .setPrintPGN(PRINT_PGN)
                     .setSwitchChairs(MATCH_SWITCH_CHAIRS)
                     //.setMatchListener(new MatchBroadcaster()
-                            //         .addListener(new MatchListenerToMBean())
-                            //         .addListener(new SavePGNGame())
+                    //         .addListener(new MatchListenerToMBean())
+                    //         .addListener(new SavePGNGame())
                     //         )
                     ;
 
