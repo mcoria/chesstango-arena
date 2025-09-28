@@ -20,6 +20,10 @@
     <dependencies>
         <dependency>
             <groupId>net.chesstango</groupId>
+            <artifactId>engine-reports</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.chesstango</groupId>
             <artifactId>engine-uci</artifactId>
         </dependency>
         <dependency>

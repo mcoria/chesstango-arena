@@ -18,4 +18,5 @@ module net.chesstango.arena.core {
     requires org.slf4j;
 
     requires static lombok;
+    requires net.chesstango.reports;
 }
