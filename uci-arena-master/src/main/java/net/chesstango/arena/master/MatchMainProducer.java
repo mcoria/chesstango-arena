@@ -2,14 +2,15 @@ package net.chesstango.arena.master;
 
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
+import net.chesstango.arena.core.matchtypes.MatchByDepth;
+import net.chesstango.arena.core.matchtypes.MatchType;
+import net.chesstango.arena.worker.MatchRequest;
 import net.chesstango.board.Game;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
-import net.chesstango.arena.worker.MatchRequest;
-import net.chesstango.arena.core.matchtypes.MatchByDepth;
-import net.chesstango.arena.core.matchtypes.MatchType;
+import org.apache.commons.cli.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +27,19 @@ import static net.chesstango.arena.master.common.Common.SESSION_DATE;
 public class MatchMainProducer implements Runnable {
 
     public static void main(String[] args) {
-        String rabbitHost = "localhost";
+        CommandLine parsedArgs = parseArguments(args);
+
+        String rabbitHost = parsedArgs.getOptionValue("r");
+
+        /*
+        if (parsedArgs.hasOption('p')) {
+            epdFilter.setFilter(new PlayerFilter(parsedArgs.getOptionValue('p')));
+        } else if (parsedArgs.hasOption('b')) {
+            epdFilter.setFilter(Predicate.not(new BookFilter(createBook(parsedArgs.getOptionValue('b')))));
+        } else {
+            throw new RuntimeException("Filter not found");
+        }
+         */
 
         new MatchMainProducer(rabbitHost).run();
     }
@@ -41,7 +54,7 @@ public class MatchMainProducer implements Runnable {
     public void run() {
         log.info("Starting");
 
-        List<MatchRequest> matchRequests = createMatchRequests(new MatchByDepth(4), getFEN_FromPGN(), true);
+        List<MatchRequest> matchRequests = createMatchRequests(new MatchByDepth(4), fromPGN(), true);
 
         try (ExecutorService executorService = Executors.newSingleThreadExecutor()) {
             ConnectionFactory factory = new ConnectionFactory();
@@ -65,12 +78,6 @@ public class MatchMainProducer implements Runnable {
         String player1 = "class:WithTables";
         //String player1 = "file:Tango-v1.2.0";
         String player2 = "file:Spike";
-
-        /*
-        String matchId = UUID.randomUUID().toString();
-        String player1Name = player1.replace("file:", "").replace("class:", "");
-        String player2Name = player2.replace("file:", "").replace("class:", "");
-         */
 
         Stream<MatchRequest> result = fenList.stream()
                 .map(fen -> new MatchRequest()
@@ -100,7 +107,7 @@ public class MatchMainProducer implements Runnable {
     }
 
 
-    private static List<FEN> getFEN_FromPGN() {
+    private static List<FEN> fromPGN() {
         Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMainProducer.class.getClassLoader().getResourceAsStream("Balsa_Top10.pgn"));
         //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMasterMain.class.getClassLoader().getResourceAsStream("Balsa_Top25.pgn"));
         //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMasterMain.class.getClassLoader().getResourceAsStream("Balsa_Top50.pgn"));
@@ -114,12 +121,53 @@ public class MatchMainProducer implements Runnable {
     }
 
 
-    private static List<FEN> getFEN() {
+    private static List<FEN> fromFEN() {
         List<String> fenList = List.of(FENParser.INITIAL_FEN);
         //List<String> fenList =  List.of("K7/N7/k7/8/3p4/8/N7/8 w - - 0 1", "8/8/8/6B1/8/8/4k3/1K5N b - - 0 1");
         //List<String> fenList =  List.of("1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
         //List<String> fenList =  List.of(FENDecoder.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
 
         return fenList.stream().map(FEN::of).toList();
+    }
+
+    private static CommandLine parseArguments(String[] args) {
+        final Options options = new Options();
+        Option inputOpt = Option
+                .builder("r")
+                .longOpt("rabbitHost")
+                .required()
+                .hasArg()
+                .argName("HOSTNAME/IP")
+                .desc("rabbit host")
+                .build();
+        options.addOption(inputOpt);
+
+        /*
+        Option player = Option.builder("p")
+                .argName("player")
+                .hasArg()
+                .desc("Player name filter")
+                .build();
+        options.addOption(player);
+
+        Option book = Option.builder("b")
+                .argName("book")
+                .hasArg()
+                .desc("Book file")
+                .build();
+        options.addOption(book);
+         */
+
+
+        CommandLineParser parser = new DefaultParser();
+        try {
+            // parse the command line arguments
+            return parser.parse(options, args);
+        } catch (ParseException exp) {
+            // oops, something went wrong
+            System.err.println("Parsing failed.  Reason: " + exp.getMessage());
+            System.exit(-1);
+        }
+        return null;
     }
 }
