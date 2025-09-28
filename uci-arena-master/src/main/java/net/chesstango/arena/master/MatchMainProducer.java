@@ -30,34 +30,36 @@ public class MatchMainProducer implements Runnable {
         CommandLine parsedArgs = parseArguments(args);
 
         String rabbitHost = parsedArgs.getOptionValue("r", "localhost");
+        log.info("Rabbit host: {}", rabbitHost);
+
         String engine = parsedArgs.getOptionValue("e");
+        log.info("Engine: {}", engine);
 
-        /*
-        if (parsedArgs.hasOption('p')) {
-            epdFilter.setFilter(new PlayerFilter(parsedArgs.getOptionValue('p')));
-        } else if (parsedArgs.hasOption('b')) {
-            epdFilter.setFilter(Predicate.not(new BookFilter(createBook(parsedArgs.getOptionValue('b')))));
-        } else {
-            throw new RuntimeException("Filter not found");
+        MatchType matchType = null;
+        if (parsedArgs.hasOption('d')) {
+            matchType = new MatchByDepth(Integer.parseInt(parsedArgs.getOptionValue("d")));
+            log.info("Match: {}", matchType);
         }
-         */
 
-        new MatchMainProducer(rabbitHost, engine).run();
+        new MatchMainProducer(rabbitHost, engine, matchType)
+                .run();
     }
 
     private final String rabbitHost;
     private final String engine;
+    private final MatchType matchType;
 
-    public MatchMainProducer(String rabbitHost, String engine) {
+    public MatchMainProducer(String rabbitHost, String engine, MatchType matchType) {
         this.rabbitHost = rabbitHost;
         this.engine = engine;
+        this.matchType = matchType;
     }
 
     @Override
     public void run() {
         log.info("Starting");
 
-        List<MatchRequest> matchRequests = createMatchRequests(new MatchByDepth(4), fromPGN(), true);
+        List<MatchRequest> matchRequests = createMatchRequests(fromPGN());
 
         try (ExecutorService executorService = Executors.newSingleThreadExecutor()) {
             ConnectionFactory factory = new ConnectionFactory();
@@ -77,7 +79,7 @@ public class MatchMainProducer implements Runnable {
     }
 
 
-    private List<MatchRequest> createMatchRequests(MatchType match, List<FEN> fenList, boolean switchChairs) {
+    private List<MatchRequest> createMatchRequests(List<FEN> fenList) {
         String player2 = "file:Spike";
 
         Stream<MatchRequest> result = fenList.stream()
@@ -85,24 +87,23 @@ public class MatchMainProducer implements Runnable {
                         .setWhiteEngine(engine)
                         .setBlackEngine(player2)
                         .setFen(fen)
-                        .setMatchType(match)
+                        .setMatchType(matchType)
                         .setMatchId(UUID.randomUUID().toString())
                         .setSessionId(SESSION_DATE)
                 );
 
-        if (switchChairs) {
-            Stream<MatchRequest> switchStream = fenList.stream()
-                    .map(fen -> new MatchRequest()
-                            .setWhiteEngine(player2)
-                            .setBlackEngine(engine)
-                            .setFen(fen)
-                            .setMatchType(match)
-                            .setMatchId(UUID.randomUUID().toString())
-                            .setSessionId(SESSION_DATE)
-                    );
 
-            result = Stream.concat(result, switchStream);
-        }
+        Stream<MatchRequest> switchStream = fenList.stream()
+                .map(fen -> new MatchRequest()
+                        .setWhiteEngine(player2)
+                        .setBlackEngine(engine)
+                        .setFen(fen)
+                        .setMatchType(matchType)
+                        .setMatchId(UUID.randomUUID().toString())
+                        .setSessionId(SESSION_DATE)
+                );
+
+        result = Stream.concat(result, switchStream);
 
         return result
                 .peek(request -> log.info("{}", request.toString()))
@@ -140,7 +141,7 @@ public class MatchMainProducer implements Runnable {
                 .longOpt("rabbitHost")
                 .hasArg()
                 .argName("HOSTNAME/IP")
-                .desc("Rabbit host where messages are sent")
+                .desc("rabbit host where messages are sent")
                 .build();
         options.addOption(inputOpt);
 
@@ -154,13 +155,30 @@ public class MatchMainProducer implements Runnable {
                 .build();
         options.addOption(mainEngineOpt);
 
+        Option matchTypeByDepth = Option
+                .builder("d")
+                .longOpt("MatchByDepth")
+                .hasArg()
+                .argName("DEPTH")
+                .desc("match by depth")
+                .build();
+        options.addOption(matchTypeByDepth);
+
+
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
-            return parser.parse(options, args);
+            CommandLine cmdLine = parser.parse(options, args);
+
+            if (!cmdLine.hasOption('d')) {
+                throw new ParseException("No match type argument");
+            }
+
+            return cmdLine;
+
         } catch (ParseException exp) {
             // oops, something went wrong
-            System.err.println("Parsing failed.  Reason: " + exp.getMessage());
+            System.err.println("ERROR: " + exp.getMessage());
             printHelp(options);
             System.exit(-1);
         }
