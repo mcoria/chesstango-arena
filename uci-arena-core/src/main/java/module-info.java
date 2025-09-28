@@ -2,6 +2,7 @@ module net.chesstango.arena.core {
     exports net.chesstango.arena.core;
     exports net.chesstango.arena.core.listeners;
     exports net.chesstango.arena.core.matchtypes;
+    exports net.chesstango.arena.core.reports;
 
     requires net.chesstango.goyeneche;
     requires net.chesstango.gardel;
