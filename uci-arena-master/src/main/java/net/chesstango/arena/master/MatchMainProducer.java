@@ -29,7 +29,8 @@ public class MatchMainProducer implements Runnable {
     public static void main(String[] args) {
         CommandLine parsedArgs = parseArguments(args);
 
-        String rabbitHost = parsedArgs.getOptionValue("r");
+        String rabbitHost = parsedArgs.getOptionValue("r", "localhost");
+        String engine = parsedArgs.getOptionValue("e");
 
         /*
         if (parsedArgs.hasOption('p')) {
@@ -41,13 +42,15 @@ public class MatchMainProducer implements Runnable {
         }
          */
 
-        new MatchMainProducer(rabbitHost).run();
+        new MatchMainProducer(rabbitHost, engine).run();
     }
 
     private final String rabbitHost;
+    private final String engine;
 
-    public MatchMainProducer(String rabbitHost) {
+    public MatchMainProducer(String rabbitHost, String engine) {
         this.rabbitHost = rabbitHost;
+        this.engine = engine;
     }
 
     @Override
@@ -74,14 +77,12 @@ public class MatchMainProducer implements Runnable {
     }
 
 
-    private static List<MatchRequest> createMatchRequests(MatchType match, List<FEN> fenList, boolean switchChairs) {
-        String player1 = "class:WithTables";
-        //String player1 = "file:Tango-v1.2.0";
+    private List<MatchRequest> createMatchRequests(MatchType match, List<FEN> fenList, boolean switchChairs) {
         String player2 = "file:Spike";
 
         Stream<MatchRequest> result = fenList.stream()
                 .map(fen -> new MatchRequest()
-                        .setWhiteEngine(player1)
+                        .setWhiteEngine(engine)
                         .setBlackEngine(player2)
                         .setFen(fen)
                         .setMatchType(match)
@@ -93,7 +94,7 @@ public class MatchMainProducer implements Runnable {
             Stream<MatchRequest> switchStream = fenList.stream()
                     .map(fen -> new MatchRequest()
                             .setWhiteEngine(player2)
-                            .setBlackEngine(player1)
+                            .setBlackEngine(engine)
                             .setFen(fen)
                             .setMatchType(match)
                             .setMatchId(UUID.randomUUID().toString())
@@ -103,7 +104,9 @@ public class MatchMainProducer implements Runnable {
             result = Stream.concat(result, switchStream);
         }
 
-        return result.toList();
+        return result
+                .peek(request -> log.info("{}", request.toString()))
+                .toList();
     }
 
 
@@ -135,29 +138,21 @@ public class MatchMainProducer implements Runnable {
         Option inputOpt = Option
                 .builder("r")
                 .longOpt("rabbitHost")
-                .required()
                 .hasArg()
                 .argName("HOSTNAME/IP")
                 .desc("Rabbit host where messages are sent")
                 .build();
         options.addOption(inputOpt);
 
-        /*
-        Option player = Option.builder("p")
-                .argName("player")
+        Option mainEngineOpt = Option
+                .builder("e")
+                .longOpt("engine")
+                .required()
                 .hasArg()
-                .desc("Player name filter")
+                .argName("ENGINE")
+                .desc("main engine under test")
                 .build();
-        options.addOption(player);
-
-        Option book = Option.builder("b")
-                .argName("book")
-                .hasArg()
-                .desc("Book file")
-                .build();
-        options.addOption(book);
-         */
-
+        options.addOption(mainEngineOpt);
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -172,7 +167,7 @@ public class MatchMainProducer implements Runnable {
         return null;
     }
 
-    private static void printHelp(Options options){
+    private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
 
         // Custom settings (optional)
@@ -180,7 +175,7 @@ public class MatchMainProducer implements Runnable {
 
         // 3. Call printHelp()
         String cmdName = "my-cli-tool";
-        String header = "\nA simple command line utility for file processing.\n\nOptions:";
+        String header = "\nCommand line utility for queueing matches.\n\nOptions:";
         String footer = "\nPlease report issues on GitHub.";
 
         formatter.printHelp(cmdName, header, options, footer, true);
