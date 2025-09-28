@@ -1,11 +1,11 @@
 <configuration>
-    <root level="INFO">
+    <root level="NONE">
         <appender-ref ref="STDOUT"/>
     </root>
 
     <logger level="INFO" name="net.chesstango"/>
 
-    <logger level="DEBUG" name="net.chesstango.engine"/>
+    <logger level="INFO" name="net.chesstango.engine"/>
     <!--logger level="TRACE" name="net.chesstango.uci.proxy"/ -->
     <!--logger level="TRACE" name="net.chesstango.uci.engine"/ -->
 

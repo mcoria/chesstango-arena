@@ -2,16 +2,13 @@ package net.chesstango.arena.master;
 
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
-import net.chesstango.arena.master.common.Common;
 import net.chesstango.arena.worker.MatchResponse;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 
 /**
@@ -32,18 +29,18 @@ public class MatchMainConsumer implements Runnable {
             throw new RuntimeException("Directory not found: " + directory);
         }
 
-        new MatchMainConsumer(rabbitHost, matchStore).run();
+        new MatchMainConsumer(rabbitHost, new MatchSaver(matchStore)).run();
     }
 
     private final String rabbitHost;
-    private final Path matchStore;
+    private final Consumer<MatchResponse> matchResponseConsumer;
 
-    public MatchMainConsumer(String rabbitHost, Path matchStore) {
+    public MatchMainConsumer(String rabbitHost, Consumer<MatchResponse> matchResponseConsumer) {
         if (rabbitHost == null) {
             throw new IllegalArgumentException("rabbitHost and matchStore must be provided");
         }
         this.rabbitHost = rabbitHost;
-        this.matchStore = matchStore;
+        this.matchResponseConsumer = matchResponseConsumer;
     }
 
     @Override
@@ -62,7 +59,7 @@ public class MatchMainConsumer implements Runnable {
 
                 log.info("Connected to RabbitMQ");
 
-                responseConsumer.setupQueueConsumer(this::accept);
+                responseConsumer.setupQueueConsumer(matchResponseConsumer);
 
                 log.info("Waiting for MatchResponse");
 
@@ -75,22 +72,4 @@ public class MatchMainConsumer implements Runnable {
         log.info("Done");
     }
 
-
-    public void accept(MatchResponse matchResponse) {
-        Path sessionDirectory = Common.createSessionDirectory(matchStore, matchResponse.getSessionId());
-
-        log.info("Saving MatchResponse for {}", matchResponse.getSessionId());
-
-        String filename = String.format("match_%s.ser", matchResponse.getMatchId());
-
-        Path filePath = sessionDirectory.resolve(filename);
-
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath.toFile()))) {
-            oos.writeObject(matchResponse);
-            log.info("Response serialized to file: {}", filePath);
-        } catch (IOException e) {
-            log.error("Failed to serialize response", e);
-            throw new RuntimeException(e);
-        }
-    }
 }
