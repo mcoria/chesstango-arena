@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: engines-pvc
+spec:
+  accessModes:
+    - ReadOnlyMany # Requesting read-only access
+  resources:
+    requests:
+      storage: 1Gi # Requesting storage that matches the PV's declared capacity
+  storageClassName: "manual-hostpath"

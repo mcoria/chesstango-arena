@@ -32,7 +32,7 @@ spec:
           persistentVolumeClaim:
             claimName: chesstango-book-pvc
         - name: engine-volume
-          hostPath:
-            path: /run/desktop/mnt/host/c/java/projects/chess/chess-utils/engines
+          persistentVolumeClaim:
+            claimName: engines-pvc
       restartPolicy: Always
       
