@@ -3,9 +3,15 @@ package net.chesstango.arena.master;
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.worker.MatchResponse;
+import net.chesstango.board.Game;
+import net.chesstango.gardel.fen.FEN;
+import net.chesstango.gardel.pgn.PGNStringDecoder;
+import org.apache.commons.cli.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -17,16 +23,18 @@ import java.util.function.Consumer;
 @Slf4j
 public class MatchMainConsumer implements Runnable {
 
-    public static void main(String[] args) throws Exception {
-        String rabbitHost = args[0];
+    public static void main(String[] args) {
+        CommandLine parsedArgs = parseArguments(args);
 
-        String directory = args[1];
+        String rabbitHost = parsedArgs.getOptionValue("r", "localhost");
+        log.info("Rabbit: {}", rabbitHost);
 
-        System.out.printf("matchStore={%s}\n", directory);
+        String matchStoreDirectory = parsedArgs.getOptionValue("s");
+        log.info("Store: {}", matchStoreDirectory);
 
-        Path matchStore = Path.of(directory);
+        Path matchStore = Path.of(matchStoreDirectory);
         if (!Files.exists(matchStore) || !Files.isDirectory(matchStore)) {
-            throw new RuntimeException("Directory not found: " + directory);
+            throw new RuntimeException("Directory not found: " + matchStoreDirectory);
         }
 
         new MatchMainConsumer(rabbitHost, new MatchSaver(matchStore)).run();
@@ -71,5 +79,54 @@ public class MatchMainConsumer implements Runnable {
         }
         log.info("Done");
     }
+
+    private static CommandLine parseArguments(String[] args) {
+        final Options options = new Options();
+        Option inputOpt = Option
+                .builder("r")
+                .longOpt("rabbitHost")
+                .hasArg()
+                .argName("HOSTNAME/IP")
+                .desc("rabbit host where messages are sent")
+                .build();
+        options.addOption(inputOpt);
+
+        Option storeOpt = Option
+                .builder("s")
+                .longOpt("store")
+                .hasArg()
+                .required()
+                .argName("DIRECTORY")
+                .desc("store directory")
+                .build();
+        options.addOption(storeOpt);
+
+
+        CommandLineParser parser = new DefaultParser();
+        try {
+            // parse the command line arguments
+
+            return parser.parse(options, args);
+        } catch (ParseException exp) {
+            // oops, something went wrong
+            System.err.println("ERROR: " + exp.getMessage());
+            printHelp(options);
+            System.exit(-1);
+        }
+        return null;
+    }
+
+    private static void printHelp(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+
+        formatter.setWidth(100); // Set the display width
+
+        String cmdName = "MatchMainConsumer";
+        String header = "\nCommand line utility for queueing matches.\n\nOptions:";
+        String footer = "\nPlease report issues on GitHub.";
+
+        formatter.printHelp(cmdName, header, options, footer, true);
+    }
+
 
 }
