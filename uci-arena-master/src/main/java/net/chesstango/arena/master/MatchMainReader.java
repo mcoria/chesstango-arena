@@ -36,6 +36,7 @@ public class MatchMainReader {
 
 
 
+        /*
         new SessionReport()
                 //.withCollisionStatistics()
                 //.withNodesVisitedStatistics()
@@ -51,6 +52,7 @@ public class MatchMainReader {
                 .withPrincipalVariation()
                 .withMathResults(matchResult)
                 .printReport(System.out);
+         */
     }
 
     public static List<MatchResponse> loadMatchResponses(String directoryStr) {
