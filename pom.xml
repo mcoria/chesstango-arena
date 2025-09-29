@@ -34,6 +34,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
+        <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
+
         <commons-cli.version>1.8.0</commons-cli.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
         <rabitmq.verison>5.26.0</rabitmq.verison>
@@ -98,6 +100,14 @@
                 <configuration>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
