@@ -25,7 +25,12 @@ spec:
           volumeMounts:
             - name: engine-volume
               mountPath: /engines
+            - name: books-volume
+              mountPath: /books/
       volumes:
+        - name: books-volume
+          persistentVolumeClaim:
+            claimName: chesstango-book-pvc
         - name: engine-volume
           hostPath:
             path: /run/desktop/mnt/host/c/java/projects/chess/chess-utils/engines
