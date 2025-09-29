@@ -204,7 +204,7 @@ public class MatchMainProducer implements Runnable {
 
         formatter.setWidth(100); // Set the display width
 
-        String cmdName = "my-cli-tool";
+        String cmdName = "MatchMainProducer";
         String header = "\nCommand line utility for queueing matches.\n\nOptions:";
         String footer = "\nPlease report issues on GitHub.";
 
