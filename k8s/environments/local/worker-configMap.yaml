@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: match-worker-config
+data:
+  RABBIT_HOST: "chesstango-rabbit-svc.default.svc.cluster.local"
+  ENGINE_CATALOG: "/engines/catalog_linux"
+

@@ -19,11 +19,9 @@ spec:
         - name: uci-arena-worker
           image: coriamauricio/uci-arena-worker:1.2.0-SNAPSHOT
           imagePullPolicy: IfNotPresent
-          env:
-            - name: RABBIT_HOST
-              value: "chesstango-rabbit-svc.default.svc.cluster.local"
-            - name: ENGINE_CATALOG
-              value: "/engines/catalog_linux"
+          envFrom:
+            - configMapRef:
+                name: match-worker-config
           volumeMounts:
             - name: engine-volume
               mountPath: /engines
