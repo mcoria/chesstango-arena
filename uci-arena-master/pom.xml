@@ -112,15 +112,17 @@
                         <artifactId>maven-shade-plugin</artifactId>
                         <configuration>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
+                                        <exclude>module-info.class</exclude>
                                         <exclude>META-INF/MANIFEST.MF</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
-                            <finalName>chesstango-tools</finalName>
+                            <finalName>uci-arena-master</finalName>
                         </configuration>
                     </plugin>
                 </plugins>
