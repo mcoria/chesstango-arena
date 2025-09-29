@@ -1,21 +1,22 @@
 package net.chesstango.arena.master;
 
-import net.chesstango.board.Game;
-import net.chesstango.gardel.fen.FEN;
-import net.chesstango.evaluation.evaluators.EvaluatorByMaterialAndPST;
-import net.chesstango.evaluation.evaluators.EvaluatorImp02;
-import net.chesstango.gardel.pgn.PGN;
-import net.chesstango.gardel.pgn.PGNStringDecoder;
-import net.chesstango.arena.master.common.MatchListenerToMBeans;
-import net.chesstango.arena.master.common.Tournament;
-import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.arena.core.MatchResult;
-import net.chesstango.uci.gui.Controller;
 import net.chesstango.arena.core.listeners.CaptureMatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
+import net.chesstango.arena.master.common.MatchListenerToMBeans;
+import net.chesstango.arena.master.common.Tournament;
+import net.chesstango.arena.worker.ControllerFactory;
+import net.chesstango.board.Game;
+import net.chesstango.evaluation.evaluators.EvaluatorByMaterialAndPST;
+import net.chesstango.evaluation.evaluators.EvaluatorImp02;
+import net.chesstango.gardel.fen.FEN;
+import net.chesstango.gardel.pgn.PGN;
+import net.chesstango.gardel.pgn.PGNStringDecoder;
+import net.chesstango.uci.gui.Controller;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -54,10 +55,14 @@ public class TournamentMain {
     }
 
     private static Stream<FEN> getFenList() {
-        //List<String> fenList = new Transcoding().pgnFileToFenPositions(TournamentMain.class.getClassLoader().getResourceAsStream("Balsa_v2724.pgn"));
-        Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Top10.pgn"));
-        //List<String> fenList = List.of(FENDecoder.INITIAL_FEN);
-        return pgnStream.map(Game::from).map(Game::getCurrentFEN);
+        try {
+            //List<String> fenList = new Transcoding().pgnFileToFenPositions(TournamentMain.class.getClassLoader().getResourceAsStream("Balsa_v2724.pgn"));
+            Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Top10.pgn"));
+            //List<String> fenList = List.of(FENDecoder.INITIAL_FEN);
+            return pgnStream.map(Game::from).map(Game::getCurrentFEN);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private final List<Supplier<Controller>> engineSupplierList;

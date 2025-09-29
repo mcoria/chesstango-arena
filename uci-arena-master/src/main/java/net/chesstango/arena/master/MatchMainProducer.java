@@ -7,18 +7,17 @@ import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.worker.MatchRequest;
 import net.chesstango.board.Game;
 import net.chesstango.gardel.fen.FEN;
-import net.chesstango.gardel.fen.FENParser;
-import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
 import org.apache.commons.cli.*;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Stream;
 
 import static net.chesstango.arena.master.common.Common.SESSION_DATE;
 
@@ -29,7 +28,7 @@ import static net.chesstango.arena.master.common.Common.SESSION_DATE;
 public class MatchMainProducer implements Runnable {
 
     /**
-     * Example: -d 2 -e "class:WithTables" -o "file:Spike"
+     * Example: -d 2 -e "class:WithTables" -o "file:Spike" -p "C:\java\projects\chess\chess-utils\testing\matches\Balsa_Top10.pgn"
      */
     public static void main(String[] args) {
         CommandLine parsedArgs = parseArguments(args);
@@ -40,8 +39,8 @@ public class MatchMainProducer implements Runnable {
         String engine = parsedArgs.getOptionValue("e");
         log.info("Engine: {}", engine);
 
-        String[] opponents = parsedArgs.getOptionValues("o");
-        log.info("Opponents: {}", Arrays.toString(opponents));
+        List<String> opponents = Arrays.stream(parsedArgs.getOptionValues("o")).toList();
+        log.info("Opponents: {}", opponents);
 
         MatchType matchType = null;
         if (parsedArgs.hasOption('d')) {
@@ -49,25 +48,33 @@ public class MatchMainProducer implements Runnable {
             log.info("Match: {}", matchType);
         }
 
-        new MatchMainProducer(rabbitHost, engine, opponents, matchType)
+        List<FEN> fenList = parsedArgs.hasOption('f')
+                ? Arrays.stream(parsedArgs.getOptionValues("f")).map(FEN::of).toList()
+                : fromPGN(parsedArgs.getOptionValue('p'));
+
+        log.info("FEN size: {}", fenList.size());
+
+        new MatchMainProducer(rabbitHost, engine, opponents, matchType, fenList)
                 .run();
     }
 
     private final String rabbitHost;
     private final String engine;
     private final MatchType matchType;
-    private final String[] opponents;
+    private final List<String> opponents;
+    private final List<FEN> fenList;
 
-    public MatchMainProducer(String rabbitHost, String engine, String[] opponents, MatchType matchType) {
+    public MatchMainProducer(String rabbitHost, String engine, List<String> opponents, MatchType matchType, List<FEN> fenList) {
         this.rabbitHost = rabbitHost;
         this.engine = engine;
         this.matchType = matchType;
         this.opponents = opponents;
+        this.fenList = fenList;
     }
 
     @Override
     public void run() {
-        List<MatchRequest> matchRequests = createMatchRequests(fromPGN());
+        List<MatchRequest> matchRequests = createMatchRequests();
         try (ExecutorService executorService = Executors.newSingleThreadExecutor()) {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(rabbitHost);
@@ -81,7 +88,7 @@ public class MatchMainProducer implements Runnable {
     }
 
 
-    private List<MatchRequest> createMatchRequests(List<FEN> fenList) {
+    private List<MatchRequest> createMatchRequests() {
         List<MatchRequest> matchRequests = new LinkedList<>();
 
         for (String opponent : opponents) {
@@ -114,29 +121,6 @@ public class MatchMainProducer implements Runnable {
     }
 
 
-    private static List<FEN> fromPGN() {
-        Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMainProducer.class.getClassLoader().getResourceAsStream("Balsa_Top10.pgn"));
-        //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMasterMain.class.getClassLoader().getResourceAsStream("Balsa_Top25.pgn"));
-        //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMasterMain.class.getClassLoader().getResourceAsStream("Balsa_Top50.pgn"));
-        //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMasterMain.class.getClassLoader().getResourceAsStream("Balsa_v500.pgn"));
-        //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMasterMain.class.getClassLoader().getResourceAsStream("Balsa_v2724.pgn"));
-
-        return pgnStream
-                .map(Game::from)
-                .map(Game::getCurrentFEN)
-                .toList();
-    }
-
-
-    private static List<FEN> fromFEN() {
-        List<String> fenList = List.of(FENParser.INITIAL_FEN);
-        //List<String> fenList =  List.of("K7/N7/k7/8/3p4/8/N7/8 w - - 0 1", "8/8/8/6B1/8/8/4k3/1K5N b - - 0 1");
-        //List<String> fenList =  List.of("1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
-        //List<String> fenList =  List.of(FENDecoder.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
-
-        return fenList.stream().map(FEN::of).toList();
-    }
-
     private static CommandLine parseArguments(String[] args) {
         final Options options = new Options();
         Option inputOpt = Option
@@ -163,7 +147,7 @@ public class MatchMainProducer implements Runnable {
                 .longOpt("opponents")
                 .required()
                 .hasArgs()
-                .argName("OPPONENT1 OPPONENT2")
+                .argName("OPPONENT...")
                 .desc("opponents list")
                 .build();
         options.addOption(opponents);
@@ -177,17 +161,35 @@ public class MatchMainProducer implements Runnable {
                 .build();
         options.addOption(matchTypeByDepth);
 
+        Option fenList = Option
+                .builder("f")
+                .longOpt("fenList")
+                .hasArgs()
+                .argName("FEN...")
+                .desc("fen list")
+                .build();
+        options.addOption(fenList);
+
+        Option pgnFile = Option
+                .builder("p")
+                .longOpt("pgnFile")
+                .hasArg()
+                .argName("FILE")
+                .desc("PNG file path")
+                .build();
+        options.addOption(pgnFile);
+
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
             CommandLine cmdLine = parser.parse(options, args);
-
             if (!cmdLine.hasOption('d')) {
                 throw new ParseException("No match type argument");
             }
-
+            if (!cmdLine.hasOption('f') && !cmdLine.hasOption('p')) {
+                throw new ParseException("FEN nor PGN file option present");
+            }
             return cmdLine;
-
         } catch (ParseException exp) {
             // oops, something went wrong
             System.err.println("ERROR: " + exp.getMessage());
@@ -207,5 +209,17 @@ public class MatchMainProducer implements Runnable {
         String footer = "\nPlease report issues on GitHub.";
 
         formatter.printHelp(cmdName, header, options, footer, true);
+    }
+
+    private static List<FEN> fromPGN(String pgnFile) {
+        try {
+            return new PGNStringDecoder()
+                    .decodePGNs(Path.of(pgnFile))
+                    .map(Game::from)
+                    .map(Game::getCurrentFEN)
+                    .toList();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
