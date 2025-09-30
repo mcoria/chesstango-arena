@@ -19,6 +19,11 @@ spec:
         - name: uci-arena-worker
           image: coriamauricio/uci-arena-worker:1.2.0-SNAPSHOT
           imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "1000m"
+            limits:
+              cpu: "1000m"
           envFrom:
             - configMapRef:
                 name: match-worker-config
