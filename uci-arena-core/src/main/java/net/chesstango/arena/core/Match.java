@@ -3,6 +3,8 @@ package net.chesstango.arena.core;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import net.chesstango.arena.core.listeners.MatchListener;
+import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.board.Color;
 import net.chesstango.board.Game;
 import net.chesstango.board.Status;
@@ -16,8 +18,6 @@ import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
 import net.chesstango.search.SearchResult;
-import net.chesstango.arena.core.listeners.MatchListener;
-import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerVisitor;
@@ -225,10 +225,6 @@ public final class Match {
 
         Session session = sessionRef.get();
 
-        if (session != null) {
-            return session.getSearches();
-        }
-
-        return null;
+        return session != null ? session.getSearchResults() : null;
     }
 }
