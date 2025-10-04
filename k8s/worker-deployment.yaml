@@ -5,7 +5,7 @@ metadata:
   labels:
     app: uci-arena-worker
 spec:
-  replicas: 1
+  replicas: 20
   selector:
     matchLabels:
       app: uci-arena-worker
@@ -21,9 +21,7 @@ spec:
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: "1000m"
-            limits:
-              cpu: "1000m"
+              cpu: "900m"
           envFrom:
             - configMapRef:
                 name: match-worker-config
