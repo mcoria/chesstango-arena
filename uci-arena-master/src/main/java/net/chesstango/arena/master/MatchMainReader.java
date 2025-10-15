@@ -2,18 +2,15 @@ package net.chesstango.arena.master;
 
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
-
 import net.chesstango.arena.core.reports.MatchesReport;
-import net.chesstango.arena.core.reports.SearchesReport;
-import net.chesstango.arena.core.reports.SessionReport;
-import net.chesstango.arena.worker.*;
-
+import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -25,13 +22,14 @@ import java.util.stream.Stream;
 public class MatchMainReader {
 
     public static void main(String[] args) {
-        List<MatchResponse> matchResponses = loadMatchResponses("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2025-10-01-18-58");
+        List<MatchResponse> matchResponses = loadMatchResponses("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2025-10-15-01-02");
 
         List<MatchResult> matchResult = matchResponses.stream().map(MatchResponse::getMatchResult).toList();
 
         new MatchesReport()
                 .withMatchResults(matchResult)
                 //.withMatchResult(List.of(engineController1, engineController2), matchResult)
+                .sortBy(Comparator.comparing(MatchesReport.ReportRowModel::getWinPercentage).reversed())
                 .printReport(System.out);
 
 

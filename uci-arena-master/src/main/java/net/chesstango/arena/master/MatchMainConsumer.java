@@ -23,6 +23,9 @@ import java.util.function.Consumer;
 @Slf4j
 public class MatchMainConsumer implements Runnable {
 
+    /**
+     * Example: -r localhost -s C:\java\projects\chess\chess-utils\testing\matches
+     */
     public static void main(String[] args) {
         CommandLine parsedArgs = parseArguments(args);
 

@@ -1,7 +1,8 @@
 package net.chesstango.arena.core.reports;
 
-import net.chesstango.gardel.pgn.PGN;
+import lombok.Getter;
 import net.chesstango.arena.core.MatchResult;
+import net.chesstango.gardel.pgn.PGN;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -16,6 +17,8 @@ public class MatchesReport {
     private final List<ReportRowModel> reportRowModels = new ArrayList<>();
 
     private PrintStream out;
+
+    private Comparator<? super ReportRowModel> theComparator = Comparator.comparing(row -> row.engineName);
 
     public MatchesReport printReport(PrintStream output) {
         out = output;
@@ -34,6 +37,11 @@ public class MatchesReport {
 
         engineNames.stream().map(engineName -> createRowModel(engineName, matchResults)).forEach(reportRowModels::add);
 
+        return this;
+    }
+
+    public MatchesReport sortBy(Comparator<ReportRowModel> comparator) {
+        theComparator = comparator;
         return this;
     }
 
@@ -63,16 +71,20 @@ public class MatchesReport {
 
 
     private void print() {
-        out.printf(" ___________________________________________________________________________________________________________________________________________________\n");
-        out.printf("|ENGINE NAME                        |WHITE WON|BLACK WON|WHITE LOST|BLACK LOST|WHITE DRAW|BLACK DRAW|WHITE POINTS|BLACK POINTS|TOTAL POINTS|   WIN %%|\n");
-        reportRowModels.forEach(row -> {
-            out.printf("|%35s|%8d |%8d |%9d |%9d |%9d |%9d |%11.1f |%11.1f |%6.1f /%3d | %6.1f |\n", row.engineName, row.wonAsWhite, row.wonAsBlack, row.lostAsWhite, row.lostAsBlack, row.drawsAsWhite, row.drawsAsBlack, row.puntosAsWhite, row.puntosAsBlack, row.puntosTotal, row.playedGames, row.winPercentage);
-        });
-        out.printf(" ---------------------------------------------------------------------------------------------------------------------------------------------------\n");
+        out.print(" _____________________________________________________________________________________________________________________________________________________________\n");
+        out.print("|ENGINE NAME                        |   GAMES |WHITE WON|BLACK WON|WHITE LOST|BLACK LOST|WHITE DRAW|BLACK DRAW|WHITE POINTS|BLACK POINTS|TOTAL POINTS|   WIN %|\n");
+
+        reportRowModels.stream()
+                .sorted(theComparator)
+                .forEach(row -> {
+                    out.printf("|%34s |%8d |%8d |%8d |%9d |%9d |%9d |%9d |%11.1f |%11.1f |%11.1f | %6.1f |\n", row.engineName, row.playedGames, row.wonAsWhite, row.wonAsBlack, row.lostAsWhite, row.lostAsBlack, row.drawsAsWhite, row.drawsAsBlack, row.puntosAsWhite, row.puntosAsBlack, row.puntosTotal, row.winPercentage);
+                });
+        out.print(" -------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
     }
 
 
-    private static class ReportRowModel {
+    @Getter
+    public static class ReportRowModel {
         String engineName;
         long wonAsWhite;
         long wonAsBlack;
