@@ -67,11 +67,13 @@ public class MatchMultiple {
                     case BOTH_SIDES:
                         executor.execute(() -> play(fen, controllerPool1, controllerPool2));
                         executor.execute(() -> play(fen, controllerPool2, controllerPool1));
+                        break;
                     case WHITE_ONLY:
                         executor.execute(() -> play(fen, controllerPool1, controllerPool2));
                         break;
                     case BLACK_ONLY:
                         executor.execute(() -> play(fen, controllerPool2, controllerPool1));
+                        break;
                 }
             });
         }
