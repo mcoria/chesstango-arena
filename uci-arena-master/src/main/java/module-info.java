@@ -13,6 +13,7 @@ module net.chesstango.arena.master {
     requires net.chesstango.arena.core;
     requires net.chesstango.arena.worker;
     requires net.chesstango.arena.ipc;
+    requires net.chesstango.goyeneche;
 
     requires org.slf4j;
     requires org.apache.commons.pool2;

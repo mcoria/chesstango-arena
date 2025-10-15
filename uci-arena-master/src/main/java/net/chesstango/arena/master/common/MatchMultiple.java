@@ -4,11 +4,11 @@ package net.chesstango.arena.master.common;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import net.chesstango.gardel.fen.FEN;
 import net.chesstango.arena.core.Match;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchListener;
 import net.chesstango.arena.core.matchtypes.MatchType;
+import net.chesstango.gardel.fen.FEN;
 import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.ObjectPool;
 
@@ -24,6 +24,12 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class MatchMultiple {
+    public enum Type {
+        BOTH_SIDES,
+        WHITE_ONLY,
+        BLACK_ONLY
+    }
+
     private final int parallelJobs;
 
     private final ObjectPool<Controller> controllerPool1;
@@ -40,7 +46,7 @@ public class MatchMultiple {
 
     @Setter
     @Accessors(chain = true)
-    private boolean switchChairs;
+    private Type type = Type.BOTH_SIDES;
 
     @Setter
     @Accessors(chain = true)
@@ -52,15 +58,20 @@ public class MatchMultiple {
         this.controllerPool1 = controllerPool1;
         this.controllerPool2 = controllerPool2;
         this.matchType = matchType;
-        this.switchChairs = true;
     }
 
     public List<MatchResult> play(Stream<FEN> fenStream) {
         try (ExecutorService executor = Executors.newFixedThreadPool(parallelJobs)) {
             fenStream.forEach(fen -> {
-                executor.execute(() -> play(fen, controllerPool1, controllerPool2));
-                if (switchChairs) {
-                    executor.execute(() -> play(fen, controllerPool2, controllerPool1));
+                switch (type) {
+                    case BOTH_SIDES:
+                        executor.execute(() -> play(fen, controllerPool1, controllerPool2));
+                        executor.execute(() -> play(fen, controllerPool2, controllerPool1));
+                    case WHITE_ONLY:
+                        executor.execute(() -> play(fen, controllerPool1, controllerPool2));
+                        break;
+                    case BLACK_ONLY:
+                        executor.execute(() -> play(fen, controllerPool2, controllerPool1));
                 }
             });
         }
