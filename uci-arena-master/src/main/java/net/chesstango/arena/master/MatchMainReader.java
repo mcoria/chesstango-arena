@@ -3,7 +3,7 @@ package net.chesstango.arena.master;
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.reports.MatchesReport;
-import net.chesstango.arena.core.reports.SearchesByTreeFromMatchesReport;
+import net.chesstango.arena.core.reports.SearchesByTreeDetailReport;
 import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.ByteArrayInputStream;
@@ -35,7 +35,7 @@ public class MatchMainReader {
 
 
         /*
-        new SessionReport()
+        new SearchesByTreeSummaryReport()
                 //.withCollisionStatistics()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
@@ -45,7 +45,7 @@ public class MatchMainReader {
         */
 
 
-        new SearchesByTreeFromMatchesReport()
+        new SearchesByTreeDetailReport()
                 //.withCutoffStatistics()
                 .withNodesVisitedStatistics()
                 .withPrincipalVariation()

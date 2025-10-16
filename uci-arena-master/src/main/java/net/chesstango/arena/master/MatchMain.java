@@ -7,7 +7,7 @@ import net.chesstango.arena.core.listeners.SavePGNGame;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
-import net.chesstango.arena.core.reports.SearchesByTreeFromMatchesReport;
+import net.chesstango.arena.core.reports.SearchesByTreeSummaryReport;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.worker.ControllerFactory;
@@ -43,7 +43,7 @@ public class MatchMain {
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
 
     private static final boolean PRINT_PGN = false;
-    private static final MatchMultiple.Type MATCH_MULTIPLE_TYPE = MatchMultiple.Type.WHITE_ONLY;
+    private static final MatchMultiple.Type MATCH_MULTIPLE_TYPE = MatchMultiple.Type.BOTH_SIDES;
 
     private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     private static final String SYZYGY_DIRECTORY = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
@@ -106,23 +106,24 @@ public class MatchMain {
                 .withMatchResults(matchResult)
                 .printReport(System.out);
 
+        new SearchesByTreeSummaryReport()
+                .withNodesVisitedStatistics()
+                .withCutoffStatistics()
+                .breakByColor()
+                .withMathResults(matchResult)
+                .printReport(System.out);
 
-        new SearchesByTreeFromMatchesReport()
+        /*
+        new SearchesByTreeDetailReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
                 .withPrincipalVariation()
                 .withEvaluationReport()
                 .withMathResults(matchResult)
                 .printReport(System.out);
+        */
 
-        /*
-        new SessionReport()
-                .withNodesVisitedStatistics()
-                .withCutoffStatistics()
-                .breakByColor()
-                .withMathResults(matchResult)
-                .printReport(System.out);
-         */
+
     }
 
     private static Stream<FEN> getFromPGN() {

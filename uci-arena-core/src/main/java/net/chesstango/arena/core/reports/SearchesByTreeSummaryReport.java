@@ -14,21 +14,21 @@ import java.util.*;
  *
  * @author Mauricio Coria
  */
-public class SessionReport {
-    private final List<SessionReportModel> sessionReportModels = new ArrayList<>();
+public class SearchesByTreeSummaryReport {
+    private final List<SearchesByTreeSummaryModel> searchesByTreeSummaryModels = new ArrayList<>();
     private boolean printNodesVisitedStatistics;
     private boolean printCutoffStatistics;
     private boolean breakByColor;
     private PrintStream out;
 
-    public SessionReport printReport(PrintStream output) {
+    public SearchesByTreeSummaryReport printReport(PrintStream output) {
         out = output;
         print();
         return this;
     }
 
 
-    public SessionReport withMathResults(List<MatchResult> matchResults) {
+    public SearchesByTreeSummaryReport withMathResults(List<MatchResult> matchResults) {
         Set<String> engineNames = new HashSet<>();
 
         matchResults.stream().map(MatchResult::pgn).forEach(pgn -> {
@@ -58,10 +58,10 @@ public class SessionReport {
 
             if (breakByColor) {
                 if (!searchesWhite.isEmpty()) {
-                    sessionReportModels.add(SessionReportModel.collectStatics(String.format("%s white", engineName), searchesWhite));
+                    searchesByTreeSummaryModels.add(SearchesByTreeSummaryModel.collectStatics(String.format("%s white", engineName), searchesWhite));
                 }
                 if (!searchesBlack.isEmpty()) {
-                    sessionReportModels.add(SessionReportModel.collectStatics(String.format("%s black", engineName), searchesBlack));
+                    searchesByTreeSummaryModels.add(SearchesByTreeSummaryModel.collectStatics(String.format("%s black", engineName), searchesBlack));
                 }
             } else {
                 List<SearchResult> searches = new ArrayList<>();
@@ -69,7 +69,7 @@ public class SessionReport {
                 searches.addAll(searchesBlack);
 
                 if (!searches.isEmpty()) {
-                    sessionReportModels.add(SessionReportModel.collectStatics(engineName, searches));
+                    searchesByTreeSummaryModels.add(SearchesByTreeSummaryModel.collectStatics(engineName, searches));
                 }
             }
         });
@@ -79,7 +79,7 @@ public class SessionReport {
 
     private void print() {
         if (printNodesVisitedStatistics) {
-            new PrintNodesVisitedStatistics(out, sessionReportModels)
+            new PrintNodesVisitedStatistics(out, searchesByTreeSummaryModels)
                     .printNodesVisitedStaticsByType()
                     .printNodesVisitedStatics()
                     .printNodesVisitedStaticsAvg();
@@ -87,23 +87,23 @@ public class SessionReport {
 
 
         if (printCutoffStatistics) {
-            new PrintCutoffStatics(out, sessionReportModels)
+            new PrintCutoffStatics(out, searchesByTreeSummaryModels)
                     .printCutoffStatics();
         }
     }
 
 
-    public SessionReport withNodesVisitedStatistics() {
+    public SearchesByTreeSummaryReport withNodesVisitedStatistics() {
         this.printNodesVisitedStatistics = true;
         return this;
     }
 
-    public SessionReport withCutoffStatistics() {
+    public SearchesByTreeSummaryReport withCutoffStatistics() {
         this.printCutoffStatistics = true;
         return this;
     }
 
-    public SessionReport breakByColor() {
+    public SearchesByTreeSummaryReport breakByColor() {
         this.breakByColor = true;
         return this;
     }

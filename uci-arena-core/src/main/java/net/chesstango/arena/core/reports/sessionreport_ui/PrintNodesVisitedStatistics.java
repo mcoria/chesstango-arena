@@ -2,7 +2,7 @@ package net.chesstango.arena.core.reports.sessionreport_ui;
 
 
 
-import net.chesstango.arena.core.reports.SessionReportModel;
+import net.chesstango.arena.core.reports.SearchesByTreeSummaryModel;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -12,26 +12,26 @@ import java.util.stream.IntStream;
  * @author Mauricio Coria
  */
 public class PrintNodesVisitedStatistics {
-    private final List<SessionReportModel> reportRows;
+    private final List<SearchesByTreeSummaryModel> reportRows;
     private final PrintStream out;
 
     private int maxRLevelVisited;
 
     private int maxQLevelVisited;
 
-    public PrintNodesVisitedStatistics(PrintStream out, List<SessionReportModel> reportRows) {
+    public PrintNodesVisitedStatistics(PrintStream out, List<SearchesByTreeSummaryModel> reportRows) {
         this.reportRows = reportRows;
         this.out = out;
 
         int maxRLevelVisited = 0;
         int maxQLevelVisited = 0;
 
-        for (SessionReportModel sessionReportModel : reportRows) {
-            if (maxRLevelVisited < sessionReportModel.maxSearchRLevel) {
-                maxRLevelVisited = sessionReportModel.maxSearchRLevel;
+        for (SearchesByTreeSummaryModel searchesByTreeSummaryModel : reportRows) {
+            if (maxRLevelVisited < searchesByTreeSummaryModel.maxSearchRLevel) {
+                maxRLevelVisited = searchesByTreeSummaryModel.maxSearchRLevel;
             }
-            if (maxQLevelVisited < sessionReportModel.maxSearchQLevel) {
-                maxQLevelVisited = sessionReportModel.maxSearchQLevel;
+            if (maxQLevelVisited < searchesByTreeSummaryModel.maxSearchQLevel) {
+                maxQLevelVisited = searchesByTreeSummaryModel.maxSearchQLevel;
             }
         }
 

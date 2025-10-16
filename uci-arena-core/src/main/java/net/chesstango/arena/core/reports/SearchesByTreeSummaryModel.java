@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author Mauricio Coria
  */
-public class SessionReportModel {
+public class SearchesByTreeSummaryModel {
     public String engineName;
     public long searches;
 
@@ -42,14 +42,14 @@ public class SessionReportModel {
     public int[] visitedQNodesCountersAvg;
     ///////////////////// END VISITED QUIESCENCE NODES
 
-    public static SessionReportModel collectStatics(String engineName, List<SearchResult> searchResults) {
-        SessionReportModel sessionReportModel = new SessionReportModel();
+    public static SearchesByTreeSummaryModel collectStatics(String engineName, List<SearchResult> searchResults) {
+        SearchesByTreeSummaryModel searchesByTreeSummaryModel = new SearchesByTreeSummaryModel();
 
-        sessionReportModel.engineName = engineName;
+        searchesByTreeSummaryModel.engineName = engineName;
 
-        sessionReportModel.load(searchResults);
+        searchesByTreeSummaryModel.load(searchResults);
 
-        return sessionReportModel;
+        return searchesByTreeSummaryModel;
     }
 
     private void load(List<SearchResult> searchResults) {

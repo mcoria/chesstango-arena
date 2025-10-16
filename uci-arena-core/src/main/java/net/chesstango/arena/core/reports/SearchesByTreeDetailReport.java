@@ -15,15 +15,15 @@ import java.util.List;
  *
  * @author Mauricio Coria
  */
-public class SearchesByTreeFromMatchesReport {
+public class SearchesByTreeDetailReport {
     private final SearchesByTreeReport searchesByTreeReport = new SearchesByTreeReport();
 
-    public SearchesByTreeFromMatchesReport printReport(PrintStream out) {
+    public SearchesByTreeDetailReport printReport(PrintStream out) {
         searchesByTreeReport.printReport(out);
         return this;
     }
 
-    public SearchesByTreeFromMatchesReport withMathResults(List<MatchResult> matchResult) {
+    public SearchesByTreeDetailReport withMathResults(List<MatchResult> matchResult) {
         matchResult.stream()
                 .filter(result -> result.whiteSearches() != null)
                 .forEach(result -> {
@@ -61,23 +61,23 @@ public class SearchesByTreeFromMatchesReport {
 
 
 
-    public SearchesByTreeFromMatchesReport withCutoffStatistics() {
+    public SearchesByTreeDetailReport withCutoffStatistics() {
         searchesByTreeReport.withCutoffStatistics();
         return this;
     }
 
-    public SearchesByTreeFromMatchesReport withNodesVisitedStatistics() {
+    public SearchesByTreeDetailReport withNodesVisitedStatistics() {
         searchesByTreeReport.withNodesVisitedStatistics();
         return this;
     }
 
 
-    public SearchesByTreeFromMatchesReport withEvaluationReport() {
+    public SearchesByTreeDetailReport withEvaluationReport() {
         searchesByTreeReport.withEvaluationReport();
         return this;
     }
 
-    public SearchesByTreeFromMatchesReport withPrincipalVariation() {
+    public SearchesByTreeDetailReport withPrincipalVariation() {
         searchesByTreeReport.withPrincipalVariation();
         return this;
     }
