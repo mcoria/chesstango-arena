@@ -1,12 +1,11 @@
 package net.chesstango.arena.core.reports;
 
+import net.chesstango.arena.core.MatchResult;
 import net.chesstango.engine.SearchByTreeResult;
 import net.chesstango.reports.summary.PrintCutoffStatics;
 import net.chesstango.reports.summary.PrintNodesVisitedStatistics;
 import net.chesstango.reports.summary.SearchesByTreeSummaryModel;
 import net.chesstango.search.SearchResult;
-
-import net.chesstango.arena.core.MatchResult;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -58,25 +57,31 @@ public class SearchesByTreeSummaryReport {
                     .toList();
 
 
-            if (breakByColor) {
-                if (!searchesWhite.isEmpty()) {
-                    searchesByTreeSummaryModels.add(SearchesByTreeSummaryModel.collectStatics(String.format("%s white", engineName), searchesWhite));
-                }
-                if (!searchesBlack.isEmpty()) {
-                    searchesByTreeSummaryModels.add(SearchesByTreeSummaryModel.collectStatics(String.format("%s black", engineName), searchesBlack));
-                }
-            } else {
-                List<SearchResult> searches = new ArrayList<>();
-                searches.addAll(searchesWhite);
-                searches.addAll(searchesBlack);
+            addReportAggregator(engineName, searchesWhite, searchesBlack);
 
-                if (!searches.isEmpty()) {
-                    searchesByTreeSummaryModels.add(SearchesByTreeSummaryModel.collectStatics(engineName, searches));
-                }
-            }
         });
 
         return this;
+    }
+
+
+    public void addReportAggregator(String engineName, List<SearchResult> searchesWhite, List<SearchResult> searchesBlack) {
+        if (breakByColor) {
+            if (!searchesWhite.isEmpty()) {
+                searchesByTreeSummaryModels.add(SearchesByTreeSummaryModel.collectStatics(String.format("%s white", engineName), searchesWhite));
+            }
+            if (!searchesBlack.isEmpty()) {
+                searchesByTreeSummaryModels.add(SearchesByTreeSummaryModel.collectStatics(String.format("%s black", engineName), searchesBlack));
+            }
+        } else {
+            List<SearchResult> searches = new ArrayList<>();
+            searches.addAll(searchesWhite);
+            searches.addAll(searchesBlack);
+
+            if (!searches.isEmpty()) {
+                searchesByTreeSummaryModels.add(SearchesByTreeSummaryModel.collectStatics(engineName, searches));
+            }
+        }
     }
 
     private void print() {
