@@ -1,9 +1,11 @@
 package net.chesstango.arena.core.reports;
 
 import net.chesstango.engine.SearchByTreeResult;
+import net.chesstango.reports.summary.PrintCutoffStatics;
+import net.chesstango.reports.summary.PrintNodesVisitedStatistics;
+import net.chesstango.reports.summary.SearchesByTreeSummaryModel;
 import net.chesstango.search.SearchResult;
-import net.chesstango.arena.core.reports.sessionreport_ui.PrintCutoffStatics;
-import net.chesstango.arena.core.reports.sessionreport_ui.PrintNodesVisitedStatistics;
+
 import net.chesstango.arena.core.MatchResult;
 
 import java.io.PrintStream;
