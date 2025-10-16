@@ -11,6 +11,7 @@ import net.chesstango.board.Status;
 import net.chesstango.board.moves.Move;
 import net.chesstango.board.representations.GameDebugEncoder;
 import net.chesstango.board.representations.move.SimpleMoveDecoder;
+import net.chesstango.engine.SearchResponse;
 import net.chesstango.engine.Session;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
@@ -209,7 +210,7 @@ public final class Match {
         return pgn;
     }
 
-    private static List<SearchResult> visitEngineController(Controller controller) {
+    private static List<SearchResponse> visitEngineController(Controller controller) {
         AtomicReference<Session> sessionRef = new AtomicReference<>();
 
         controller.accept(new ControllerVisitor() {

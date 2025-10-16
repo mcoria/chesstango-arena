@@ -1,5 +1,6 @@
 package net.chesstango.arena.core.reports;
 
+import net.chesstango.engine.SearchByTreeResult;
 import net.chesstango.search.SearchResult;
 import net.chesstango.arena.core.reports.sessionreport_ui.PrintCutoffStatics;
 import net.chesstango.arena.core.reports.sessionreport_ui.PrintNodesVisitedStatistics;
@@ -41,6 +42,8 @@ public class SessionReport {
                     .map(MatchResult::whiteSearches)
                     .filter(Objects::nonNull)
                     .flatMap(List::stream)
+                    .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                    .map(SearchByTreeResult::getSearchResult)
                     .toList();
 
             List<SearchResult> searchesBlack = matchResults.stream()
@@ -48,6 +51,8 @@ public class SessionReport {
                     .map(MatchResult::blackSearches)
                     .filter(Objects::nonNull)
                     .flatMap(List::stream)
+                    .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                    .map(SearchByTreeResult::getSearchResult)
                     .toList();
 
 

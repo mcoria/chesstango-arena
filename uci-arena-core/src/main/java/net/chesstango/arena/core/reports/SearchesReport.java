@@ -1,6 +1,7 @@
 package net.chesstango.arena.core.reports;
 
 
+import net.chesstango.engine.SearchByTreeResult;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.reports.evaluation.EvaluationReport;
 import net.chesstango.reports.evaluation.EvaluationReportModel;
@@ -9,10 +10,12 @@ import net.chesstango.reports.nodes.NodesReportModel;
 import net.chesstango.reports.pv.PrincipalVariationReport;
 import net.chesstango.reports.pv.PrincipalVariationReportModel;
 import net.chesstango.arena.core.MatchResult;
+import net.chesstango.search.SearchResult;
 
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Por cada juego de Tango muestra estadísticas de cada búsqueda.
@@ -54,10 +57,16 @@ public class SearchesReport {
                 .forEach(result -> {
                     PGN pgn = result.pgn();
                     String engineName = pgn.getWhite();
-                    NodesReportModel nodesReportModel = NodesReportModel.collectStatistics(String.format("%s - %s", engineName, pgn.getEvent()), result.whiteSearches());
-                    EvaluationReportModel evaluationReportModel = EvaluationReportModel.collectStatistics(String.format("%s - %s", engineName, pgn.getEvent()), result.whiteSearches());
-                    PrincipalVariationReportModel principalVariationReportModel = PrincipalVariationReportModel.collectStatics(String.format("%s - %s", engineName, pgn.getEvent()), result.whiteSearches());
-                    reportModels.add(new ReportModels(nodesReportModel, evaluationReportModel, principalVariationReportModel));
+
+                    List<SearchResult> whiteSearches = result.whiteSearches()
+                            .stream()
+                            .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
+                            .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                            .map(SearchByTreeResult::getSearchResult)
+                            .toList();
+
+
+                    createReportModels(pgn, engineName, whiteSearches);
                 });
 
         matchResult.stream()
@@ -65,12 +74,24 @@ public class SearchesReport {
                 .forEach(result -> {
                     PGN pgn = result.pgn();
                     String engineName = pgn.getBlack();
-                    NodesReportModel nodesReportModel = NodesReportModel.collectStatistics(String.format("%s - %s", engineName, pgn.getEvent()), result.blackSearches());
-                    EvaluationReportModel evaluationReportModel = EvaluationReportModel.collectStatistics(String.format("%s - %s", engineName, pgn.getEvent()), result.blackSearches());
-                    PrincipalVariationReportModel principalVariationReportModel = PrincipalVariationReportModel.collectStatics(String.format("%s - %s", engineName, pgn.getEvent()), result.blackSearches());
-                    reportModels.add(new ReportModels(nodesReportModel, evaluationReportModel, principalVariationReportModel));
+
+                    List<SearchResult> blackSearches = result.blackSearches()
+                            .stream()
+                            .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
+                            .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                            .map(SearchByTreeResult::getSearchResult)
+                            .toList();
+
+                    createReportModels(pgn, engineName, blackSearches);
                 });
         return this;
+    }
+
+    private void createReportModels(PGN pgn, String engineName, List<SearchResult> searchResultList) {
+        NodesReportModel nodesReportModel = NodesReportModel.collectStatistics(String.format("%s - %s", engineName, pgn.getEvent()), searchResultList);
+        EvaluationReportModel evaluationReportModel = EvaluationReportModel.collectStatistics(String.format("%s - %s", engineName, pgn.getEvent()), searchResultList);
+        PrincipalVariationReportModel principalVariationReportModel = PrincipalVariationReportModel.collectStatics(String.format("%s - %s", engineName, pgn.getEvent()), searchResultList);
+        reportModels.add(new ReportModels(nodesReportModel, evaluationReportModel, principalVariationReportModel));
     }
 
 

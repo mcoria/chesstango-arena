@@ -12,6 +12,7 @@ import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.board.Game;
 import net.chesstango.gardel.fen.FEN;
+import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
 import net.chesstango.uci.gui.Controller;
@@ -95,7 +96,7 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(getFromFile());
+                .play(getFEN());
 
         new MatchesReport()
                 .withMatchResults(matchResult)
@@ -122,10 +123,10 @@ public class MatchMain {
 
     private static Stream<FEN> getFromPGN() {
         try {
-            //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Top10.pgn"));
+            Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Top10.pgn"));
             //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Top25.pgn"));
             //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Top50.pgn"));
-            Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Special.pgn"));
+            //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Special.pgn"));
             //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_v500.pgn"));
             //Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_v2724.pgn"));
 
@@ -139,11 +140,11 @@ public class MatchMain {
 
 
     private static Stream<FEN> getFEN() {
-        //List<String> fenList = List.of(FENParser.INITIAL_FEN);
+        List<String> fenList = List.of(FENParser.INITIAL_FEN);
         //List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
         //List<String> fenList =  List.of("8/8/8/8/8/8/2Rk4/1K6 b - - 0 1");
         //List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
-        List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
+        //List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
 
 
         return fenList
