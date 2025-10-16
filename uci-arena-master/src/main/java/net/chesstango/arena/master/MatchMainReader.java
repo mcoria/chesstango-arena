@@ -3,6 +3,8 @@ package net.chesstango.arena.master;
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.reports.MatchesReport;
+import net.chesstango.arena.core.reports.SearchesReport;
+import net.chesstango.arena.core.reports.SessionReport;
 import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.ByteArrayInputStream;
@@ -22,7 +24,7 @@ import java.util.stream.Stream;
 public class MatchMainReader {
 
     public static void main(String[] args) {
-        List<MatchResponse> matchResponses = loadMatchResponses("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2025-10-15-01-02");
+        List<MatchResponse> matchResponses = loadMatchResponses("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2025-10-15-08-16");
 
         List<MatchResult> matchResult = matchResponses.stream().map(MatchResponse::getMatchResult).toList();
 
@@ -33,24 +35,24 @@ public class MatchMainReader {
                 .printReport(System.out);
 
 
-
         /*
         new SessionReport()
                 //.withCollisionStatistics()
-                //.withNodesVisitedStatistics()
-                //.withCutoffStatistics()
+                .withNodesVisitedStatistics()
+                .withCutoffStatistics()
                 .breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
+        */
 
 
         new SearchesReport()
                 //.withCutoffStatistics()
-                //.withNodesVisitedStatistics()
+                .withNodesVisitedStatistics()
                 .withPrincipalVariation()
                 .withMathResults(matchResult)
                 .printReport(System.out);
-         */
+
     }
 
     public static List<MatchResponse> loadMatchResponses(String directoryStr) {
