@@ -7,14 +7,17 @@ import net.chesstango.arena.core.listeners.SavePGNGame;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
+import net.chesstango.arena.core.reports.SearchesReport;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.board.Game;
+import net.chesstango.evaluation.Evaluator;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
+import net.chesstango.search.builders.AlphaBetaBuilder;
 import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -35,12 +38,12 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    private static final MatchType MATCH_TYPE = new MatchByDepth(4);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(1);
     //private static final MatchType MATCH_TYPE = new MatchByTime(2000);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
 
     private static final boolean PRINT_PGN = false;
-    private static final MatchMultiple.Type MATCH_MULTIPLE_TYPE = MatchMultiple.Type.BOTH_SIDES;
+    private static final MatchMultiple.Type MATCH_MULTIPLE_TYPE = MatchMultiple.Type.WHITE_ONLY;
 
     private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     private static final String SYZYGY_DIRECTORY = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
@@ -63,23 +66,24 @@ public class MatchMain {
     public static void main(String[] args) {
         //Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
 
-        /*
+
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
                 AlphaBetaBuilder
                         .createDefaultBuilderInstance()
                         .withGameEvaluator(Evaluator.getInstance())
                         .withStatistics()
                         .build()
-        ).overrideEngineName("DefaultEvaluator");
-         */
+        );
 
 
         //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithEvaluator(Evaluator::getInstance);
 
+        /*
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
             //config.setPolyglotFile(POLYGLOT_FILE);
             config.setSyzygyDirectory(SYZYGY_DIRECTORY);
         });
+         */
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
@@ -102,7 +106,7 @@ public class MatchMain {
                 .withMatchResults(matchResult)
                 .printReport(System.out);
 
-        /*
+
         new SearchesReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
@@ -111,7 +115,7 @@ public class MatchMain {
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
-
+        /*
         new SessionReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()

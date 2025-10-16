@@ -15,7 +15,6 @@ import net.chesstango.search.SearchResult;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Por cada juego de Tango muestra estadísticas de cada búsqueda.
@@ -26,7 +25,9 @@ public class SearchesReport {
     private final NodesReport nodesReport = new NodesReport();
     private final EvaluationReport evaluationReport = new EvaluationReport();
     private final PrincipalVariationReport principalVariationReport = new PrincipalVariationReport();
-    private final List<ReportModels> reportModels = new LinkedList<>();
+
+    private final List<ReportAggregator> reportModels = new LinkedList<>();
+
     private boolean withPrincipalVariation;
     private boolean withEvaluationReport;
     private boolean withNodesReport;
@@ -66,7 +67,7 @@ public class SearchesReport {
                             .toList();
 
 
-                    createReportModels(pgn, engineName, whiteSearches);
+                    addReportAggregator(String.format("%s - %s", engineName, pgn.getEvent()), whiteSearches);
                 });
 
         matchResult.stream()
@@ -82,16 +83,16 @@ public class SearchesReport {
                             .map(SearchByTreeResult::getSearchResult)
                             .toList();
 
-                    createReportModels(pgn, engineName, blackSearches);
+                    addReportAggregator(String.format("%s - %s", engineName, pgn.getEvent()), blackSearches);
                 });
         return this;
     }
 
-    private void createReportModels(PGN pgn, String engineName, List<SearchResult> searchResultList) {
-        NodesReportModel nodesReportModel = NodesReportModel.collectStatistics(String.format("%s - %s", engineName, pgn.getEvent()), searchResultList);
-        EvaluationReportModel evaluationReportModel = EvaluationReportModel.collectStatistics(String.format("%s - %s", engineName, pgn.getEvent()), searchResultList);
-        PrincipalVariationReportModel principalVariationReportModel = PrincipalVariationReportModel.collectStatics(String.format("%s - %s", engineName, pgn.getEvent()), searchResultList);
-        reportModels.add(new ReportModels(nodesReportModel, evaluationReportModel, principalVariationReportModel));
+    private void addReportAggregator(String reportTitle, List<SearchResult> searchResultList) {
+        NodesReportModel nodesReportModel = NodesReportModel.collectStatistics(reportTitle, searchResultList);
+        EvaluationReportModel evaluationReportModel = EvaluationReportModel.collectStatistics(reportTitle, searchResultList);
+        PrincipalVariationReportModel principalVariationReportModel = PrincipalVariationReportModel.collectStatics(reportTitle, searchResultList);
+        reportModels.add(new ReportAggregator(nodesReportModel, evaluationReportModel, principalVariationReportModel));
     }
 
 
@@ -118,9 +119,8 @@ public class SearchesReport {
         return this;
     }
 
-    private record ReportModels(NodesReportModel nodesReportModel, EvaluationReportModel evaluationReportModel,
-                                PrincipalVariationReportModel principalVariationReportModel) {
+    private record ReportAggregator(NodesReportModel nodesReportModel,
+                                    EvaluationReportModel evaluationReportModel,
+                                    PrincipalVariationReportModel principalVariationReportModel) {
     }
-
-    ;
 }
