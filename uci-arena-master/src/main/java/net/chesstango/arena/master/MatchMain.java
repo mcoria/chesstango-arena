@@ -7,7 +7,7 @@ import net.chesstango.arena.core.listeners.SavePGNGame;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
-import net.chesstango.arena.core.reports.SearchesByTreeSummaryReport;
+import net.chesstango.arena.core.reports.MatchesSearchesByTreeSummaryReport;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.worker.ControllerFactory;
@@ -106,7 +106,7 @@ public class MatchMain {
                 .withMatchResults(matchResult)
                 .printReport(System.out);
 
-        new SearchesByTreeSummaryReport()
+        new MatchesSearchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
                 .breakByColor()
@@ -114,7 +114,7 @@ public class MatchMain {
                 .printReport(System.out);
 
         /*
-        new SearchesByTreeDetailReport()
+        new MatchesSearchesByTreeDetailReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
                 .withPrincipalVariation()

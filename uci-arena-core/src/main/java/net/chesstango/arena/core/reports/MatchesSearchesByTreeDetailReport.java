@@ -4,7 +4,7 @@ package net.chesstango.arena.core.reports;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.engine.SearchByTreeResult;
 import net.chesstango.gardel.pgn.PGN;
-import net.chesstango.reports.SearchesByTreeReport;
+import net.chesstango.reports.detail.SearchesDetailReport;
 import net.chesstango.search.SearchResult;
 
 import java.io.PrintStream;
@@ -15,15 +15,15 @@ import java.util.List;
  *
  * @author Mauricio Coria
  */
-public class SearchesByTreeDetailReport {
-    private final SearchesByTreeReport searchesByTreeReport = new SearchesByTreeReport();
+public class MatchesSearchesByTreeDetailReport {
+    private final SearchesDetailReport searchesByTreeReport = new SearchesDetailReport();
 
-    public SearchesByTreeDetailReport printReport(PrintStream out) {
+    public MatchesSearchesByTreeDetailReport printReport(PrintStream out) {
         searchesByTreeReport.printReport(out);
         return this;
     }
 
-    public SearchesByTreeDetailReport withMathResults(List<MatchResult> matchResult) {
+    public MatchesSearchesByTreeDetailReport withMathResults(List<MatchResult> matchResult) {
         matchResult.stream()
                 .filter(result -> result.whiteSearches() != null)
                 .forEach(result -> {
@@ -61,23 +61,23 @@ public class SearchesByTreeDetailReport {
 
 
 
-    public SearchesByTreeDetailReport withCutoffStatistics() {
+    public MatchesSearchesByTreeDetailReport withCutoffStatistics() {
         searchesByTreeReport.withCutoffStatistics();
         return this;
     }
 
-    public SearchesByTreeDetailReport withNodesVisitedStatistics() {
+    public MatchesSearchesByTreeDetailReport withNodesVisitedStatistics() {
         searchesByTreeReport.withNodesVisitedStatistics();
         return this;
     }
 
 
-    public SearchesByTreeDetailReport withEvaluationReport() {
+    public MatchesSearchesByTreeDetailReport withEvaluationReport() {
         searchesByTreeReport.withEvaluationReport();
         return this;
     }
 
-    public SearchesByTreeDetailReport withPrincipalVariation() {
+    public MatchesSearchesByTreeDetailReport withPrincipalVariation() {
         searchesByTreeReport.withPrincipalVariation();
         return this;
     }
