@@ -7,6 +7,7 @@ import net.chesstango.arena.core.listeners.SavePGNGame;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
+import net.chesstango.arena.core.reports.MatchesSearchesByTreeDetailReport;
 import net.chesstango.arena.core.reports.MatchesSearchesByTreeSummaryReport;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
@@ -106,6 +107,7 @@ public class MatchMain {
                 .withMatchResults(matchResult)
                 .printReport(System.out);
 
+        /*
         new MatchesSearchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
@@ -113,17 +115,17 @@ public class MatchMain {
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
-        /*
+
         new MatchesSearchesByTreeDetailReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
                 .withPrincipalVariation()
                 .withEvaluationReport()
+                //.withFilter(pgn -> pgn.getFen().toString().equals(FENParser.INITIAL_FEN))
                 .withMathResults(matchResult)
                 .printReport(System.out);
+
         */
-
-
     }
 
     private static Stream<FEN> getFromPGN() {
@@ -145,10 +147,10 @@ public class MatchMain {
 
 
     private static Stream<FEN> getFEN() {
-        List<String> fenList = List.of(FENParser.INITIAL_FEN);
+        //List<String> fenList = List.of(FENParser.INITIAL_FEN);
         //List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
         //List<String> fenList =  List.of("8/8/8/8/8/8/2Rk4/1K6 b - - 0 1");
-        //List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
+        List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
         //List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
 
 

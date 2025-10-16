@@ -9,6 +9,7 @@ import net.chesstango.search.SearchResult;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Por cada juego de Tango muestra estadísticas de cada arbol de búsqueda.
@@ -17,6 +18,7 @@ import java.util.List;
  */
 public class MatchesSearchesByTreeDetailReport {
     private final SearchesDetailReport searchesByTreeReport = new SearchesDetailReport();
+    private Predicate<PGN> predicate = pgn -> true;
 
     public MatchesSearchesByTreeDetailReport printReport(PrintStream out) {
         searchesByTreeReport.printReport(out);
@@ -28,37 +30,40 @@ public class MatchesSearchesByTreeDetailReport {
                 .filter(result -> result.whiteSearches() != null)
                 .forEach(result -> {
                     PGN pgn = result.pgn();
-                    String engineName = pgn.getWhite();
+                    if (predicate.test(pgn)) {
+                        String engineName = pgn.getWhite();
 
-                    List<SearchResult> whiteSearches = result.whiteSearches()
-                            .stream()
-                            .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
-                            .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                            .map(SearchByTreeResult::getSearchResult)
-                            .toList();
+                        List<SearchResult> whiteSearches = result.whiteSearches()
+                                .stream()
+                                .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
+                                .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                                .map(SearchByTreeResult::getSearchResult)
+                                .toList();
 
 
-                    searchesByTreeReport.addReportAggregator(String.format("%s - %s", engineName, pgn.getEvent()), whiteSearches);
+                        searchesByTreeReport.addReportAggregator(String.format("%s - %s", engineName, pgn.getEvent()), whiteSearches);
+                    }
                 });
 
         matchResult.stream()
                 .filter(result -> result.blackSearches() != null)
                 .forEach(result -> {
                     PGN pgn = result.pgn();
-                    String engineName = pgn.getBlack();
+                    if (predicate.test(pgn)) {
+                        String engineName = pgn.getBlack();
 
-                    List<SearchResult> blackSearches = result.blackSearches()
-                            .stream()
-                            .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
-                            .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                            .map(SearchByTreeResult::getSearchResult)
-                            .toList();
+                        List<SearchResult> blackSearches = result.blackSearches()
+                                .stream()
+                                .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
+                                .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                                .map(SearchByTreeResult::getSearchResult)
+                                .toList();
 
-                    searchesByTreeReport.addReportAggregator(String.format("%s - %s", engineName, pgn.getEvent()), blackSearches);
+                        searchesByTreeReport.addReportAggregator(String.format("%s - %s", engineName, pgn.getEvent()), blackSearches);
+                    }
                 });
         return this;
     }
-
 
 
     public MatchesSearchesByTreeDetailReport withCutoffStatistics() {
@@ -79,6 +84,11 @@ public class MatchesSearchesByTreeDetailReport {
 
     public MatchesSearchesByTreeDetailReport withPrincipalVariation() {
         searchesByTreeReport.withPrincipalVariation();
+        return this;
+    }
+
+    public MatchesSearchesByTreeDetailReport withFilter(Predicate<PGN> predicate) {
+        this.predicate = predicate;
         return this;
     }
 }
