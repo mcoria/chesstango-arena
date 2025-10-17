@@ -6,10 +6,7 @@ import net.chesstango.reports.summary.SearchesSummaryReport;
 import net.chesstango.search.SearchResult;
 
 import java.io.PrintStream;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Este reporte resume las sessiones de engine Tango
@@ -17,7 +14,15 @@ import java.util.Set;
  * @author Mauricio Coria
  */
 public class MatchesSearchesByTreeSummaryReport {
+    private enum BreakType {
+        NONE,
+        COLOR,      // Resta implementar
+        GAMES
+    }
+
     private final SearchesSummaryReport searchesSummaryReport = new SearchesSummaryReport();
+
+    private BreakType breakType = BreakType.NONE;
 
     public MatchesSearchesByTreeSummaryReport printReport(PrintStream output) {
         searchesSummaryReport.printReport(output);
@@ -53,8 +58,22 @@ public class MatchesSearchesByTreeSummaryReport {
                     .toList();
 
 
-            searchesSummaryReport.addSearchesByTreeSummaryModel(engineName, searchesWhite, searchesBlack);
+            if (breakType == BreakType.COLOR) {
+                if (!searchesWhite.isEmpty()) {
+                    searchesSummaryReport.addSearchesByTreeSummaryModel(String.format("%s white", engineName), searchesWhite);
+                }
+                if (!searchesBlack.isEmpty()) {
+                    searchesSummaryReport.addSearchesByTreeSummaryModel(String.format("%s black", engineName), searchesBlack);
+                }
+            } else if (breakType == BreakType.NONE) {
+                List<SearchResult> searches = new ArrayList<>();
+                searches.addAll(searchesWhite);
+                searches.addAll(searchesBlack);
 
+                if (!searches.isEmpty()) {
+                    searchesSummaryReport.addSearchesByTreeSummaryModel(engineName, searches);
+                }
+            }
         });
 
         return this;
@@ -72,7 +91,12 @@ public class MatchesSearchesByTreeSummaryReport {
     }
 
     public MatchesSearchesByTreeSummaryReport breakByColor() {
-        searchesSummaryReport.breakByColor();
+        this.breakType = BreakType.COLOR;
+        return this;
+    }
+
+    public MatchesSearchesByTreeSummaryReport breakByGame() {
+        this.breakType = BreakType.GAMES;
         return this;
     }
 
