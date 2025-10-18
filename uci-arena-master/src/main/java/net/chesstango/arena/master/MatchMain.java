@@ -13,6 +13,7 @@ import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.board.Game;
+import net.chesstango.engine.Tango;
 import net.chesstango.evaluation.Evaluator;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
@@ -74,7 +75,7 @@ public class MatchMain {
                         .withGameEvaluator(Evaluator.getInstance())
                         .withStatistics()
                         .build()
-        );
+        ).overrideEngineName(Tango.ENGINE_NAME);
 
 
         //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithEvaluator(Evaluator::getInstance);
@@ -101,13 +102,13 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(getFEN());
+                .play(getFromPGN());
 
         new MatchesReport()
                 .withMatchResults(matchResult)
                 .printReport(System.out);
 
-        /*
+
         new MatchesSearchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
@@ -116,16 +117,17 @@ public class MatchMain {
                 .printReport(System.out);
 
 
+        // no tiene sentido imprimir para todos los matches, deberia almacenar y luego reportar o filtrar
+
         new MatchesSearchesByTreeDetailReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
-                .withPrincipalVariation()
+                .withPrincipalVariationReport()
                 .withEvaluationReport()
                 //.withFilter(pgn -> pgn.getFen().toString().equals(FENParser.INITIAL_FEN))
-                .withMathResults(matchResult)
+                .withMoveResults(MatchesSearchesByTreeDetailReport.filterByEngineName("Tango", matchResult))
                 .printReport(System.out);
 
-        */
     }
 
     private static Stream<FEN> getFromPGN() {

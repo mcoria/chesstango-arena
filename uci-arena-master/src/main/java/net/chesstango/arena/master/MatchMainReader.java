@@ -45,13 +45,14 @@ public class MatchMainReader {
         */
 
 
+        /*
         new MatchesSearchesByTreeDetailReport()
                 //.withCutoffStatistics()
                 .withNodesVisitedStatistics()
-                .withPrincipalVariation()
+                .withPrincipalVariationReport()
                 .withMathResults(matchResult)
                 .printReport(System.out);
-
+         */
     }
 
     public static List<MatchResponse> loadMatchResponses(String directoryStr) {

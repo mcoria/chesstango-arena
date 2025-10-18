@@ -3,13 +3,13 @@ package net.chesstango.arena.core.reports;
 
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.engine.SearchByTreeResult;
-import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.reports.detail.SearchesDetailReport;
 import net.chesstango.search.SearchResult;
 
 import java.io.PrintStream;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Objects;
 
 /**
  * Por cada juego de Tango muestra estadísticas de cada arbol de búsqueda.
@@ -18,51 +18,48 @@ import java.util.function.Predicate;
  */
 public class MatchesSearchesByTreeDetailReport {
     private final SearchesDetailReport searchesByTreeReport = new SearchesDetailReport();
-    private Predicate<PGN> predicate = pgn -> true;
+
 
     public MatchesSearchesByTreeDetailReport printReport(PrintStream out) {
-        searchesByTreeReport.printReport(out);
+        this.searchesByTreeReport.printReport(out);
         return this;
     }
 
-    public MatchesSearchesByTreeDetailReport withMathResults(List<MatchResult> matchResult) {
-        matchResult.stream()
-                .filter(result -> result.whiteSearches() != null)
-                .forEach(result -> {
-                    PGN pgn = result.pgn();
-                    if (predicate.test(pgn)) {
-                        String engineName = pgn.getWhite();
-
-                        List<SearchResult> whiteSearches = result.whiteSearches()
-                                .stream()
-                                .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
-                                .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                                .map(SearchByTreeResult::getSearchResult)
-                                .toList();
-
-
-                        searchesByTreeReport.addReportAggregator(String.format("%s - %s", engineName, pgn.getEvent()), whiteSearches);
-                    }
-                });
-
-        matchResult.stream()
-                .filter(result -> result.blackSearches() != null)
-                .forEach(result -> {
-                    PGN pgn = result.pgn();
-                    if (predicate.test(pgn)) {
-                        String engineName = pgn.getBlack();
-
-                        List<SearchResult> blackSearches = result.blackSearches()
-                                .stream()
-                                .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
-                                .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                                .map(SearchByTreeResult::getSearchResult)
-                                .toList();
-
-                        searchesByTreeReport.addReportAggregator(String.format("%s - %s", engineName, pgn.getEvent()), blackSearches);
-                    }
-                });
+    public MatchesSearchesByTreeDetailReport withMoveResults(List<SearchResult> searchResultList) {
+        this.searchesByTreeReport.withMoveResults(searchResultList);
         return this;
+    }
+
+    public MatchesSearchesByTreeDetailReport setReportTitle(String reportTitle) {
+        this.searchesByTreeReport.setReportTitle(reportTitle);
+        return this;
+    }
+
+    public static List<SearchResult> filterByEngineName(String engineName, List<MatchResult> matchResult) {
+        List<SearchResult> searchResultList = new LinkedList<>();
+
+        matchResult.stream()
+                .filter(result -> Objects.equals(result.pgn().getWhite(), engineName))
+                .map(MatchResult::whiteSearches)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
+                .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                .map(SearchByTreeResult::getSearchResult)
+                .forEach(searchResultList::add);
+
+
+        matchResult.stream()
+                .filter(result -> Objects.equals(result.pgn().getBlack(), engineName))
+                .map(MatchResult::blackSearches)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
+                .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                .map(SearchByTreeResult::getSearchResult)
+                .forEach(searchResultList::add);
+
+        return searchResultList;
     }
 
 
@@ -82,13 +79,8 @@ public class MatchesSearchesByTreeDetailReport {
         return this;
     }
 
-    public MatchesSearchesByTreeDetailReport withPrincipalVariation() {
-        searchesByTreeReport.withPrincipalVariation();
-        return this;
-    }
-
-    public MatchesSearchesByTreeDetailReport withFilter(Predicate<PGN> predicate) {
-        this.predicate = predicate;
+    public MatchesSearchesByTreeDetailReport withPrincipalVariationReport() {
+        searchesByTreeReport.withPrincipalVariationReport();
         return this;
     }
 }
