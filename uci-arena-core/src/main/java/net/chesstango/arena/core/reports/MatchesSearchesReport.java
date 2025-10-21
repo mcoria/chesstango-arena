@@ -1,9 +1,8 @@
 package net.chesstango.arena.core.reports;
 
 import net.chesstango.arena.core.MatchResult;
-import net.chesstango.engine.SearchByTreeResult;
-import net.chesstango.reports.tree.SummaryReport;
-import net.chesstango.search.SearchResult;
+import net.chesstango.engine.SearchResponse;
+import net.chesstango.reports.engine.SearchManagerSummaryReport;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -13,24 +12,24 @@ import java.util.*;
  *
  * @author Mauricio Coria
  */
-public class MatchesSearchesByTreeSummaryReport {
+public class MatchesSearchesReport {
     private enum BreakType {
         NONE,
         COLOR,      // Resta implementar
         GAMES
     }
 
-    private final SummaryReport searchesSummaryReport = new SummaryReport();
+    private final SearchManagerSummaryReport searchesSummaryReport = new SearchManagerSummaryReport();
 
     private BreakType breakType = BreakType.NONE;
 
-    public MatchesSearchesByTreeSummaryReport printReport(PrintStream output) {
+    public MatchesSearchesReport printReport(PrintStream output) {
         searchesSummaryReport.printReport(output);
         return this;
     }
 
 
-    public MatchesSearchesByTreeSummaryReport withMathResults(List<MatchResult> matchResults) {
+    public MatchesSearchesReport withMathResults(List<MatchResult> matchResults) {
         Set<String> engineNames = new HashSet<>();
 
         matchResults.stream().map(MatchResult::pgn).forEach(pgn -> {
@@ -39,39 +38,35 @@ public class MatchesSearchesByTreeSummaryReport {
         });
 
         engineNames.forEach(engineName -> {
-            List<SearchResult> searchesWhite = matchResults.stream()
+            List<SearchResponse> searchesWhite = matchResults.stream()
                     .filter(matchResult -> Objects.equals(matchResult.pgn().getWhite(), engineName))
                     .map(MatchResult::whiteSearches)
                     .filter(Objects::nonNull)
                     .flatMap(List::stream)
-                    .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                    .map(SearchByTreeResult::getSearchResult)
                     .toList();
 
-            List<SearchResult> searchesBlack = matchResults.stream()
+            List<SearchResponse> searchesBlack = matchResults.stream()
                     .filter(matchResult -> Objects.equals(matchResult.pgn().getBlack(), engineName))
                     .map(MatchResult::blackSearches)
                     .filter(Objects::nonNull)
                     .flatMap(List::stream)
-                    .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                    .map(SearchByTreeResult::getSearchResult)
                     .toList();
 
 
             if (breakType == BreakType.COLOR) {
                 if (!searchesWhite.isEmpty()) {
-                    searchesSummaryReport.addSearchesByTreeSummaryModel(String.format("%s white", engineName), searchesWhite);
+                    searchesSummaryReport.addSearchResponses(String.format("%s white", engineName), searchesWhite);
                 }
                 if (!searchesBlack.isEmpty()) {
-                    searchesSummaryReport.addSearchesByTreeSummaryModel(String.format("%s black", engineName), searchesBlack);
+                    searchesSummaryReport.addSearchResponses(String.format("%s black", engineName), searchesBlack);
                 }
             } else if (breakType == BreakType.NONE) {
-                List<SearchResult> searches = new ArrayList<>();
+                List<SearchResponse> searches = new ArrayList<>();
                 searches.addAll(searchesWhite);
                 searches.addAll(searchesBlack);
 
                 if (!searches.isEmpty()) {
-                    searchesSummaryReport.addSearchesByTreeSummaryModel(engineName, searches);
+                    searchesSummaryReport.addSearchResponses(engineName, searches);
                 }
             }
         });
@@ -80,22 +75,12 @@ public class MatchesSearchesByTreeSummaryReport {
     }
 
 
-    public MatchesSearchesByTreeSummaryReport withNodesVisitedStatistics() {
-        searchesSummaryReport.withNodesVisitedStatistics();
-        return this;
-    }
-
-    public MatchesSearchesByTreeSummaryReport withCutoffStatistics() {
-        searchesSummaryReport.withCutoffStatistics();
-        return this;
-    }
-
-    public MatchesSearchesByTreeSummaryReport breakByColor() {
+    public MatchesSearchesReport breakByColor() {
         this.breakType = BreakType.COLOR;
         return this;
     }
 
-    public MatchesSearchesByTreeSummaryReport breakByGame() {
+    public MatchesSearchesReport breakByGame() {
         this.breakType = BreakType.GAMES;
         return this;
     }

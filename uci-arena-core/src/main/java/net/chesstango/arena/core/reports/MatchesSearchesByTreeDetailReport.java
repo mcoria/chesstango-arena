@@ -3,7 +3,7 @@ package net.chesstango.arena.core.reports;
 
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.engine.SearchByTreeResult;
-import net.chesstango.reports.detail.SearchesDetailReport;
+import net.chesstango.reports.tree.DetailReport;
 import net.chesstango.search.SearchResult;
 
 import java.io.PrintStream;
@@ -17,7 +17,7 @@ import java.util.Objects;
  * @author Mauricio Coria
  */
 public class MatchesSearchesByTreeDetailReport {
-    private final SearchesDetailReport searchesByTreeReport = new SearchesDetailReport();
+    private final DetailReport searchesByTreeReport = new DetailReport();
 
 
     public MatchesSearchesByTreeDetailReport printReport(PrintStream out) {

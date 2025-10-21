@@ -9,6 +9,7 @@ import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
 import net.chesstango.arena.core.reports.MatchesSearchesByTreeDetailReport;
 import net.chesstango.arena.core.reports.MatchesSearchesByTreeSummaryReport;
+import net.chesstango.arena.core.reports.MatchesSearchesReport;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.worker.ControllerFactory;
@@ -40,7 +41,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    private static final MatchType MATCH_TYPE = new MatchByDepth(1);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(5);
     //private static final MatchType MATCH_TYPE = new MatchByTime(2000);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
 
@@ -69,6 +70,7 @@ public class MatchMain {
         //Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
 
 
+        /*
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
                 AlphaBetaBuilder
                         .createDefaultBuilderInstance()
@@ -76,16 +78,16 @@ public class MatchMain {
                         .withStatistics()
                         .build()
         ).overrideEngineName(Tango.ENGINE_NAME);
+         */
 
 
         //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithEvaluator(Evaluator::getInstance);
 
-        /*
+
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
             //config.setPolyglotFile(POLYGLOT_FILE);
             config.setSyzygyDirectory(SYZYGY_DIRECTORY);
         });
-         */
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
@@ -102,23 +104,29 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(getFromPGN());
+                .play(getFromFile());
 
         new MatchesReport()
                 .withMatchResults(matchResult)
                 .printReport(System.out);
 
+        new MatchesSearchesReport()
+                //.breakByGame()
+                .withMathResults(matchResult)
+                .printReport(System.out);
 
+        /*
         new MatchesSearchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
                 .breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
-
+        */
 
         // no tiene sentido imprimir para todos los matches, deberia almacenar y luego reportar o filtrar
 
+        /*
         new MatchesSearchesByTreeDetailReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
@@ -127,6 +135,7 @@ public class MatchMain {
                 //.withFilter(pgn -> pgn.getFen().toString().equals(FENParser.INITIAL_FEN))
                 .withMoveResults(MatchesSearchesByTreeDetailReport.filterByEngineName("Tango", matchResult))
                 .printReport(System.out);
+         */
 
     }
 
@@ -149,10 +158,10 @@ public class MatchMain {
 
 
     private static Stream<FEN> getFEN() {
-        //List<String> fenList = List.of(FENParser.INITIAL_FEN);
+        List<String> fenList = List.of(FENParser.INITIAL_FEN);
         //List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
         //List<String> fenList =  List.of("8/8/8/8/8/8/2Rk4/1K6 b - - 0 1");
-        List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
+        //List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
         //List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
 
 
@@ -170,7 +179,7 @@ public class MatchMain {
         try (Stream<String> lines = Files.lines(filePath)) {
             lines.filter(s -> s != null && !s.trim().isEmpty())
                     .map(FEN::of)
-                    .limit(500)
+                    .limit(200)
                     .forEach(fenBuilder::add);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
