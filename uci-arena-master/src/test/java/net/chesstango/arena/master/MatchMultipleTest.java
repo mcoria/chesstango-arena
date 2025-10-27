@@ -60,7 +60,7 @@ public class MatchMultipleTest {
     public void testPlay() {
         MatchMultiple matchMultiple = new MatchMultiple(1, smartEnginePool, dummyEnginePool, new MatchByDepth(3))
                 //.setPrintPGN(true)
-                .setType(MatchMultiple.Type.BOTH_SIDES);
+                .setSide(MatchMultiple.Side.BOTH);
 
 
         List<MatchResult> matchResult = matchMultiple.play(Stream.of(FEN.of(FENParser.INITIAL_FEN)));

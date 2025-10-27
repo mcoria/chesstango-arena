@@ -24,8 +24,9 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class MatchMultiple {
-    public enum Type {
-        BOTH_SIDES,
+
+    public enum Side {
+        BOTH,
         WHITE_ONLY,
         BLACK_ONLY
     }
@@ -46,7 +47,7 @@ public class MatchMultiple {
 
     @Setter
     @Accessors(chain = true)
-    private Type type = Type.BOTH_SIDES;
+    private Side side = Side.BOTH;
 
     @Setter
     @Accessors(chain = true)
@@ -63,8 +64,8 @@ public class MatchMultiple {
     public List<MatchResult> play(Stream<FEN> fenStream) {
         try (ExecutorService executor = Executors.newFixedThreadPool(parallelJobs)) {
             fenStream.forEach(fen -> {
-                switch (type) {
-                    case BOTH_SIDES:
+                switch (side) {
+                    case BOTH:
                         executor.execute(() -> play(fen, controllerPool1, controllerPool2));
                         executor.execute(() -> play(fen, controllerPool2, controllerPool1));
                         break;
