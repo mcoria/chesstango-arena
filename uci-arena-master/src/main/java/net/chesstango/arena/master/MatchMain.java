@@ -46,12 +46,13 @@ public class MatchMain {
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
 
     private static final boolean PRINT_PGN = false;
-    private static final MatchMultiple.Type MATCH_MULTIPLE_TYPE = MatchMultiple.Type.BOTH_SIDES;
+    private static final MatchMultiple.Type MATCH_MULTIPLE_TYPE = MatchMultiple.Type.BLACK_ONLY;
 
     private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     private static final String SYZYGY_DIRECTORY = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
 
-    private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
+    //private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
+    private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
     private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0-no-books.json");
     //private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0.json");
 
@@ -68,7 +69,6 @@ public class MatchMain {
      */
     public static void main(String[] args) {
         //Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
-
 
         /*
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
@@ -91,7 +91,7 @@ public class MatchMain {
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(spike);
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(stockfish);
         /*
         Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
                 AlphaBetaBuilder
@@ -112,6 +112,7 @@ public class MatchMain {
 
         new MatchesSearchesReport()
                 //.breakByGame()
+                //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
@@ -174,12 +175,12 @@ public class MatchMain {
     private static Stream<FEN> getFromFile() {
         Stream.Builder<FEN> fenBuilder = Stream.builder();
 
-        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\LumbrasGigaBase\\LumbrasGigaBase_OTB_2025_6_pieces_finalLessThan6.fen");
+        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\LumbrasGigaBase\\LumbrasGigaBase_OTB_2025_6_pieces_finalLessThan6_whiteWins_filtered.fen");
 
         try (Stream<String> lines = Files.lines(filePath)) {
             lines.filter(s -> s != null && !s.trim().isEmpty())
                     .map(FEN::of)
-                    .limit(200)
+                    .limit(100)
                     .forEach(fenBuilder::add);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
