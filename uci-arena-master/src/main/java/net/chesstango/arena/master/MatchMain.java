@@ -36,12 +36,12 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    private static final MatchType MATCH_TYPE = new MatchByDepth(5);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(1);
     //private static final MatchType MATCH_TYPE = new MatchByTime(2000);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
 
     private static final boolean PRINT_PGN = false;
-    private static final MatchMultiple.Side MATCH_SIDE = MatchMultiple.Side.BLACK_ONLY;
+    private static final MatchMultiple.Side MATCH_SIDE = MatchMultiple.Side.WHITE_ONLY;
 
     private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     private static final String SYZYGY_DIRECTORY = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
@@ -99,7 +99,7 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(getFromFile());
+                .play(getFENFromFile());
 
         new MatchesReport()
                 .withMatchResults(matchResult)
@@ -154,11 +154,13 @@ public class MatchMain {
 
 
     private static Stream<FEN> getFEN() {
-        List<String> fenList = List.of(FENParser.INITIAL_FEN);
+        //List<String> fenList = List.of(FENParser.INITIAL_FEN);
         //List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
         //List<String> fenList =  List.of("8/8/8/8/8/8/2Rk4/1K6 b - - 0 1");
         //List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
         //List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
+        //List<String> fenList = List.of("8/1k6/4K1p1/6P1/8/8/8/8 w - - 0 1");
+        List<String> fenList = List.of("8/8/3P4/8/5k2/p2K1p2/P7/8 b - - 0 1");
 
 
         return fenList
@@ -167,15 +169,15 @@ public class MatchMain {
     }
 
 
-    private static Stream<FEN> getFromFile() {
+    private static Stream<FEN> getFENFromFile() {
         Stream.Builder<FEN> fenBuilder = Stream.builder();
 
-        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\LumbrasGigaBase\\LumbrasGigaBase_OTB_2025_6_pieces_finalLessThan6_whiteWins_filtered.fen");
+        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\LumbrasGigaBase\\LumbrasGigaBase_OTB_2025_5_pieces_finalLessThan6_blackWins.fen");
 
         try (Stream<String> lines = Files.lines(filePath)) {
             lines.filter(s -> s != null && !s.trim().isEmpty())
                     .map(FEN::of)
-                    .limit(100)
+                    //.limit(500)
                     .forEach(fenBuilder::add);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
