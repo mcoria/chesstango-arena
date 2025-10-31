@@ -46,7 +46,7 @@ public class Tournament {
                 try (ObjectPool<Controller> opponentPool = new GenericObjectPool<>(new ControllerPoolFactory(opponentEngineSupplier))) {
                     if (mainEngineSupplier != opponentEngineSupplier) {
                         MatchMultiple matchMultiple = new MatchMultiple(parallelJobs, mainPool, opponentPool, matchType)
-                                .setSide(MatchMultiple.Side.BOTH)
+                                .setSide(MatchSide.BOTH)
                                 .setMatchListener(matchListener);
                         matchResults.addAll(matchMultiple.play(fenList));
                     }

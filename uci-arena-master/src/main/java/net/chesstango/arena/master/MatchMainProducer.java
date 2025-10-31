@@ -4,6 +4,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
+import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.MatchRequest;
 import net.chesstango.board.Game;
 import net.chesstango.gardel.fen.FEN;
@@ -11,13 +12,16 @@ import net.chesstango.gardel.pgn.PGNStringDecoder;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
 import static net.chesstango.arena.master.common.Common.SESSION_DATE;
 
@@ -28,7 +32,9 @@ import static net.chesstango.arena.master.common.Common.SESSION_DATE;
 public class MatchMainProducer implements Runnable {
 
     /**
-     * Example: -d 2 -e "class:WithTables" -o "file:Spike" -p "C:\java\projects\chess\chess-utils\testing\matches\Balsa_Top10.pgn"
+     * Example:
+     * -d 2 -e "class:WithTables" -o "file:Spike" -p "C:\java\projects\chess\chess-utils\testing\matches\Balsa_Top10.pgn"
+     * -d 2 -s white -e "class:WithTables" -o "file:Stockfish" -f "C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\LumbrasGigaBase\\LumbrasGigaBase_OTB_2025_5_pieces_finalLessThan6_blackWins.fen"
      */
     public static void main(String[] args) {
         CommandLine parsedArgs = parseArguments(args);
@@ -48,13 +54,21 @@ public class MatchMainProducer implements Runnable {
             log.info("Match: {}", matchType);
         }
 
+        MatchSide matchSide = MatchSide.BOTH;
+        matchSide = switch (parsedArgs.getOptionValue("s", "both")) {
+            case "white" -> MatchSide.WHITE_ONLY;
+            case "black" -> MatchSide.BLACK_ONLY;
+            default -> throw new IllegalArgumentException("Invalid match side: " + parsedArgs.getOptionValue("s"));
+        };
+        log.info("MatchSide: {}", matchSide);
+
         List<FEN> fenList = parsedArgs.hasOption('f')
-                ? Arrays.stream(parsedArgs.getOptionValues("f")).map(FEN::of).toList()
+                ? fromFEN(parsedArgs.getOptionValue("f"))
                 : fromPGN(parsedArgs.getOptionValue('p'));
 
         log.info("FEN size: {}", fenList.size());
 
-        new MatchMainProducer(rabbitHost, engine, opponents, matchType, fenList)
+        new MatchMainProducer(rabbitHost, engine, opponents, matchType, matchSide, fenList)
                 .run();
     }
 
@@ -63,11 +77,13 @@ public class MatchMainProducer implements Runnable {
     private final MatchType matchType;
     private final List<String> opponents;
     private final List<FEN> fenList;
+    private final MatchSide side;
 
-    public MatchMainProducer(String rabbitHost, String engine, List<String> opponents, MatchType matchType, List<FEN> fenList) {
+    public MatchMainProducer(String rabbitHost, String engine, List<String> opponents, MatchType matchType, MatchSide side, List<FEN> fenList) {
         this.rabbitHost = rabbitHost;
         this.engine = engine;
         this.matchType = matchType;
+        this.side = side;
         this.opponents = opponents;
         this.fenList = fenList;
     }
@@ -161,12 +177,21 @@ public class MatchMainProducer implements Runnable {
                 .build();
         options.addOption(matchTypeByDepth);
 
+        Option matchSide = Option
+                .builder("s")
+                .longOpt("MatchSide")
+                .hasArg()
+                .argName("SIDE")
+                .desc("both | white | black")
+                .build();
+        options.addOption(matchSide);
+
         Option fenList = Option
                 .builder("f")
                 .longOpt("fenList")
                 .hasArgs()
-                .argName("FEN...")
-                .desc("fen list")
+                .argName("FILE")
+                .desc("FEN file path")
                 .build();
         options.addOption(fenList);
 
@@ -221,5 +246,19 @@ public class MatchMainProducer implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static List<FEN> fromFEN(String fenFile) {
+        List<FEN> fens = new LinkedList<>();
+        Path filePath = Paths.get(fenFile);
+        try (Stream<String> lines = Files.lines(filePath)) {
+            lines.filter(s -> s != null && !s.trim().isEmpty())
+                    .map(FEN::of)
+                    .forEach(fens::add);
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+            System.exit(-1);
+        }
+        return fens;
     }
 }

@@ -1,5 +1,6 @@
 package net.chesstango.arena.master;
 
+import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.engine.Config;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.fen.FENParser;
@@ -60,7 +61,7 @@ public class MatchMultipleTest {
     public void testPlay() {
         MatchMultiple matchMultiple = new MatchMultiple(1, smartEnginePool, dummyEnginePool, new MatchByDepth(3))
                 //.setPrintPGN(true)
-                .setSide(MatchMultiple.Side.BOTH);
+                .setSide(MatchSide.BOTH);
 
 
         List<MatchResult> matchResult = matchMultiple.play(Stream.of(FEN.of(FENParser.INITIAL_FEN)));

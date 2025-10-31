@@ -25,12 +25,6 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMultiple {
 
-    public enum Side {
-        BOTH,
-        WHITE_ONLY,
-        BLACK_ONLY
-    }
-
     private final int parallelJobs;
 
     private final ObjectPool<Controller> controllerPool1;
@@ -47,7 +41,7 @@ public class MatchMultiple {
 
     @Setter
     @Accessors(chain = true)
-    private Side side = Side.BOTH;
+    private MatchSide side = MatchSide.BOTH;
 
     @Setter
     @Accessors(chain = true)
