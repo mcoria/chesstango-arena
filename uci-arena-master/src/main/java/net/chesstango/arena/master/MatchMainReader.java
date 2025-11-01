@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.reports.MatchesReport;
 import net.chesstango.arena.core.reports.MatchesSearchesByTreeDetailReport;
+import net.chesstango.arena.core.reports.MatchesSearchesReport;
 import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
 public class MatchMainReader {
 
     public static void main(String[] args) {
-        List<MatchResponse> matchResponses = loadMatchResponses("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2025-10-30-22-47");
+        List<MatchResponse> matchResponses = loadMatchResponses("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2025-10-31-20-33");
 
         List<MatchResult> matchResult = matchResponses.stream().map(MatchResponse::getMatchResult).toList();
 
@@ -33,8 +34,13 @@ public class MatchMainReader {
                 .sortBy(Comparator.comparing(MatchesReport.ReportRowModel::getWinPercentage).reversed())
                 .printReport(System.out);
 
+         /*
+        new MatchesSearchesReport()
+                //.breakByGame()
+                //.breakByColor()
+                .withMathResults(matchResult)
+                .printReport(System.out);
 
-        /*
         new MatchesSearchesByTreeSummaryReport()
                 //.withCollisionStatistics()
                 .withNodesVisitedStatistics()

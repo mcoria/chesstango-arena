@@ -25,7 +25,8 @@ public class ControllerFactory {
             ProxyConfig config = ProxyConfigReader.readConfig(configFile);
             UciProxy proxy = new UciProxy(config);
             return new ControllerProxy(proxy)
-                    .setOptionsCommands(config.uciOptionCommands());
+                    .setOptionsCommands(config.uciOptionCommands())
+                    .overrideEngineName(config.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

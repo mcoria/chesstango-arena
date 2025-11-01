@@ -60,7 +60,7 @@ class ControllerProvider implements AutoCloseable {
             Supplier<Controller> controllerSupplier = instantiateSupplier(engine.substring(6));
             controller = controllerSupplier.get();
         } else {
-            throw new RuntimeException("Invalid engine name: " + engine);
+            throw new RuntimeException("Invalid engine: " + engine);
         }
         controller.startEngine();
         return controller;

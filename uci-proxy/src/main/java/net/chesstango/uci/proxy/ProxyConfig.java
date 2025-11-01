@@ -21,7 +21,7 @@ public class ProxyConfig {
 
     private String directory;
 
-    private String exe;
+    private String command;
 
     private List<String> arguments;
 
@@ -38,7 +38,7 @@ public class ProxyConfig {
     public ProcessBuilder processBuilder() {
         List<String> commandAndArguments = new ArrayList<>();
 
-        commandAndArguments.add(getExe());
+        commandAndArguments.add(getCommand());
 
         if (getArguments() != null) {
             commandAndArguments.addAll(getArguments());

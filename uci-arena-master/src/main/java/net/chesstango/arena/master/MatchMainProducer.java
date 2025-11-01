@@ -33,7 +33,7 @@ public class MatchMainProducer implements Runnable {
 
     /**
      * Example:
-     * -d 2 -e "class:WithTables" -o "file:Spike" -p "C:\java\projects\chess\chess-utils\testing\matches\Balsa_Top10.pgn"
+     * -d 2 -e "file:Spike" -o "file:Spike" -p "C:\java\projects\chess\chess-utils\testing\matches\Balsa_Top10.pgn"
      * -d 2 -s white -e "class:WithTables" -o "file:Stockfish" -f "C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\LumbrasGigaBase\\LumbrasGigaBase_OTB_2025_5_pieces_finalLessThan6_blackWins.fen"
      */
     public static void main(String[] args) {
@@ -58,6 +58,7 @@ public class MatchMainProducer implements Runnable {
         matchSide = switch (parsedArgs.getOptionValue("s", "both")) {
             case "white" -> MatchSide.WHITE_ONLY;
             case "black" -> MatchSide.BLACK_ONLY;
+            case "both" -> MatchSide.BOTH;
             default -> throw new IllegalArgumentException("Invalid match side: " + parsedArgs.getOptionValue("s"));
         };
         log.info("MatchSide: {}", matchSide);
@@ -108,29 +109,34 @@ public class MatchMainProducer implements Runnable {
         List<MatchRequest> matchRequests = new LinkedList<>();
 
         for (String opponent : opponents) {
-            fenList.stream()
-                    .map(fen -> new MatchRequest()
-                            .setWhiteEngine(engine)
-                            .setBlackEngine(opponent)
-                            .setFen(fen)
-                            .setMatchType(matchType)
-                            .setMatchId(UUID.randomUUID().toString())
-                            .setSessionId(SESSION_DATE)
-                    )
-                    .peek(request -> log.info("{}", request.toString()))
-                    .forEach(matchRequests::add);
 
-            fenList.stream()
-                    .map(fen -> new MatchRequest()
-                            .setWhiteEngine(opponent)
-                            .setBlackEngine(engine)
-                            .setFen(fen)
-                            .setMatchType(matchType)
-                            .setMatchId(UUID.randomUUID().toString())
-                            .setSessionId(SESSION_DATE)
-                    )
-                    .peek(request -> log.info("{}", request.toString()))
-                    .forEach(matchRequests::add);
+            if (side == MatchSide.BOTH || side == MatchSide.WHITE_ONLY) {
+                fenList.stream()
+                        .map(fen -> new MatchRequest()
+                                .setWhiteEngine(engine)
+                                .setBlackEngine(opponent)
+                                .setFen(fen)
+                                .setMatchType(matchType)
+                                .setMatchId(UUID.randomUUID().toString())
+                                .setSessionId(SESSION_DATE)
+                        )
+                        .peek(request -> log.info("{}", request.toString()))
+                        .forEach(matchRequests::add);
+            }
+
+            if (side == MatchSide.BOTH || side == MatchSide.BLACK_ONLY) {
+                fenList.stream()
+                        .map(fen -> new MatchRequest()
+                                .setWhiteEngine(opponent)
+                                .setBlackEngine(engine)
+                                .setFen(fen)
+                                .setMatchType(matchType)
+                                .setMatchId(UUID.randomUUID().toString())
+                                .setSessionId(SESSION_DATE)
+                        )
+                        .peek(request -> log.info("{}", request.toString()))
+                        .forEach(matchRequests::add);
+            }
         }
 
         return matchRequests;

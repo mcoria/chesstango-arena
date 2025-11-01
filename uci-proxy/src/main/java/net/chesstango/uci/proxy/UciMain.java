@@ -28,7 +28,8 @@ public class UciMain implements Runnable {
         Path configFile = Path.of(args[0]);
         UciMain uciMain = null;
         try {
-            uciMain = new UciMain(new UciProxy(ProxyConfigReader.readConfig(configFile)), System.in, System.out);
+            ProxyConfig config = ProxyConfigReader.readConfig(configFile);
+            uciMain = new UciMain(new UciProxy(config), System.in, System.out);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
