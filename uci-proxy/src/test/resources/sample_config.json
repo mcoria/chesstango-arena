@@ -1,7 +1,7 @@
 {
   "name": "EngineName",
   "directory": "C:\\directory",
-  "exe": "C:\\directory\\engine.exe",
+  "command": "C:\\directory\\engine.exe",
   "arguments": ["-first",  "-second"],
   "uci_options": [
     {
