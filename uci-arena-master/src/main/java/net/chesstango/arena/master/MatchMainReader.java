@@ -3,8 +3,6 @@ package net.chesstango.arena.master;
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.reports.MatchesReport;
-import net.chesstango.arena.core.reports.MatchesSearchesByTreeDetailReport;
-import net.chesstango.arena.core.reports.MatchesSearchesReport;
 import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.ByteArrayInputStream;
@@ -23,8 +21,10 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMainReader {
 
+    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2025-11-02-18-09");
+
     public static void main(String[] args) {
-        List<MatchResponse> matchResponses = loadMatchResponses("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2025-10-31-20-33");
+        List<MatchResponse> matchResponses = loadMatchResponses(responsesStore);
 
         List<MatchResult> matchResult = matchResponses.stream().map(MatchResponse::getMatchResult).toList();
 
@@ -50,7 +50,6 @@ public class MatchMainReader {
                 .printReport(System.out);
         */
 
-
         /*
         new MatchesSearchesByTreeDetailReport()
                 //.withCutoffStatistics()
@@ -59,13 +58,13 @@ public class MatchMainReader {
                 .withMathResults(matchResult)
                 .printReport(System.out);
          */
+
+        new MathesToPGN(responsesStore)
+                .save(matchResult);
     }
 
-    public static List<MatchResponse> loadMatchResponses(String directoryStr) {
+    public static List<MatchResponse> loadMatchResponses(Path directory) {
         List<MatchResponse> matchResponses = new LinkedList<>();
-
-        Path directory = Path.of(directoryStr);
-
         try (Stream<Path> files = Files.list(directory)) {
             files.forEach(file -> {
                 try {
@@ -80,7 +79,6 @@ public class MatchMainReader {
         } catch (IOException e) {
             log.error("Error listing directory: " + directory, e);
         }
-
         return matchResponses;
     }
 

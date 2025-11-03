@@ -41,7 +41,7 @@ public class MatchMain {
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
 
     private static final boolean PRINT_PGN = false;
-    private static final MatchSide MATCH_SIDE = MatchSide.WHITE_ONLY;
+    private static final MatchSide MATCH_SIDE = MatchSide.BLACK_ONLY;
 
     private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     private static final String SYZYGY_DIRECTORY = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
@@ -49,7 +49,9 @@ public class MatchMain {
     //private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
     private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
     private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0-no-books.json");
+    //private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
     //private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0.json");
+    private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
     //private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
     private static final int parallelJobs = 2;
@@ -86,7 +88,7 @@ public class MatchMain {
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(stockfish);
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(arasan);
         /*
         Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
                 AlphaBetaBuilder
@@ -99,7 +101,7 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(getFENFromFile());
+                .play(getFEN());
 
         new MatchesReport()
                 .withMatchResults(matchResult)
@@ -160,7 +162,7 @@ public class MatchMain {
         //List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
         //List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
         //List<String> fenList = List.of("8/1k6/4K1p1/6P1/8/8/8/8 w - - 0 1");
-        List<String> fenList = List.of("8/8/3P4/8/5k2/p2K1p2/P7/8 b - - 0 1");
+        List<String> fenList = List.of("6k1/1R6/6K1/6P1/5r2/8/8/8 w - - 0 1", "8/8/8/8/1k1P2N1/6P1/2K5/8 w - - 0 1");
 
 
         return fenList
@@ -172,7 +174,7 @@ public class MatchMain {
     private static Stream<FEN> getFENFromFile() {
         Stream.Builder<FEN> fenBuilder = Stream.builder();
 
-        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\LumbrasGigaBase\\LumbrasGigaBase_OTB_2025_5_pieces_finalLessThan6_blackWins.fen");
+        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\full\\LumbrasGigaBase\\OverTheBoard\\LumbrasGigaBase_OTB_2025_5_pieces_finalLessThan6_whiteWins.fen");
 
         try (Stream<String> lines = Files.lines(filePath)) {
             lines.filter(s -> s != null && !s.trim().isEmpty())

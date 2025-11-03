@@ -54,8 +54,7 @@ public class MatchMainProducer implements Runnable {
             log.info("Match: {}", matchType);
         }
 
-        MatchSide matchSide = MatchSide.BOTH;
-        matchSide = switch (parsedArgs.getOptionValue("s", "both")) {
+        MatchSide matchSide = switch (parsedArgs.getOptionValue("s", "both")) {
             case "white" -> MatchSide.WHITE_ONLY;
             case "black" -> MatchSide.BLACK_ONLY;
             case "both" -> MatchSide.BOTH;
@@ -250,7 +249,9 @@ public class MatchMainProducer implements Runnable {
                     .map(Game::getCurrentFEN)
                     .toList();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("Error reading file: " + e.getMessage());
+            System.exit(-1);
+            return null;
         }
     }
 
