@@ -162,6 +162,7 @@ public abstract class ControllerAbstract implements Controller {
     public synchronized UCIResponse sendRequestWaitResponse(UCIGui newState, UCIRequest request) {
         this.response = null;
         this.currentState = newState;
+        log.trace("[{}] gui >> {}", engineName, request);
         service.accept(request);
         try {
             /**
@@ -178,6 +179,8 @@ public abstract class ControllerAbstract implements Controller {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        log.trace("[{}] gui << {}", engineName, response);
         return response;
     }
 

@@ -12,28 +12,37 @@ import java.time.Instant;
  * @author Mauricio Coria
  */
 public class MatchByClock implements MatchType {
+    private final int time;
     private final int inc;
+
+
+    // Current timers
     private int wTime;
     private int bTime;
 
     public MatchByClock(int time, int inc) {
-        this.wTime = time;
-        this.bTime = time;
+        this.time = time;
         this.inc = inc;
     }
 
 
     @Override
-    public RspBestMove retrieveBestMoveFromController(Controller currentTurn, boolean isWhite) {
-        ReqGoFast goCmd = UCIRequest.goFast(wTime, bTime, inc, inc);
+    public void reset() {
+        this.wTime = time;
+        this.bTime = time;
+    }
+
+    @Override
+    public RspBestMove retrieveBestMoveFromController(Controller controller, boolean whiteTurn) {
+        ReqGoFast goCmd = UCIRequest.goFast(wTime, inc, bTime, inc);
 
         Instant start = Instant.now();
 
-        RspBestMove bestMove = currentTurn.send_ReqGo(goCmd);
+        RspBestMove bestMove = controller.send_ReqGo(goCmd);
 
         long timeElapsed = Duration.between(start, Instant.now()).toMillis();
 
-        if (isWhite) {
+        if (whiteTurn) {
             wTime -= (int) timeElapsed;
             wTime += inc;
             if (wTime < 0) {

@@ -9,6 +9,7 @@ import java.io.Serializable;
  * @author Mauricio Coria
  */
 public interface MatchType extends Serializable {
+    void reset();
 
-    RspBestMove retrieveBestMoveFromController(Controller currentTurn, boolean isWhite);
+    RspBestMove retrieveBestMoveFromController(Controller controller, boolean isWhite);
 }

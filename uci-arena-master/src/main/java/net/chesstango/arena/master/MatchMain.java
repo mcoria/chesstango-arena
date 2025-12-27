@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
+import net.chesstango.arena.core.matchtypes.MatchByClock;
 import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
@@ -39,8 +40,9 @@ import java.util.stream.Stream;
 public class MatchMain {
 
     //private static final MatchType MATCH_TYPE = new MatchByDepth(2);
-    private static final MatchType MATCH_TYPE = new MatchByTime(500);
-    //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
+    //private static final MatchType MATCH_TYPE = new MatchByTime(500);
+   // private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
+    private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 10, 100);
 
     private static final boolean PRINT_PGN = false;
     private static final MatchSide MATCH_SIDE = MatchSide.BOTH;
@@ -56,7 +58,7 @@ public class MatchMain {
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
     //private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
-    private static final int parallelJobs = 2;
+    private static final int parallelJobs = 1;
 
     /**
      * Add the following JVM parameters:
@@ -104,7 +106,7 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(getFromPGN());
+                .play(getFEN());
 
         new MatchesReport()
                 .withMatchResults(matchResult)

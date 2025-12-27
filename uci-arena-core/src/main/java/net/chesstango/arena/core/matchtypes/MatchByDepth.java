@@ -16,8 +16,12 @@ public class MatchByDepth implements MatchType {
     }
 
     @Override
-    public RspBestMove retrieveBestMoveFromController(Controller currentTurn, boolean isWhite) {
-        return currentTurn.send_ReqGo(reqGo);
+    public void reset() {
+    }
+
+    @Override
+    public RspBestMove retrieveBestMoveFromController(Controller controller, boolean isWhite) {
+        return controller.send_ReqGo(reqGo);
     }
 
     @Override

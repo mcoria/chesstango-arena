@@ -107,8 +107,10 @@ public final class Match {
             matchListener.notifyNewGame(game, white, black);
         }
 
-        while (game.getStatus().isInProgress()) {
+        // Reset MatchType
+        matchType.reset();
 
+        while (game.getStatus().isInProgress()) {
             String moveStr = retrieveBestMoveFromController(currentTurn, executedMovesStr);
 
             Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
@@ -117,6 +119,8 @@ public final class Match {
                 printGameForDebug(System.err);
                 throw new RuntimeException(String.format("No move found %s", moveStr));
             }
+
+            log.trace("[{}] {} plays move {}", mathId, currentTurn.getEngineName(), moveStr);
 
             move.executeMove();
 

@@ -5,9 +5,13 @@
 
     <logger level="INFO" name="net.chesstango"/>
 
-    <logger level="INFO" name="net.chesstango.engine"/>
+    <!--logger level="TRACE" name="net.chesstango.uci.gui"/ -->
     <!--logger level="TRACE" name="net.chesstango.uci.proxy"/ -->
     <!--logger level="TRACE" name="net.chesstango.uci.engine"/ -->
+
+    <!--logger level="INFO" name="net.chesstango.engine"/ -->
+
+    <logger level="TRACE" name="net.chesstango.arena"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
