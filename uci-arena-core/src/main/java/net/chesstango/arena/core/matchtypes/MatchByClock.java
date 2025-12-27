@@ -33,7 +33,7 @@ public class MatchByClock implements MatchType {
     }
 
     @Override
-    public RspBestMove retrieveBestMoveFromController(Controller controller, boolean whiteTurn) {
+    public RspBestMove retrieveBestMove(Controller controller, boolean whiteTurn) {
         ReqGoFast goCmd = UCIRequest.goFast(wTime, inc, bTime, inc);
 
         Instant start = Instant.now();
@@ -46,13 +46,13 @@ public class MatchByClock implements MatchType {
             wTime -= (int) timeElapsed;
             wTime += inc;
             if (wTime < 0) {
-                throw new RuntimeException("White time out");
+                throw new MatchTimeOut("White time out", controller);
             }
         } else {
             bTime -= (int) timeElapsed;
             bTime += inc;
             if (bTime < 0) {
-                throw new RuntimeException("Black time out");
+                throw new MatchTimeOut("Black time out", controller);
             }
         }
 

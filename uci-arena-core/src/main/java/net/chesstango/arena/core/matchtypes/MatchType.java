@@ -11,5 +11,5 @@ import java.io.Serializable;
 public interface MatchType extends Serializable {
     void reset();
 
-    RspBestMove retrieveBestMoveFromController(Controller controller, boolean isWhite);
+    RspBestMove retrieveBestMove(Controller controller, boolean whiteTurn);
 }

@@ -21,7 +21,7 @@ public class MatchByTime implements MatchType {
     }
 
     @Override
-    public RspBestMove retrieveBestMoveFromController(Controller controller, boolean isWhite) {
+    public RspBestMove retrieveBestMove(Controller controller, boolean whiteTurn) {
         return controller.send_ReqGo(reqGo);
     }
 

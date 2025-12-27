@@ -4,6 +4,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.listeners.MatchListener;
+import net.chesstango.arena.core.matchtypes.MatchTimeOut;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.board.Color;
 import net.chesstango.board.Game;
@@ -18,7 +19,6 @@ import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
-import net.chesstango.search.SearchResult;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerVisitor;
@@ -42,6 +42,7 @@ public final class Match {
     private final SimpleMoveDecoder simpleMoveDecoder = new SimpleMoveDecoder();
 
     private Game game;
+    private MatchTimeOut matchTimeOut;
     private MatchResult matchResult;
 
     @Setter
@@ -95,13 +96,7 @@ public final class Match {
 
         final List<String> executedMovesStr = new ArrayList<>();
 
-        Controller currentTurn;
-
-        if (Color.WHITE.equals(game.getPosition().getCurrentTurn())) {
-            currentTurn = white;
-        } else {
-            currentTurn = black;
-        }
+        Controller currentTurn = Color.WHITE.equals(game.getPosition().getCurrentTurn()) ? white : black;
 
         if (matchListener != null) {
             matchListener.notifyNewGame(game, white, black);
@@ -110,27 +105,32 @@ public final class Match {
         // Reset MatchType
         matchType.reset();
 
-        while (game.getStatus().isInProgress()) {
-            String moveStr = retrieveBestMoveFromController(currentTurn, executedMovesStr);
+        try {
+            while (game.getStatus().isInProgress()) {
+                String moveStr = retrieveBestMove(currentTurn, executedMovesStr);
 
-            Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
+                Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
 
-            if (move == null) {
-                printGameForDebug(System.err);
-                throw new RuntimeException(String.format("No move found %s", moveStr));
+                if (move == null) {
+                    printGameForDebug(System.err);
+                    throw new RuntimeException(String.format("No move found %s", moveStr));
+                }
+
+                log.trace("[{}] {} plays move {}", mathId, currentTurn.getEngineName(), moveStr);
+
+                move.executeMove();
+
+                executedMovesStr.add(moveStr);
+
+                currentTurn = (currentTurn == white ? black : white);
+
+                if (matchListener != null) {
+                    matchListener.notifyMove(game, move);
+                }
             }
 
-            log.trace("[{}] {} plays move {}", mathId, currentTurn.getEngineName(), moveStr);
-
-            move.executeMove();
-
-            executedMovesStr.add(moveStr);
-
-            currentTurn = (currentTurn == white ? black : white);
-
-            if (matchListener != null) {
-                matchListener.notifyMove(game, move);
-            }
+        } catch (MatchTimeOut e) {
+            matchTimeOut = e;
         }
 
         matchResult = createResult();
@@ -158,8 +158,15 @@ public final class Match {
         } else if (Status.MATE.equals(game.getStatus())) {
             if (Color.WHITE.equals(game.getPosition().getCurrentTurn())) {
                 log.info("[{}] BLACK WON {}", mathId, black.getEngineName());
-            } else if (Color.BLACK.equals(game.getPosition().getCurrentTurn())) {
+            } else {
                 log.info("[{}] WHITE WON {}", mathId, white.getEngineName());
+            }
+        } else if (matchTimeOut != null) {
+            // Loser controller
+            if (matchTimeOut.getController() == white) {
+                log.info("[{}] BLACK WON BY TIME OUT {}", mathId, black.getEngineName());
+            } else {
+                log.info("[{}] WHITE WON BY TIME OUT {}", mathId, white.getEngineName());
             }
         } else {
             printGameForDebug(System.err);
@@ -173,19 +180,20 @@ public final class Match {
         return new MatchResult(createPGN(), visitEngineController(white), visitEngineController(black));
     }
 
+
     private void startNewGame() {
         white.startNewGame();
         black.startNewGame();
     }
 
-    private String retrieveBestMoveFromController(Controller currentTurn, List<String> moves) {
+    private String retrieveBestMove(Controller currentTurn, List<String> moves) {
         if (FEN.of(FENParser.INITIAL_FEN).equals(fen)) {
             currentTurn.send_ReqPosition(UCIRequest.position(moves));
         } else {
             currentTurn.send_ReqPosition(UCIRequest.position(fen.toString(), moves));
         }
 
-        RspBestMove bestMove = matchType.retrieveBestMoveFromController(currentTurn, currentTurn == white);
+        RspBestMove bestMove = matchType.retrieveBestMove(currentTurn, currentTurn == white);
 
         return bestMove.getBestMove();
     }
@@ -211,9 +219,19 @@ public final class Match {
         pgn.setEvent(mathId);
         pgn.setWhite(white.getEngineName());
         pgn.setBlack(black.getEngineName());
+
+        if (matchTimeOut != null) {
+            Controller winner = matchTimeOut.getController() == white ? black : white;
+            pgn.setResult(winner == white ? PGN.Result.WHITE_WINS : PGN.Result.BLACK_WINS);
+            pgn.setTermination(PGN.Termination.TIME_FORFEIT);
+        }
+
         return pgn;
     }
 
+    /**
+     * Extracts search results from controller's active session
+     */
     private static List<SearchResponse> visitEngineController(Controller controller) {
         AtomicReference<Session> sessionRef = new AtomicReference<>();
 
