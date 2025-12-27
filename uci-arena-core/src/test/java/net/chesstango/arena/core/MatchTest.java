@@ -37,6 +37,7 @@ public class MatchTest {
 
         dummyEngine = new ControllerTango(
                 new UciTango(new Config()
+                        .setSyncSearch(true)
                         .setSearch(new Dummy())
                 )
         ).overrideEngineName(DUMMY);

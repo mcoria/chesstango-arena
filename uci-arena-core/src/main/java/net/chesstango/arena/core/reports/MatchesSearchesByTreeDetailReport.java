@@ -45,7 +45,7 @@ public class MatchesSearchesByTreeDetailReport {
                 .flatMap(List::stream)
                 .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
                 .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                .map(SearchByTreeResult::getSearchResult)
+                .map(SearchByTreeResult::searchResult)
                 .forEach(searchResultList::add);
 
 
@@ -56,7 +56,7 @@ public class MatchesSearchesByTreeDetailReport {
                 .flatMap(List::stream)
                 .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
                 .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                .map(SearchByTreeResult::getSearchResult)
+                .map(SearchByTreeResult::searchResult)
                 .forEach(searchResultList::add);
 
         return searchResultList;

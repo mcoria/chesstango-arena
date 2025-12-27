@@ -45,7 +45,7 @@ public class MatchesSearchesByTreeSummaryReport {
                     .filter(Objects::nonNull)
                     .flatMap(List::stream)
                     .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                    .map(SearchByTreeResult::getSearchResult)
+                    .map(SearchByTreeResult::searchResult)
                     .toList();
 
             List<SearchResult> searchesBlack = matchResults.stream()
@@ -54,7 +54,7 @@ public class MatchesSearchesByTreeSummaryReport {
                     .filter(Objects::nonNull)
                     .flatMap(List::stream)
                     .map(searchResponse -> (SearchByTreeResult) searchResponse)
-                    .map(SearchByTreeResult::getSearchResult)
+                    .map(SearchByTreeResult::searchResult)
                     .toList();
 
 
