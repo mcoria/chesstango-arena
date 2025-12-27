@@ -1,5 +1,6 @@
 package net.chesstango.arena.core;
 
+import lombok.AccessLevel;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +42,13 @@ public final class Match {
     private final FEN fen;
     private final SimpleMoveDecoder simpleMoveDecoder = new SimpleMoveDecoder();
 
+    @Setter(AccessLevel.PACKAGE)
     private Game game;
+
+    @Setter(AccessLevel.PACKAGE)
     private MatchTimeOut matchTimeOut;
+
+    @Setter(AccessLevel.PACKAGE)
     private MatchResult matchResult;
 
     @Setter
@@ -130,7 +136,7 @@ public final class Match {
             }
 
         } catch (MatchTimeOut e) {
-            matchTimeOut = e;
+            setMatchTimeOut(e);
         }
 
         matchResult = createResult();
@@ -138,10 +144,6 @@ public final class Match {
         if (matchListener != null) {
             matchListener.notifyEndGame(game, matchResult);
         }
-    }
-
-    void setGame(Game game) {
-        this.game = game;
     }
 
 
