@@ -39,10 +39,10 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    //private static final MatchType MATCH_TYPE = new MatchByDepth(2);
-    //private static final MatchType MATCH_TYPE = new MatchByTime(500);
-   // private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
-    private static final MatchType MATCH_TYPE = new MatchByClock(1000, 0);
+    // private static final MatchType MATCH_TYPE = new MatchByDepth(2);
+    // private static final MatchType MATCH_TYPE = new MatchByTime(500);
+    // private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
+    private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
 
     private static final boolean PRINT_PGN = false;
     private static final MatchSide MATCH_SIDE = MatchSide.BOTH;
