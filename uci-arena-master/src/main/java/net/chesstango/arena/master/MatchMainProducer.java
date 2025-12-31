@@ -2,6 +2,7 @@ package net.chesstango.arena.master;
 
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
+import net.chesstango.arena.core.matchtypes.MatchByClock;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
@@ -54,6 +55,14 @@ public class MatchMainProducer implements Runnable {
             matchType = new MatchByDepth(Integer.parseInt(parsedArgs.getOptionValue("d")));
         } else if (parsedArgs.hasOption('t')) {
             matchType = new MatchByTime(Integer.parseInt(parsedArgs.getOptionValue("t")));
+        } else if (parsedArgs.hasOption('c')) {
+            String clocks = parsedArgs.getOptionValue("c");
+            String[] clocksArray = clocks.split(":");
+
+            int time = Integer.parseInt(clocksArray[0]);
+            int inc = Integer.parseInt(clocksArray[1]);
+
+            matchType = new MatchByClock(time, inc);
         }
         log.info("Match: {}", matchType);
 
@@ -194,6 +203,15 @@ public class MatchMainProducer implements Runnable {
                 .build();
         options.addOption(matchTypeByTime);
 
+        Option matchTypeByClock = Option
+                .builder("c")
+                .longOpt("MatchByClock")
+                .hasArg()
+                .argName("MILLISECONDS")
+                .desc("match by clock in ms")
+                .build();
+        options.addOption(matchTypeByClock);
+
         Option matchSide = Option
                 .builder("s")
                 .longOpt("MatchSide")
@@ -225,7 +243,7 @@ public class MatchMainProducer implements Runnable {
         try {
             // parse the command line arguments
             CommandLine cmdLine = parser.parse(options, args);
-            if (!(cmdLine.hasOption('d') || cmdLine.hasOption('t'))) {
+            if (!(cmdLine.hasOption('d') || cmdLine.hasOption('t') || cmdLine.hasOption('c'))) {
                 throw new ParseException("No match type argument");
             }
             if (!cmdLine.hasOption('f') && !cmdLine.hasOption('p')) {
