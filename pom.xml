@@ -11,6 +11,7 @@
 
     <artifactId>uci-arena-parent</artifactId>
     <packaging>pom</packaging>
+    <version>1.2.0-SNAPSHOT</version>
 
     <scm>
         <developerConnection>scm:git:https://github.com/mcoria/chesstango-arena.git</developerConnection>
@@ -35,7 +36,9 @@
         <maven.compiler.target>21</maven.compiler.target>
 
         <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
+        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
 
+        <chesstango.version>1.2.0</chesstango.version>
         <commons-cli.version>1.8.0</commons-cli.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
         <rabitmq.verison>5.26.0</rabitmq.verison>
@@ -43,11 +46,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>net.chesstango</groupId>
-                <artifactId>engine-reports</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-arena-ipc</artifactId>
@@ -74,6 +72,11 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>net.chesstango</groupId>
+                <artifactId>engine-reports</artifactId>
+                <version>${chesstango.version}</version>
+            </dependency>
             <dependency>
                 <groupId>commons-cli</groupId>
                 <artifactId>commons-cli</artifactId>
@@ -116,9 +119,6 @@
     <profiles>
         <profile>
             <id>docker</id>
-            <properties>
-                <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-            </properties>
             <build>
                 <pluginManagement>
                     <plugins>
