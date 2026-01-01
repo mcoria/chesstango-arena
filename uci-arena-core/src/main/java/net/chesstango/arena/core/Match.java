@@ -226,6 +226,8 @@ public final class Match {
             Controller winner = matchTimeOut.getController() == white ? black : white;
             pgn.setResult(winner == white ? PGN.Result.WHITE_WINS : PGN.Result.BLACK_WINS);
             pgn.setTermination(PGN.Termination.TIME_FORFEIT);
+        } else {
+            pgn.setTermination(PGN.Termination.NORMAL);
         }
 
         return pgn;
