@@ -170,7 +170,7 @@ public abstract class ControllerAbstract implements Controller {
              * Por lo tanto esperamos solo si todavia no recibimos resuesta.
              */
             if (response == null) {
-                wait(20000);
+                wait(120 * 1000); // 120 seconds
             }
             if (response == null) {
                 log.error("Engine {} has not provided any response after sending: {}", engineName, request);
