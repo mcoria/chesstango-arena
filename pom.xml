@@ -5,7 +5,7 @@
     <parent>
         <groupId>net.chesstango</groupId>
         <artifactId>engine-parent</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0-SNAPSHOT</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -69,12 +69,6 @@
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-arena-worker</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.chesstango</groupId>
-                <artifactId>engine-reports</artifactId>
-                <version>${chesstango.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-cli</groupId>
