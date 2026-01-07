@@ -2,7 +2,9 @@ package net.chesstango.arena.master;
 
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
+import net.chesstango.arena.core.matchtypes.MatchByClock;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
+import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.MatchRequest;
@@ -51,8 +53,18 @@ public class MatchMainProducer implements Runnable {
         MatchType matchType = null;
         if (parsedArgs.hasOption('d')) {
             matchType = new MatchByDepth(Integer.parseInt(parsedArgs.getOptionValue("d")));
-            log.info("Match: {}", matchType);
+        } else if (parsedArgs.hasOption('t')) {
+            matchType = new MatchByTime(Integer.parseInt(parsedArgs.getOptionValue("t")));
+        } else if (parsedArgs.hasOption('c')) {
+            String clocks = parsedArgs.getOptionValue("c");
+            String[] clocksArray = clocks.split(":");
+
+            int time = Integer.parseInt(clocksArray[0]);
+            int inc = Integer.parseInt(clocksArray[1]);
+
+            matchType = new MatchByClock(time, inc);
         }
+        log.info("Match: {}", matchType);
 
         MatchSide matchSide = switch (parsedArgs.getOptionValue("s", "both")) {
             case "white" -> MatchSide.WHITE_ONLY;
@@ -182,6 +194,24 @@ public class MatchMainProducer implements Runnable {
                 .build();
         options.addOption(matchTypeByDepth);
 
+        Option matchTypeByTime = Option
+                .builder("t")
+                .longOpt("MatchByTime")
+                .hasArg()
+                .argName("MILLISECONDS")
+                .desc("match by time in ms")
+                .build();
+        options.addOption(matchTypeByTime);
+
+        Option matchTypeByClock = Option
+                .builder("c")
+                .longOpt("MatchByClock")
+                .hasArg()
+                .argName("MILLISECONDS")
+                .desc("match by clock in ms")
+                .build();
+        options.addOption(matchTypeByClock);
+
         Option matchSide = Option
                 .builder("s")
                 .longOpt("MatchSide")
@@ -213,7 +243,7 @@ public class MatchMainProducer implements Runnable {
         try {
             // parse the command line arguments
             CommandLine cmdLine = parser.parse(options, args);
-            if (!cmdLine.hasOption('d')) {
+            if (!(cmdLine.hasOption('d') || cmdLine.hasOption('t') || cmdLine.hasOption('c'))) {
                 throw new ParseException("No match type argument");
             }
             if (!cmdLine.hasOption('f') && !cmdLine.hasOption('p')) {

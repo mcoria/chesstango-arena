@@ -62,8 +62,7 @@ public class MatchByClock implements MatchType {
     @Override
     public String toString() {
         return "MatchByClock{" +
-                "wTime=" + wTime +
-                ", bTime=" + bTime +
+                "time=" + time +
                 ", inc=" + inc +
                 '}';
     }
