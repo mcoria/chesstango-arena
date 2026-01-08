@@ -8,6 +8,6 @@ spec:
   accessModes:
     - ReadOnlyMany # Allows multiple nodes to mount read-only
   hostPath:
-    path: "/run/desktop/mnt/host/c/java/projects/chess/chess-utils/books"
+    path: "/run/desktop/mnt/host/c/java/projects/chess/chess-utils/books/k8s_shared"
   persistentVolumeReclaimPolicy: Retain
   storageClassName: "manual-hostpath"

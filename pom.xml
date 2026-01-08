@@ -37,7 +37,6 @@
         <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
 
-        <chesstango.version>1.2.0</chesstango.version>
         <commons-cli.version>1.8.0</commons-cli.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
         <rabitmq.verison>5.26.0</rabitmq.verison>
