@@ -5,7 +5,7 @@ metadata:
   labels:
     app: uci-arena-worker
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       app: uci-arena-worker
@@ -30,12 +30,17 @@ spec:
               mountPath: /engines
             - name: books-volume
               mountPath: /books/
+            - name: syzygy-volume
+              mountPath: /syzygy/
       volumes:
-        - name: books-volume
-          persistentVolumeClaim:
-            claimName: chesstango-book-pvc
         - name: engine-volume
           persistentVolumeClaim:
             claimName: engines-pvc
+        - name: books-volume
+          persistentVolumeClaim:
+            claimName: chesstango-book-pvc
+        - name: syzygy-volume
+          persistentVolumeClaim:
+            claimName: chesstango-syzygy-pvc
       restartPolicy: Always
       

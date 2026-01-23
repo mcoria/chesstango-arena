@@ -5,6 +5,7 @@ import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
 import net.chesstango.arena.core.matchtypes.MatchByClock;
+import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
@@ -39,16 +40,17 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    // private static final MatchType MATCH_TYPE = new MatchByDepth(2);
+     private static final MatchType MATCH_TYPE = new MatchByDepth(2);
     // private static final MatchType MATCH_TYPE = new MatchByTime(500);
     // private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
-    private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
+    // private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
 
     private static final boolean PRINT_PGN = false;
-    private static final MatchSide MATCH_SIDE = MatchSide.BOTH;
+    private static final MatchSide MATCH_SIDE = MatchSide.WHITE_ONLY;
 
     private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
-    private static final String SYZYGY_DIRECTORY = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
+    //private static final String SYZYGY_DIRECTORY = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
+    private static final String SYZYGY_DIRECTORY = "D:\\books\\syzygy";
 
     //private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
     private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
@@ -92,7 +94,7 @@ public class MatchMain {
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(arasan);
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(stockfish);
 
         /*
         Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
@@ -155,13 +157,13 @@ public class MatchMain {
 
 
     private static Stream<FEN> getFEN() {
-        List<String> fenList = List.of(FENParser.INITIAL_FEN);
+        //List<String> fenList = List.of(FENParser.INITIAL_FEN);
         //List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
         //List<String> fenList =  List.of("8/8/8/8/8/8/2Rk4/1K6 b - - 0 1");
         //List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
         //List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
         //List<String> fenList = List.of("8/1k6/4K1p1/6P1/8/8/8/8 w - - 0 1");
-        //List<String> fenList = List.of("6k1/1R6/6K1/6P1/5r2/8/8/8 w - - 0 1", "8/8/8/8/1k1P2N1/6P1/2K5/8 w - - 0 1");
+        List<String> fenList = List.of("8/5K2/5p2/5Pp1/8/8/3k4/8 w - g6 0 1");
 
         return fenList
                 .stream()
@@ -172,12 +174,12 @@ public class MatchMain {
     private static Stream<FEN> getFENFromFile() {
         Stream.Builder<FEN> fenBuilder = Stream.builder();
 
-        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\full\\LumbrasGigaBase\\OverTheBoard\\LumbrasGigaBase_OTB_2025_5_pieces_finalLessThan6_whiteWins.fen");
+        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\full\\LumbrasGigaBase\\OverTheBoard\\LumbrasGigaBase_OTB_2025_6_pieces-draws.fen");
 
         try (Stream<String> lines = Files.lines(filePath)) {
             lines.filter(s -> s != null && !s.trim().isEmpty())
                     .map(FEN::of)
-                    //.limit(500)
+                    .limit(200)
                     .forEach(fenBuilder::add);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
