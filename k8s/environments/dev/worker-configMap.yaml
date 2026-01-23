@@ -6,4 +6,4 @@ data:
   RABBIT_HOST: "chesstango-rabbit-svc.default.svc.cluster.local"
   ENGINE_CATALOG: "/engines/catalog_linux"
   POLYGLOT_FILE: "/books/polyglot/komodo.bin"
-  SYZYGY_DIRECTORY: "/syzygy/3-4-5-6"
+  SYZYGY_PATH: "/syzygy/3-4-5-6"

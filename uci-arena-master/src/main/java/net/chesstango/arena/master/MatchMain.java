@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
-import net.chesstango.arena.core.matchtypes.MatchByClock;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
-import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
 import net.chesstango.arena.core.reports.MatchesSearchesReport;
@@ -16,7 +14,6 @@ import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.board.Game;
 import net.chesstango.gardel.fen.FEN;
-import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
 import net.chesstango.uci.gui.Controller;
@@ -49,8 +46,8 @@ public class MatchMain {
     private static final MatchSide MATCH_SIDE = MatchSide.WHITE_ONLY;
 
     private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
-    //private static final String SYZYGY_DIRECTORY = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
-    private static final String SYZYGY_DIRECTORY = "D:\\books\\syzygy";
+    //private static final String SYZYGY_PATH = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
+    private static final String SYZYGY_PATH = "D:\\books\\syzygy";
 
     //private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
     private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
@@ -89,7 +86,7 @@ public class MatchMain {
 
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
             config.setPolyglotFile(POLYGLOT_FILE);
-            config.setSyzygyDirectory(SYZYGY_DIRECTORY);
+            config.setSyzygyPath(SYZYGY_PATH);
         });
 
 

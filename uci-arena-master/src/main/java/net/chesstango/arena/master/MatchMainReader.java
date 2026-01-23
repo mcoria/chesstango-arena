@@ -3,6 +3,7 @@ package net.chesstango.arena.master;
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.reports.MatchesReport;
+import net.chesstango.arena.core.reports.MatchesSearchesReport;
 import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.ByteArrayInputStream;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMainReader {
 
-    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-01-22-18-44");
+    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-01-23-18-43");
 
     public static void main(String[] args) {
         List<MatchResponse> matchResponses = loadMatchResponses(responsesStore);
@@ -34,13 +35,14 @@ public class MatchMainReader {
                 .sortBy(Comparator.comparing(MatchesReport.ReportRowModel::getWinPercentage).reversed())
                 .printReport(System.out);
 
-         /*
+
         new MatchesSearchesReport()
                 //.breakByGame()
                 //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
+         /*
         new MatchesSearchesByTreeSummaryReport()
                 //.withCollisionStatistics()
                 .withNodesVisitedStatistics()

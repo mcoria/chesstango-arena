@@ -10,12 +10,12 @@ import java.util.function.Supplier;
  */
 public class WithTables implements Supplier<Controller> {
     private final String POLYGLOT_FILE;
-    private final String SYZYGY_DIRECTORY;
+    private final String SYZYGY_PATH;
 
 
     public WithTables() {
         POLYGLOT_FILE = System.getenv("POLYGLOT_FILE");
-        SYZYGY_DIRECTORY = System.getenv("SYZYGY_DIRECTORY");
+        SYZYGY_PATH = System.getenv("SYZYGY_PATH");
     }
 
     @Override
@@ -30,7 +30,7 @@ public class WithTables implements Supplier<Controller> {
             );
              */
             config.setPolyglotFile(POLYGLOT_FILE);
-            config.setSyzygyDirectory(SYZYGY_DIRECTORY);
+            config.setSyzygyPath(SYZYGY_PATH);
         });
     }
 }
