@@ -200,7 +200,7 @@ public class MatchMain {
         try (ObjectPool<Controller> mainPool = new GenericObjectPool<>(new ControllerPoolFactory(engine1Supplier));
              ObjectPool<Controller> opponentPool = new GenericObjectPool<>(new ControllerPoolFactory(engine2Supplier))) {
 
-            MatchMultiple match = new MatchMultiple(parallelJobs, mainPool, opponentPool, MATCH_TYPE)
+            MatchMultiple matchMultiple = new MatchMultiple(parallelJobs, mainPool, opponentPool, MATCH_TYPE)
                     .setPrintPGN(PRINT_PGN)
                     .setSide(MATCH_SIDE)
                     .setMatchListener(new MatchBroadcaster()
@@ -210,7 +210,7 @@ public class MatchMain {
 
             Instant start = Instant.now();
 
-            List<MatchResult> matchResult = match.play(fenStream);
+            List<MatchResult> matchResult = matchMultiple.playFENs(fenStream);
 
             log.info("Time taken: {} ms", Duration.between(start, Instant.now()).toMillis());
 

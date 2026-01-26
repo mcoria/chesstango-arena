@@ -16,7 +16,6 @@ import net.chesstango.board.representations.move.SimpleMoveDecoder;
 import net.chesstango.engine.SearchResponse;
 import net.chesstango.engine.Session;
 import net.chesstango.gardel.fen.FEN;
-import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
@@ -30,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 /**
  * @author Mauricio Coria
@@ -58,13 +56,6 @@ public final class Match {
     private MatchListener matchListener;
 
     private String mathId;
-
-    public Match(Controller white, Controller black, MatchType matchType, FEN fen) {
-        this.white = white;
-        this.black = black;
-        this.matchType = matchType;
-        this.game = Game.from(fen);
-    }
 
     public Match(Controller white, Controller black, MatchType matchType, PGN pgn) {
         this.white = white;
@@ -195,7 +186,7 @@ public final class Match {
     }
 
     private String retrieveBestMove(Controller currentTurn, FEN startPosition, List<String> moves) {
-        if (FEN.of(FENParser.INITIAL_FEN).equals(startPosition)) {
+        if (FEN.START_POSITION.equals(startPosition)) {
             currentTurn.send_ReqPosition(UCIRequest.position(moves));
         } else {
             currentTurn.send_ReqPosition(UCIRequest.position(startPosition.toString(), moves));

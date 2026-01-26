@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static net.chesstango.arena.master.common.Common.SESSION_DATE;
@@ -123,39 +122,40 @@ public class MatchMainProducer implements Runnable {
 
 
     private void createMatchRequestsFromFENs(List<FEN> fenList) {
-        fenList.forEach(fen -> createMatchRequests(request -> request.setFen(fen)));
+        createMatchRequestsFromPGNs(fenList.stream()
+                .map(PGN::from)
+                .toList());
     }
 
     private void createMatchRequestsFromPGNs(List<PGN> pgnList) {
-        pgnList.forEach(pgn -> createMatchRequests(request -> request.setPgn(pgn)));
+        pgnList.forEach(this::createMatchRequests);
     }
 
-    private void createMatchRequests(Consumer<MatchRequest> setFenOrPGN) {
+    private void createMatchRequests(PGN pgn) {
         if (side == MatchSide.BOTH || side == MatchSide.WHITE_ONLY) {
             opponents.stream()
-                    .map(opponent -> createMatchRequest(engine, opponent))
-                    .peek(setFenOrPGN)
+                    .map(opponent -> createMatchRequest(engine, opponent, pgn))
                     .peek(request -> log.info("{}", request))
                     .forEach(matchRequests::add);
         }
 
         if (side == MatchSide.BOTH || side == MatchSide.BLACK_ONLY) {
             opponents.stream()
-                    .map(opponent -> createMatchRequest(opponent, engine))
-                    .peek(setFenOrPGN)
+                    .map(opponent -> createMatchRequest(opponent, engine, pgn))
                     .peek(request -> log.info("{}", request))
                     .forEach(matchRequests::add);
         }
     }
 
 
-    private MatchRequest createMatchRequest(String whiteEngine, String blackEngine) {
+    private MatchRequest createMatchRequest(String whiteEngine, String blackEngine, PGN pgn) {
         return new MatchRequest()
                 .setWhiteEngine(whiteEngine)
                 .setBlackEngine(blackEngine)
                 .setMatchType(matchType)
                 .setMatchId(UUID.randomUUID().toString())
-                .setSessionId(SESSION_DATE);
+                .setSessionId(SESSION_DATE)
+                .setPgn(pgn);
     }
 
 

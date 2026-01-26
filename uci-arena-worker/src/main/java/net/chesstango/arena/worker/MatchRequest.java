@@ -3,7 +3,6 @@ package net.chesstango.arena.worker;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.chesstango.gardel.fen.FEN;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.gardel.pgn.PGN;
 
@@ -26,7 +25,6 @@ public class MatchRequest implements Serializable {
     private String whiteEngine;
     private String blackEngine;
     private MatchType matchType;
-    private FEN fen;
     private PGN pgn;
 
 
@@ -52,6 +50,6 @@ public class MatchRequest implements Serializable {
 
     @Override
     public String toString() {
-        return "MatchRequest{" + "sessionId=" + sessionId + ", matchId=" + matchId + ", whiteEngine=" + whiteEngine + ", blackEngine=" + blackEngine + ", matchType=" + matchType + ", fen=" + fen + ", pgn=" + pgn + '}';
+        return "MatchRequest{" + "sessionId=" + sessionId + ", matchId=" + matchId + ", whiteEngine=" + whiteEngine + ", blackEngine=" + blackEngine + ", matchType=" + matchType + ", pgn=" + pgn + '}';
     }
 }
