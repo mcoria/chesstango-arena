@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-     private static final MatchType MATCH_TYPE = new MatchByDepth(2);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(1);
     // private static final MatchType MATCH_TYPE = new MatchByTime(500);
     // private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
     // private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
@@ -45,9 +45,9 @@ public class MatchMain {
     private static final boolean PRINT_PGN = false;
     private static final MatchSide MATCH_SIDE = MatchSide.WHITE_ONLY;
 
-    private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
+    //private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     //private static final String SYZYGY_PATH = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
-    private static final String SYZYGY_PATH = "D:\\books\\syzygy";
+    private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5;D:\\k8s_shared\\syzygy\\6-DTZ;D:\\k8s_shared\\syzygy\\6-WDL";
 
     //private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
     private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
@@ -57,7 +57,7 @@ public class MatchMain {
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
     //private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
-    private static final int parallelJobs = 2;
+    private static final int parallelJobs = 1;
 
     /**
      * Add the following JVM parameters:
@@ -85,7 +85,7 @@ public class MatchMain {
 
 
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
-            config.setPolyglotFile(POLYGLOT_FILE);
+            //config.setPolyglotFile(POLYGLOT_FILE);
             config.setSyzygyPath(SYZYGY_PATH);
         });
 
@@ -160,7 +160,10 @@ public class MatchMain {
         //List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
         //List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
         //List<String> fenList = List.of("8/1k6/4K1p1/6P1/8/8/8/8 w - - 0 1");
-        List<String> fenList = List.of("8/5K2/5p2/5Pp1/8/8/3k4/8 w - g6 0 1");
+        List<String> fenList = List.of(
+                "r2q1rk1/1pp2ppp/2npbn2/p1b1p3/2B1P3/2PP1N1P/PP3PP1/RNBQR1K1 w - - 2 9",
+                "r1bq1rk1/bpp2ppp/2np1n2/p3p3/2B1P3/2PP1N1P/PP1N1PP1/R1BQ1RK1 w - - 2 9"
+        );
 
         return fenList
                 .stream()
@@ -201,7 +204,7 @@ public class MatchMain {
                     .setPrintPGN(PRINT_PGN)
                     .setSide(MATCH_SIDE)
                     .setMatchListener(new MatchBroadcaster()
-                            //         .addListener(new MatchListenerToMBean())
+                            //.addListener(new MatchListenerToMBean())
                             .addListener(new SavePGNGame())
                     );
 

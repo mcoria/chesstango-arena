@@ -86,7 +86,7 @@ public class MatchMultiple {
             controller1 = getControllerFromPool(thePool1);
             controller2 = getControllerFromPool(thePool2);
 
-            Match match = new Match(controller1, controller2, fen, matchType)
+            Match match = new Match(controller1, controller2, matchType, fen)
                     .setPrintPGN(printPGN)
                     .setMatchListener(matchListener);
 

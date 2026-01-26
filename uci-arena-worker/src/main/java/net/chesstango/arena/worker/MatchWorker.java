@@ -1,7 +1,6 @@
 package net.chesstango.arena.worker;
 
 import lombok.extern.slf4j.Slf4j;
-import net.chesstango.gardel.fen.FEN;
 import net.chesstango.arena.core.Match;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.matchtypes.MatchType;
@@ -27,20 +26,29 @@ class MatchWorker implements Function<MatchRequest, MatchResponse> {
 
         Controller blackController = controllerProvider.getController(matchRequest.getBlackEngine());
 
-        MatchType matchType = matchRequest.getMatchType();
+        MatchResult result = getMatchResult(matchRequest, whiteController, blackController);
 
-        FEN fen = matchRequest.getFen();
-
-        Match match = new Match(whiteController, blackController, fen, matchType);
-
-        MatchResult result = match.play(matchRequest.getMatchId());
-
+        // Sets engine names and match result attributes
         return new MatchResponse()
                 .setWhiteEngineName(result.pgn().getWhite())
                 .setBlackEngineName(result.pgn().getBlack())
                 .setMatchResult(result)
                 .setMatchId(matchRequest.getMatchId())
                 .setSessionId(matchRequest.getSessionId());
+    }
+
+    private static MatchResult getMatchResult(MatchRequest matchRequest, Controller whiteController, Controller blackController) {
+        Match match = null;
+
+        if (matchRequest.getFen() != null) {
+            match = new Match(whiteController, blackController, matchRequest.getMatchType(), matchRequest.getFen());
+        } else if (matchRequest.getPgn() != null) {
+            match = new Match(whiteController, blackController, matchRequest.getMatchType(), matchRequest.getPgn());
+        } else {
+            throw new IllegalArgumentException("FEN or PGN must be provided");
+        }
+
+        return match.play(matchRequest.getMatchId());
     }
 
 }

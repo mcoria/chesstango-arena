@@ -54,7 +54,7 @@ public class MatchIntegrationTest {
 
     @Test
     public void testPlay() {
-        Match match = new Match(smartEngine, dummyEngine, FEN.of(FENParser.INITIAL_FEN), new MatchByDepth(3));
+        Match match = new Match(smartEngine, dummyEngine, new MatchByDepth(3), FEN.of(FENParser.INITIAL_FEN));
         //match.setPrintPGN(true);
 
         MatchResult matchResult = match.play();

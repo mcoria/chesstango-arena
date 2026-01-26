@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * @author Mauricio Coria
@@ -39,11 +40,8 @@ public final class Match {
     private final Controller white;
     private final Controller black;
     private final MatchType matchType;
-    private final FEN fen;
+    private final Game game;
     private final SimpleMoveDecoder simpleMoveDecoder = new SimpleMoveDecoder();
-
-    @Setter(AccessLevel.PACKAGE)
-    private Game game;
 
     @Setter(AccessLevel.PACKAGE)
     private MatchTimeOut matchTimeOut;
@@ -61,11 +59,18 @@ public final class Match {
 
     private String mathId;
 
-    public Match(Controller white, Controller black, FEN fen, MatchType matchType) {
+    public Match(Controller white, Controller black, MatchType matchType, FEN fen) {
         this.white = white;
         this.black = black;
-        this.fen = fen;
         this.matchType = matchType;
+        this.game = Game.from(fen);
+    }
+
+    public Match(Controller white, Controller black, MatchType matchType, PGN pgn) {
+        this.white = white;
+        this.black = black;
+        this.matchType = matchType;
+        this.game = Game.from(pgn);
     }
 
     public MatchResult play() {
@@ -86,7 +91,7 @@ public final class Match {
         } catch (RuntimeException e) {
             e.printStackTrace(System.err);
 
-            log.error("Error playing fen: {}", fen);
+            log.error("Error playing game: {}", mathId);
 
             log.error("PGN: {}", createPGN());
 
@@ -97,8 +102,6 @@ public final class Match {
 
     void compete() {
         log.info("[{}] WHITE={} BLACK={}", mathId, white.getEngineName(), black.getEngineName());
-
-        setGame(Game.from(fen));
 
         final List<String> executedMovesStr = new ArrayList<>();
 
@@ -112,8 +115,11 @@ public final class Match {
         matchType.reset();
 
         try {
+
+            FEN startPosition = game.getInitialFEN();
+
             while (game.getStatus().isInProgress()) {
-                String moveStr = retrieveBestMove(currentTurn, executedMovesStr);
+                String moveStr = retrieveBestMove(currentTurn, startPosition, executedMovesStr);
 
                 Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
 
@@ -188,11 +194,11 @@ public final class Match {
         black.startNewGame();
     }
 
-    private String retrieveBestMove(Controller currentTurn, List<String> moves) {
-        if (FEN.of(FENParser.INITIAL_FEN).equals(fen)) {
+    private String retrieveBestMove(Controller currentTurn, FEN startPosition, List<String> moves) {
+        if (FEN.of(FENParser.INITIAL_FEN).equals(startPosition)) {
             currentTurn.send_ReqPosition(UCIRequest.position(moves));
         } else {
-            currentTurn.send_ReqPosition(UCIRequest.position(fen.toString(), moves));
+            currentTurn.send_ReqPosition(UCIRequest.position(startPosition.toString(), moves));
         }
 
         RspBestMove bestMove = matchType.retrieveBestMove(currentTurn, currentTurn == white);
