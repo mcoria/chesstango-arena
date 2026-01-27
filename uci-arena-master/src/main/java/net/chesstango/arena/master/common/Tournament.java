@@ -6,6 +6,7 @@ import net.chesstango.gardel.fen.FEN;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchListener;
 import net.chesstango.arena.core.matchtypes.MatchType;
+import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -36,7 +37,7 @@ public class Tournament {
         this.matchType = matchType;
     }
 
-    public List<MatchResult> play(Stream<FEN> fenList) {
+    public List<MatchResult> play(Stream<PGN> pgnStream) {
         List<MatchResult> matchResults = Collections.synchronizedList(new LinkedList<>());
 
         Supplier<Controller> mainEngineSupplier = engineSupplierList.getFirst();
@@ -48,7 +49,7 @@ public class Tournament {
                         MatchMultiple matchMultiple = new MatchMultiple(parallelJobs, mainPool, opponentPool, matchType)
                                 .setSide(MatchSide.BOTH)
                                 .setMatchListener(matchListener);
-                        matchResults.addAll(matchMultiple.playFENs(fenList));
+                        matchResults.addAll(matchMultiple.play(pgnStream));
                     }
                 }
             }

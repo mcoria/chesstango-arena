@@ -8,10 +8,8 @@ import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.master.common.MatchListenerToMBeans;
 import net.chesstango.arena.master.common.Tournament;
 import net.chesstango.arena.worker.ControllerFactory;
-import net.chesstango.board.Game;
 import net.chesstango.evaluation.evaluators.EvaluatorByMaterialAndPST;
 import net.chesstango.evaluation.evaluators.EvaluatorImp02;
-import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
 import net.chesstango.uci.gui.Controller;
@@ -51,15 +49,15 @@ public class TournamentMain {
         List<Supplier<Controller>> engineSupplierList = Arrays.asList(main, evaluatorImp02, spikeSupplier);
 
         List<MatchResult> matchResult = new TournamentMain(engineSupplierList)
-                .play(getFenList());
+                .play(getPGNs());
     }
 
-    private static Stream<FEN> getFenList() {
+    private static Stream<PGN> getPGNs() {
         try {
             //List<String> fenList = new Transcoding().pgnFileToFenPositions(TournamentMain.class.getClassLoader().getResourceAsStream("Balsa_v2724.pgn"));
             Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Top10.pgn"));
             //List<String> fenList = List.of(FENDecoder.INITIAL_FEN);
-            return pgnStream.map(Game::from).map(Game::getCurrentFEN);
+            return pgnStream;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -71,7 +69,7 @@ public class TournamentMain {
         this.engineSupplierList = engineSupplierList;
     }
 
-    public List<MatchResult> play(Stream<FEN> fenList) {
+    public List<MatchResult> play(Stream<PGN> pgnStream) {
         CaptureMatchResult captureMatchResult = new CaptureMatchResult();
 
         Tournament tournament = new Tournament(parallelJobs, engineSupplierList, matchType)
@@ -81,7 +79,7 @@ public class TournamentMain {
                         .addListener(captureMatchResult));
 
         Instant start = Instant.now();
-        tournament.play(fenList);
+        tournament.play(pgnStream);
         System.out.println("Time elapsed: " + Duration.between(start, Instant.now()).toMillis() + " ms");
 
         return captureMatchResult.getMatchResults();

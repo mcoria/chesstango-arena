@@ -56,11 +56,7 @@ public class MatchMultiple {
         this.matchType = matchType;
     }
 
-    public List<MatchResult> playFENs(Stream<FEN> fenStream) {
-        return playPGNs(fenStream.map(PGN::from));
-    }
-
-    public List<MatchResult> playPGNs(Stream<PGN> pgnStream) {
+    public List<MatchResult> play(Stream<PGN> pgnStream) {
         try (ExecutorService executor = Executors.newFixedThreadPool(parallelJobs)) {
             pgnStream.forEach(pgn -> {
                 switch (side) {

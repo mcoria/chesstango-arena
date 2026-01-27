@@ -207,7 +207,7 @@ public class MatchMain {
 
             Instant start = Instant.now();
 
-            List<MatchResult> matchResult = matchMultiple.playPGNs(pgnStream);
+            List<MatchResult> matchResult = matchMultiple.play(pgnStream);
 
             log.info("Time taken: {} ms", Duration.between(start, Instant.now()).toMillis());
 
