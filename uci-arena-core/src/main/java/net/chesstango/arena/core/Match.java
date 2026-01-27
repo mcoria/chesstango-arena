@@ -94,8 +94,6 @@ public final class Match {
     void compete() {
         log.info("[{}] WHITE={} BLACK={}", mathId, white.getEngineName(), black.getEngineName());
 
-        final List<String> executedMovesStr = new ArrayList<>();
-
         Controller currentTurn = Color.WHITE.equals(game.getPosition().getCurrentTurn()) ? white : black;
 
         if (matchListener != null) {
@@ -107,7 +105,14 @@ public final class Match {
 
         try {
 
-            FEN startPosition = game.getInitialFEN();
+            final FEN startPosition = game.getInitialFEN();
+
+            final List<String> executedMovesStr = new ArrayList<>();
+
+            game.getHistory().iteratorReverse()
+                    .forEachRemaining(gameHistoryRecord -> {
+                        executedMovesStr.add(gameHistoryRecord.playedMove().coordinateEncoding());
+                    });
 
             while (game.getStatus().isInProgress()) {
                 String moveStr = retrieveBestMove(currentTurn, startPosition, executedMovesStr);

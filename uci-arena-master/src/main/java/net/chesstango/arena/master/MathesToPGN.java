@@ -31,7 +31,7 @@ public class MathesToPGN {
             List<PGN> pgnList = matchResult
                     .stream()
                     .map(MatchResult::pgn)
-                    .sorted(Comparator.comparing(o -> o.getFen().toString().concat(o.getWhite())))
+                    //.sorted(Comparator.comparing(o -> o.getFen().toString().concat(o.getWhite())))
                     .toList();
             for (PGN pgn : pgnList) {
                 writer.write(pgn.toString());

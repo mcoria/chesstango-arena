@@ -105,7 +105,7 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(getFEN());
+                .play(getFromPGN());
 
         new MatchesReport()
                 .withMatchResults(matchResult)
@@ -141,12 +141,9 @@ public class MatchMain {
 
     }
 
-    private static Stream<FEN> getFromPGN() {
+    private static Stream<PGN> getFromPGN() {
         try (FileInputStream fis = new FileInputStream("C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\openings\\Balsa_v2724\\Balsa_Top10.pgn")){
-            Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(fis);
-            return pgnStream
-                    .map(Game::from)
-                    .map(Game::getCurrentFEN);
+            return new PGNStringDecoder().decodePGNs(fis).limit(1);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -196,7 +193,7 @@ public class MatchMain {
         this.engine2Supplier = engine2Supplier;
     }
 
-    private List<MatchResult> play(Stream<FEN> fenStream) {
+    private List<MatchResult> play(Stream<PGN> pgnStream) {
         try (ObjectPool<Controller> mainPool = new GenericObjectPool<>(new ControllerPoolFactory(engine1Supplier));
              ObjectPool<Controller> opponentPool = new GenericObjectPool<>(new ControllerPoolFactory(engine2Supplier))) {
 
@@ -210,7 +207,7 @@ public class MatchMain {
 
             Instant start = Instant.now();
 
-            List<MatchResult> matchResult = matchMultiple.playFENs(fenStream);
+            List<MatchResult> matchResult = matchMultiple.playPGNs(pgnStream);
 
             log.info("Time taken: {} ms", Duration.between(start, Instant.now()).toMillis());
 
