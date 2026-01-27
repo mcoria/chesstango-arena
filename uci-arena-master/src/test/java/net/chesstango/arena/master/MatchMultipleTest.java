@@ -1,15 +1,14 @@
 package net.chesstango.arena.master;
 
+import net.chesstango.arena.core.MatchResult;
+import net.chesstango.arena.core.matchtypes.MatchByDepth;
+import net.chesstango.arena.master.common.ControllerPoolFactory;
+import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.engine.Config;
 import net.chesstango.gardel.fen.FEN;
-import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.search.dummy.Dummy;
-import net.chesstango.arena.master.common.ControllerPoolFactory;
-import net.chesstango.arena.master.common.MatchMultiple;
-import net.chesstango.arena.core.MatchResult;
-import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerTango;
@@ -64,7 +63,7 @@ public class MatchMultipleTest {
                 .setSide(MatchSide.BOTH);
 
 
-        List<MatchResult> matchResult = matchMultiple.play(Stream.of(FEN.of(FENParser.INITIAL_FEN)));
+        List<MatchResult> matchResult = matchMultiple.playFENs(Stream.of(FEN.START_POSITION));
 
         assertEquals(2, matchResult.size());
 

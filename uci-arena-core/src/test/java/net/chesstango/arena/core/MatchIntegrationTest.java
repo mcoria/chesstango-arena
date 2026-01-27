@@ -1,10 +1,8 @@
 package net.chesstango.arena.core;
 
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
-import net.chesstango.board.Game;
 import net.chesstango.engine.Config;
 import net.chesstango.gardel.fen.FEN;
-import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.search.dummy.Dummy;
 import net.chesstango.uci.engine.UciTango;
@@ -54,7 +52,7 @@ public class MatchIntegrationTest {
 
     @Test
     public void testPlay() {
-        Match match = new Match(smartEngine, dummyEngine, FEN.of(FENParser.INITIAL_FEN), new MatchByDepth(3));
+        Match match = new Match(smartEngine, dummyEngine, new MatchByDepth(3), PGN.from(FEN.START_POSITION) );
         //match.setPrintPGN(true);
 
         MatchResult matchResult = match.play();

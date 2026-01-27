@@ -9,6 +9,7 @@ import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchListener;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.gardel.fen.FEN;
+import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.ObjectPool;
 
@@ -55,19 +56,23 @@ public class MatchMultiple {
         this.matchType = matchType;
     }
 
-    public List<MatchResult> play(Stream<FEN> fenStream) {
+    public List<MatchResult> playFENs(Stream<FEN> fenStream) {
+        return playPGNs(fenStream.map(PGN::from));
+    }
+
+    public List<MatchResult> playPGNs(Stream<PGN> pgnStream) {
         try (ExecutorService executor = Executors.newFixedThreadPool(parallelJobs)) {
-            fenStream.forEach(fen -> {
+            pgnStream.forEach(pgn -> {
                 switch (side) {
                     case BOTH:
-                        executor.execute(() -> play(fen, controllerPool1, controllerPool2));
-                        executor.execute(() -> play(fen, controllerPool2, controllerPool1));
+                        executor.execute(() -> play(controllerPool1, controllerPool2, pgn));
+                        executor.execute(() -> play(controllerPool2, controllerPool1, pgn));
                         break;
                     case WHITE_ONLY:
-                        executor.execute(() -> play(fen, controllerPool1, controllerPool2));
+                        executor.execute(() -> play(controllerPool1, controllerPool2, pgn));
                         break;
                     case BLACK_ONLY:
-                        executor.execute(() -> play(fen, controllerPool2, controllerPool1));
+                        executor.execute(() -> play(controllerPool2, controllerPool1, pgn));
                         break;
                 }
             });
@@ -75,9 +80,7 @@ public class MatchMultiple {
         return result;
     }
 
-    private void play(FEN fen,
-                      ObjectPool<Controller> thePool1,
-                      ObjectPool<Controller> thePool2) {
+    private void play(ObjectPool<Controller> thePool1, ObjectPool<Controller> thePool2, PGN pgn) {
 
         Controller controller1 = null;
         Controller controller2 = null;
@@ -86,7 +89,7 @@ public class MatchMultiple {
             controller1 = getControllerFromPool(thePool1);
             controller2 = getControllerFromPool(thePool2);
 
-            Match match = new Match(controller1, controller2, fen, matchType)
+            Match match = new Match(controller1, controller2, matchType, pgn)
                     .setPrintPGN(printPGN)
                     .setMatchListener(matchListener);
 

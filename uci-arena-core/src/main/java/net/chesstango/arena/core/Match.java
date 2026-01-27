@@ -16,7 +16,6 @@ import net.chesstango.board.representations.move.SimpleMoveDecoder;
 import net.chesstango.engine.SearchResponse;
 import net.chesstango.engine.Session;
 import net.chesstango.gardel.fen.FEN;
-import net.chesstango.gardel.fen.FENParser;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
@@ -39,11 +38,8 @@ public final class Match {
     private final Controller white;
     private final Controller black;
     private final MatchType matchType;
-    private final FEN fen;
+    private final Game game;
     private final SimpleMoveDecoder simpleMoveDecoder = new SimpleMoveDecoder();
-
-    @Setter(AccessLevel.PACKAGE)
-    private Game game;
 
     @Setter(AccessLevel.PACKAGE)
     private MatchTimeOut matchTimeOut;
@@ -61,11 +57,11 @@ public final class Match {
 
     private String mathId;
 
-    public Match(Controller white, Controller black, FEN fen, MatchType matchType) {
+    public Match(Controller white, Controller black, MatchType matchType, PGN pgn) {
         this.white = white;
         this.black = black;
-        this.fen = fen;
         this.matchType = matchType;
+        this.game = Game.from(pgn);
     }
 
     public MatchResult play() {
@@ -86,7 +82,7 @@ public final class Match {
         } catch (RuntimeException e) {
             e.printStackTrace(System.err);
 
-            log.error("Error playing fen: {}", fen);
+            log.error("Error playing game: {}", mathId);
 
             log.error("PGN: {}", createPGN());
 
@@ -98,10 +94,6 @@ public final class Match {
     void compete() {
         log.info("[{}] WHITE={} BLACK={}", mathId, white.getEngineName(), black.getEngineName());
 
-        setGame(Game.from(fen));
-
-        final List<String> executedMovesStr = new ArrayList<>();
-
         Controller currentTurn = Color.WHITE.equals(game.getPosition().getCurrentTurn()) ? white : black;
 
         if (matchListener != null) {
@@ -112,8 +104,18 @@ public final class Match {
         matchType.reset();
 
         try {
+
+            final FEN startPosition = game.getInitialFEN();
+
+            final List<String> executedMovesStr = new ArrayList<>();
+
+            game.getHistory().iteratorReverse()
+                    .forEachRemaining(gameHistoryRecord -> {
+                        executedMovesStr.add(gameHistoryRecord.playedMove().coordinateEncoding());
+                    });
+
             while (game.getStatus().isInProgress()) {
-                String moveStr = retrieveBestMove(currentTurn, executedMovesStr);
+                String moveStr = retrieveBestMove(currentTurn, startPosition, executedMovesStr);
 
                 Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
 
@@ -188,11 +190,11 @@ public final class Match {
         black.startNewGame();
     }
 
-    private String retrieveBestMove(Controller currentTurn, List<String> moves) {
-        if (FEN.of(FENParser.INITIAL_FEN).equals(fen)) {
+    private String retrieveBestMove(Controller currentTurn, FEN startPosition, List<String> moves) {
+        if (FEN.START_POSITION.equals(startPosition)) {
             currentTurn.send_ReqPosition(UCIRequest.position(moves));
         } else {
-            currentTurn.send_ReqPosition(UCIRequest.position(fen.toString(), moves));
+            currentTurn.send_ReqPosition(UCIRequest.position(startPosition.toString(), moves));
         }
 
         RspBestMove bestMove = matchType.retrieveBestMove(currentTurn, currentTurn == white);

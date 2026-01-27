@@ -1,10 +1,8 @@
 package net.chesstango.arena.worker;
 
 import lombok.extern.slf4j.Slf4j;
-import net.chesstango.gardel.fen.FEN;
 import net.chesstango.arena.core.Match;
 import net.chesstango.arena.core.MatchResult;
-import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.uci.gui.Controller;
 
 import java.util.function.Function;
@@ -27,20 +25,21 @@ class MatchWorker implements Function<MatchRequest, MatchResponse> {
 
         Controller blackController = controllerProvider.getController(matchRequest.getBlackEngine());
 
-        MatchType matchType = matchRequest.getMatchType();
+        MatchResult result = getMatchResult(whiteController, blackController, matchRequest);
 
-        FEN fen = matchRequest.getFen();
-
-        Match match = new Match(whiteController, blackController, fen, matchType);
-
-        MatchResult result = match.play(matchRequest.getMatchId());
-
+        // Sets engine names and match result attributes
         return new MatchResponse()
                 .setWhiteEngineName(result.pgn().getWhite())
                 .setBlackEngineName(result.pgn().getBlack())
                 .setMatchResult(result)
                 .setMatchId(matchRequest.getMatchId())
                 .setSessionId(matchRequest.getSessionId());
+    }
+
+    private static MatchResult getMatchResult(Controller whiteController, Controller blackController, MatchRequest matchRequest) {
+        Match match = new Match(whiteController, blackController, matchRequest.getMatchType(), matchRequest.getPgn());
+
+        return match.play(matchRequest.getMatchId());
     }
 
 }

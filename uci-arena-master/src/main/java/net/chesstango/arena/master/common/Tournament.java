@@ -48,7 +48,7 @@ public class Tournament {
                         MatchMultiple matchMultiple = new MatchMultiple(parallelJobs, mainPool, opponentPool, matchType)
                                 .setSide(MatchSide.BOTH)
                                 .setMatchListener(matchListener);
-                        matchResults.addAll(matchMultiple.play(fenList));
+                        matchResults.addAll(matchMultiple.playFENs(fenList));
                     }
                 }
             }

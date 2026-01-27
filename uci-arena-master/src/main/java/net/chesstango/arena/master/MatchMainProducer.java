@@ -8,8 +8,8 @@ import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.MatchRequest;
-import net.chesstango.board.Game;
 import net.chesstango.gardel.fen.FEN;
+import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
 import org.apache.commons.cli.*;
 
@@ -74,35 +74,38 @@ public class MatchMainProducer implements Runnable {
         };
         log.info("MatchSide: {}", matchSide);
 
-        List<FEN> fenList = parsedArgs.hasOption('f')
-                ? fromFEN(parsedArgs.getOptionValue("f"))
-                : fromPGN(parsedArgs.getOptionValue('p'));
 
-        log.info("FEN size: {}", fenList.size());
+        MatchMainProducer matchMainProducer = new MatchMainProducer(rabbitHost, engine, opponents, matchType, matchSide);
 
-        new MatchMainProducer(rabbitHost, engine, opponents, matchType, matchSide, fenList)
-                .run();
+        if (parsedArgs.hasOption('f')) {
+            matchMainProducer.createMatchRequestsFromFENs(fromFEN(parsedArgs.getOptionValue("f")));
+        }
+
+        if (parsedArgs.hasOption('p')) {
+            matchMainProducer.createMatchRequestsFromPGNs(fromPGN(parsedArgs.getOptionValue("p")));
+        }
+
+        matchMainProducer.run();
     }
 
     private final String rabbitHost;
     private final String engine;
-    private final MatchType matchType;
     private final List<String> opponents;
-    private final List<FEN> fenList;
+    private final MatchType matchType;
     private final MatchSide side;
+    private final List<MatchRequest> matchRequests;
 
-    public MatchMainProducer(String rabbitHost, String engine, List<String> opponents, MatchType matchType, MatchSide side, List<FEN> fenList) {
+    public MatchMainProducer(String rabbitHost, String engine, List<String> opponents, MatchType matchType, MatchSide side) {
         this.rabbitHost = rabbitHost;
         this.engine = engine;
         this.matchType = matchType;
         this.side = side;
         this.opponents = opponents;
-        this.fenList = fenList;
+        this.matchRequests = new LinkedList<>();
     }
 
     @Override
     public void run() {
-        List<MatchRequest> matchRequests = createMatchRequests();
         try (ExecutorService executorService = Executors.newSingleThreadExecutor()) {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(rabbitHost);
@@ -113,44 +116,46 @@ public class MatchMainProducer implements Runnable {
                 throw new RuntimeException(e);
             }
         }
+
+        log.info("MatchRequest size: {}", matchRequests.size());
     }
 
 
-    private List<MatchRequest> createMatchRequests() {
-        List<MatchRequest> matchRequests = new LinkedList<>();
+    private void createMatchRequestsFromFENs(List<FEN> fenList) {
+        createMatchRequestsFromPGNs(fenList.stream()
+                .map(PGN::from)
+                .toList());
+    }
 
-        for (String opponent : opponents) {
+    private void createMatchRequestsFromPGNs(List<PGN> pgnList) {
+        pgnList.forEach(this::createMatchRequests);
+    }
 
-            if (side == MatchSide.BOTH || side == MatchSide.WHITE_ONLY) {
-                fenList.stream()
-                        .map(fen -> new MatchRequest()
-                                .setWhiteEngine(engine)
-                                .setBlackEngine(opponent)
-                                .setFen(fen)
-                                .setMatchType(matchType)
-                                .setMatchId(UUID.randomUUID().toString())
-                                .setSessionId(SESSION_DATE)
-                        )
-                        .peek(request -> log.info("{}", request.toString()))
-                        .forEach(matchRequests::add);
-            }
-
-            if (side == MatchSide.BOTH || side == MatchSide.BLACK_ONLY) {
-                fenList.stream()
-                        .map(fen -> new MatchRequest()
-                                .setWhiteEngine(opponent)
-                                .setBlackEngine(engine)
-                                .setFen(fen)
-                                .setMatchType(matchType)
-                                .setMatchId(UUID.randomUUID().toString())
-                                .setSessionId(SESSION_DATE)
-                        )
-                        .peek(request -> log.info("{}", request.toString()))
-                        .forEach(matchRequests::add);
-            }
+    private void createMatchRequests(PGN pgn) {
+        if (side == MatchSide.BOTH || side == MatchSide.WHITE_ONLY) {
+            opponents.stream()
+                    .map(opponent -> createMatchRequest(engine, opponent, pgn))
+                    .peek(request -> log.info("{}", request))
+                    .forEach(matchRequests::add);
         }
 
-        return matchRequests;
+        if (side == MatchSide.BOTH || side == MatchSide.BLACK_ONLY) {
+            opponents.stream()
+                    .map(opponent -> createMatchRequest(opponent, engine, pgn))
+                    .peek(request -> log.info("{}", request))
+                    .forEach(matchRequests::add);
+        }
+    }
+
+
+    private MatchRequest createMatchRequest(String whiteEngine, String blackEngine, PGN pgn) {
+        return new MatchRequest()
+                .setWhiteEngine(whiteEngine)
+                .setBlackEngine(blackEngine)
+                .setMatchType(matchType)
+                .setMatchId(UUID.randomUUID().toString())
+                .setSessionId(SESSION_DATE)
+                .setPgn(pgn);
     }
 
 
@@ -271,12 +276,10 @@ public class MatchMainProducer implements Runnable {
         formatter.printHelp(cmdName, header, options, footer, true);
     }
 
-    private static List<FEN> fromPGN(String pgnFile) {
+    private static List<PGN> fromPGN(String pgnFile) {
         try {
             return new PGNStringDecoder()
                     .decodePGNs(Path.of(pgnFile))
-                    .map(Game::from)
-                    .map(Game::getCurrentFEN)
                     .toList();
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());

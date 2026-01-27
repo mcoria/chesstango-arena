@@ -15,4 +15,5 @@ module net.chesstango.arena.worker {
 
     requires org.slf4j;
     requires static lombok;
+    requires net.chesstango.board;
 }
