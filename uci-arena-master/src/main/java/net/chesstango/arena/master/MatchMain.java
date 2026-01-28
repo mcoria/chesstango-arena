@@ -12,7 +12,6 @@ import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.ControllerFactory;
-import net.chesstango.board.Game;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
@@ -37,7 +36,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    private static final MatchType MATCH_TYPE = new MatchByDepth(1);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(7);
     // private static final MatchType MATCH_TYPE = new MatchByTime(500);
     // private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
     // private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
@@ -105,7 +104,7 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(getFromPGN());
+                .play(fromFEN());
 
         new MatchesReport()
                 .withMatchResults(matchResult)
@@ -141,16 +140,34 @@ public class MatchMain {
 
     }
 
-    private static Stream<PGN> getFromPGN() {
-        try (FileInputStream fis = new FileInputStream("C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\openings\\Balsa_v2724\\Balsa_Top10.pgn")){
+    private static Stream<PGN> readPGNFile() {
+        try (FileInputStream fis = new FileInputStream("C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\openings\\Balsa_v2724\\Balsa_Top10.pgn")) {
             return new PGNStringDecoder().decodePGNs(fis).limit(1);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private static Stream<PGN> readFENFile() {
+        Stream.Builder<PGN> fenBuilder = Stream.builder();
 
-    private static Stream<FEN> getFEN() {
+        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\full\\LumbrasGigaBase\\OverTheBoard\\LumbrasGigaBase_OTB_2025_6_pieces-draws.fen");
+
+        try (Stream<String> lines = Files.lines(filePath)) {
+            lines.filter(s -> s != null && !s.trim().isEmpty())
+                    .map(FEN::of)
+                    .limit(200)
+                    .map(PGN::from)
+                    .forEach(fenBuilder::add);
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+
+        return fenBuilder.build();
+    }
+
+
+    private static Stream<PGN> fromFEN() {
         //List<String> fenList = List.of(FENParser.INITIAL_FEN);
         //List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
         //List<String> fenList =  List.of("8/8/8/8/8/8/2Rk4/1K6 b - - 0 1");
@@ -164,26 +181,11 @@ public class MatchMain {
 
         return fenList
                 .stream()
-                .map(FEN::of);
+                .map(FEN::of)
+                .map(PGN::from);
     }
 
 
-    private static Stream<FEN> getFENFromFile() {
-        Stream.Builder<FEN> fenBuilder = Stream.builder();
-
-        Path filePath = Paths.get("C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\full\\LumbrasGigaBase\\OverTheBoard\\LumbrasGigaBase_OTB_2025_6_pieces-draws.fen");
-
-        try (Stream<String> lines = Files.lines(filePath)) {
-            lines.filter(s -> s != null && !s.trim().isEmpty())
-                    .map(FEN::of)
-                    .limit(200)
-                    .forEach(fenBuilder::add);
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
-        }
-
-        return fenBuilder.build();
-    }
 
     private final Supplier<Controller> engine1Supplier;
     private final Supplier<Controller> engine2Supplier;

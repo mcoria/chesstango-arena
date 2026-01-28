@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -18,10 +17,10 @@ import java.util.List;
  * @author Mauricio Coria
  */
 @Slf4j
-public class MathesToPGN {
+public class MatchToPGN {
     private final Path pgnFile;
 
-    public MathesToPGN(Path matchStore) {
+    public MatchToPGN(Path matchStore) {
         pgnFile = matchStore.resolve("games.pgn");
     }
 

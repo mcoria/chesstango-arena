@@ -61,7 +61,7 @@ public class MatchMainReader {
                 .printReport(System.out);
          */
 
-        new MathesToPGN(responsesStore)
+        new MatchToPGN(responsesStore)
                 .save(matchResult);
     }
 
@@ -72,7 +72,6 @@ public class MatchMainReader {
                 try {
                     log.info("File: {}", file.getFileName());
                     MatchResponse matchResponse = deserializeFromFile(file);
-
                     matchResponses.add(matchResponse);
                 } catch (IOException e) {
                     log.error("Error reading file: " + file.getFileName(), e);
