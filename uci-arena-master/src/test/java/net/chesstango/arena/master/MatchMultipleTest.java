@@ -63,7 +63,7 @@ public class MatchMultipleTest {
                 .setSide(MatchSide.BOTH);
 
 
-        List<MatchResult> matchResult = matchMultiple.playFENs(Stream.of(FEN.START_POSITION));
+        List<MatchResult> matchResult = matchMultiple.play(Stream.of(FEN.START_POSITION).map(PGN::from));
 
         assertEquals(2, matchResult.size());
 

@@ -37,6 +37,9 @@ public class MatchMainProducer implements Runnable {
      * Example:
      * -d 2 -e "file:Spike" -o "file:Spike" -p "C:\java\projects\chess\chess-utils\testing\matches\Balsa_Top10.pgn"
      * -d 2 -s white -e "class:WithTables" -o "file:Stockfish" -f "C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\LumbrasGigaBase\\LumbrasGigaBase_OTB_2025_5_pieces_finalLessThan6_blackWins.fen"
+     * -d 7 -e "file:Tango-v1.3.0" -o "file:Stockfish" -s both -p "C:\java\projects\chess\chess-utils\testing\PGN\openings\Perfect2023\Perfect2023-Tango.pgn"
+     *
+     *
      */
     public static void main(String[] args) {
         CommandLine parsedArgs = parseArguments(args);
@@ -59,8 +62,8 @@ public class MatchMainProducer implements Runnable {
             String clocks = parsedArgs.getOptionValue("c");
             String[] clocksArray = clocks.split(":");
 
-            int time = Integer.parseInt(clocksArray[0]);
-            int inc = Integer.parseInt(clocksArray[1]);
+            int time = Integer.parseInt(clocksArray[0]) * 60 * 1000;
+            int inc = Integer.parseInt(clocksArray[1]) * 1000;
 
             matchType = new MatchByClock(time, inc);
         }
@@ -75,14 +78,18 @@ public class MatchMainProducer implements Runnable {
         log.info("MatchSide: {}", matchSide);
 
 
-        MatchMainProducer matchMainProducer = new MatchMainProducer(rabbitHost, engine, opponents, matchType, matchSide);
+        int iterations = parsedArgs.hasOption("i") ? Integer.parseInt(parsedArgs.getOptionValue("i")) : 1;
+        log.info("Iterations: {}", iterations);
+
+
+        MatchMainProducer matchMainProducer = new MatchMainProducer(rabbitHost, engine, opponents, matchType, matchSide, iterations);
 
         if (parsedArgs.hasOption('f')) {
             matchMainProducer.createMatchRequestsFromFENs(fromFEN(parsedArgs.getOptionValue("f")));
-        }
-
-        if (parsedArgs.hasOption('p')) {
+        } else if (parsedArgs.hasOption('p')) {
             matchMainProducer.createMatchRequestsFromPGNs(fromPGN(parsedArgs.getOptionValue("p")));
+        } else {
+            matchMainProducer.createMatchRequestsFromFENs(List.of(FEN.START_POSITION));
         }
 
         matchMainProducer.run();
@@ -93,14 +100,16 @@ public class MatchMainProducer implements Runnable {
     private final List<String> opponents;
     private final MatchType matchType;
     private final MatchSide side;
+    private final int iterations;
     private final List<MatchRequest> matchRequests;
 
-    public MatchMainProducer(String rabbitHost, String engine, List<String> opponents, MatchType matchType, MatchSide side) {
+    public MatchMainProducer(String rabbitHost, String engine, List<String> opponents, MatchType matchType, MatchSide side, int iterations) {
         this.rabbitHost = rabbitHost;
         this.engine = engine;
         this.matchType = matchType;
         this.side = side;
         this.opponents = opponents;
+        this.iterations = iterations;
         this.matchRequests = new LinkedList<>();
     }
 
@@ -111,13 +120,15 @@ public class MatchMainProducer implements Runnable {
             factory.setHost(rabbitHost);
             factory.setSharedExecutor(executorService);
             try (RequestProducer requestProducer = RequestProducer.open(factory)) {
-                matchRequests.forEach(requestProducer::publish);
+                for (int i = 0; i < iterations; i++) {
+                    matchRequests.forEach(requestProducer::publish);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
-        log.info("MatchRequest size: {}", matchRequests.size());
+        log.info("MatchRequest size: {}", matchRequests.size() * iterations);
     }
 
 
@@ -244,15 +255,21 @@ public class MatchMainProducer implements Runnable {
                 .build();
         options.addOption(pgnFile);
 
+        Option iterations = Option
+                .builder("i")
+                .longOpt("iterations")
+                .hasArg()
+                .argName("NUMBER")
+                .desc("number of iterations")
+                .build();
+        options.addOption(iterations);
+
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
             CommandLine cmdLine = parser.parse(options, args);
             if (!(cmdLine.hasOption('d') || cmdLine.hasOption('t') || cmdLine.hasOption('c'))) {
                 throw new ParseException("No match type argument");
-            }
-            if (!cmdLine.hasOption('f') && !cmdLine.hasOption('p')) {
-                throw new ParseException("FEN nor PGN file option present");
             }
             return cmdLine;
         } catch (ParseException exp) {

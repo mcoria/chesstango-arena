@@ -5,7 +5,7 @@ metadata:
   labels:
     app: uci-arena-worker
 spec:
-  replicas: 20
+  replicas: 10
   selector:
     matchLabels:
       app: uci-arena-worker
