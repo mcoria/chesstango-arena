@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
+import net.chesstango.arena.core.matchtypes.MatchByClock;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
@@ -36,27 +37,30 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    private static final MatchType MATCH_TYPE = new MatchByDepth(7);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(5);
     // private static final MatchType MATCH_TYPE = new MatchByTime(500);
-    // private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 3, 1000);
+    //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 2, 1000);
     // private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
 
     private static final boolean PRINT_PGN = false;
-    private static final MatchSide MATCH_SIDE = MatchSide.WHITE_ONLY;
+    private static final MatchSide MATCH_SIDE = MatchSide.BOTH;
 
     //private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
-    //private static final String SYZYGY_PATH = "C:/java/projects/chess/chess-utils/books/syzygy/3-4-5";
+    private static final String POLYGLOT_FILE = "C:\\java\\projects\\chess\\chess-utils\\books\\openings\\chesstango\\chesstango.bin";
+    //C:\java\projects\chess\chess-utils\books\openings\chesstango
+    //private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5";
     private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5;D:\\k8s_shared\\syzygy\\6-DTZ;D:\\k8s_shared\\syzygy\\6-WDL";
 
     //private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
-    private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
+    //private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
     private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0-no-books.json");
+    private static final Path tango_1_2 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.2.0.json");
     //private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
     //private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0.json");
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
     //private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
-    private static final int parallelJobs = 1;
+    private static final int parallelJobs = 2;
 
     /**
      * Add the following JVM parameters:
@@ -84,13 +88,13 @@ public class MatchMain {
 
 
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
-            //config.setPolyglotFile(POLYGLOT_FILE);
+            config.setPolyglotFile(POLYGLOT_FILE);
             config.setSyzygyPath(SYZYGY_PATH);
         });
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(stockfish);
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_2);
 
         /*
         Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
@@ -168,23 +172,22 @@ public class MatchMain {
 
 
     private static Stream<PGN> fromFEN() {
-        //List<String> fenList = List.of(FENParser.INITIAL_FEN);
+        List<String> fenList = List.of(FEN.START_POSITION_STRING);
         //List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
         //List<String> fenList =  List.of("8/8/8/8/8/8/2Rk4/1K6 b - - 0 1");
         //List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
         //List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
         //List<String> fenList = List.of("8/1k6/4K1p1/6P1/8/8/8/8 w - - 0 1");
-        List<String> fenList = List.of(
-                "r2q1rk1/1pp2ppp/2npbn2/p1b1p3/2B1P3/2PP1N1P/PP3PP1/RNBQR1K1 w - - 2 9",
-                "r1bq1rk1/bpp2ppp/2np1n2/p3p3/2B1P3/2PP1N1P/PP1N1PP1/R1BQ1RK1 w - - 2 9"
-        );
+        //List<String> fenList = List.of(
+        //"r2q1rk1/1pp2ppp/2npbn2/p1b1p3/2B1P3/2PP1N1P/PP3PP1/RNBQR1K1 w - - 2 9",
+        //"r1bq1rk1/bpp2ppp/2np1n2/p3p3/2B1P3/2PP1N1P/PP1N1PP1/R1BQ1RK1 w - - 2 9"
+        //);
 
         return fenList
                 .stream()
                 .map(FEN::of)
                 .map(PGN::from);
     }
-
 
 
     private final Supplier<Controller> engine1Supplier;

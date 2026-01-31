@@ -120,15 +120,16 @@ public class MatchMainProducer implements Runnable {
             factory.setHost(rabbitHost);
             factory.setSharedExecutor(executorService);
             try (RequestProducer requestProducer = RequestProducer.open(factory)) {
-                for (int i = 0; i < iterations; i++) {
-                    matchRequests.forEach(requestProducer::publish);
-                }
+                matchRequests
+                        .stream()
+                        .peek(matchRequest -> log.info("MatchRequest: {}", matchRequest))
+                        .forEach(requestProducer::publish);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
-        log.info("MatchRequest size: {}", matchRequests.size() * iterations);
+        log.info("MatchRequest size: {}", matchRequests.size());
     }
 
 
@@ -143,18 +144,18 @@ public class MatchMainProducer implements Runnable {
     }
 
     private void createMatchRequests(PGN pgn) {
-        if (side == MatchSide.BOTH || side == MatchSide.WHITE_ONLY) {
-            opponents.stream()
-                    .map(opponent -> createMatchRequest(engine, opponent, pgn))
-                    .peek(request -> log.info("{}", request))
-                    .forEach(matchRequests::add);
-        }
+        for (int i = 0; i < iterations; i++) {
+            if (side == MatchSide.BOTH || side == MatchSide.WHITE_ONLY) {
+                opponents.stream()
+                        .map(opponent -> createMatchRequest(engine, opponent, pgn))
+                        .forEach(matchRequests::add);
+            }
 
-        if (side == MatchSide.BOTH || side == MatchSide.BLACK_ONLY) {
-            opponents.stream()
-                    .map(opponent -> createMatchRequest(opponent, engine, pgn))
-                    .peek(request -> log.info("{}", request))
-                    .forEach(matchRequests::add);
+            if (side == MatchSide.BOTH || side == MatchSide.BLACK_ONLY) {
+                opponents.stream()
+                        .map(opponent -> createMatchRequest(opponent, engine, pgn))
+                        .forEach(matchRequests::add);
+            }
         }
     }
 
