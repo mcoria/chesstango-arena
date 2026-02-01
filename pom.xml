@@ -152,8 +152,7 @@
                                         <arguments>
                                             <argument>build</argument>
                                             <argument>-t</argument>
-                                            <argument>coriamauricio/${project.artifactId}:${project.version}
-                                            </argument>
+                                            <argument>coriamauricio/${project.artifactId}:${project.version}</argument>
                                             <argument>.</argument>
                                         </arguments>
                                     </configuration>
