@@ -5,12 +5,13 @@
     <parent>
         <groupId>net.chesstango</groupId>
         <artifactId>engine-parent</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <artifactId>uci-arena-parent</artifactId>
     <packaging>pom</packaging>
+    <version>1.3.0</version>
 
     <scm>
         <developerConnection>scm:git:https://github.com/mcoria/chesstango-arena.git</developerConnection>
@@ -46,27 +47,27 @@
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-arena-ipc</artifactId>
-                <version>${project.version}</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-proxy</artifactId>
-                <version>${project.version}</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-gui</artifactId>
-                <version>${project.version}</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-arena-core</artifactId>
-                <version>${project.version}</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-arena-worker</artifactId>
-                <version>${project.version}</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-cli</groupId>
