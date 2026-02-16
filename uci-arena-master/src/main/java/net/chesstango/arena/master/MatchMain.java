@@ -132,7 +132,7 @@ public class MatchMain {
         new MatchesSearchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
-                .withTranspositionStatistics()
+                //.withTranspositionStatistics()
                 .breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
