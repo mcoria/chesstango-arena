@@ -71,6 +71,7 @@ public class MatchesReport {
 
 
     private void print() {
+        out.print("\n Matches report \n");
         out.print(" _____________________________________________________________________________________________________________________________________________________________\n");
         out.print("|ENGINE NAME                        |   GAMES |WHITE WON|BLACK WON|WHITE LOST|BLACK LOST|WHITE DRAW|BLACK DRAW|WHITE POINTS|BLACK POINTS|TOTAL POINTS|   WIN %|\n");
 
