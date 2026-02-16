@@ -4,18 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
-import net.chesstango.arena.core.matchtypes.MatchByClock;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesReport;
+import net.chesstango.arena.core.reports.MatchesSearchesByTreeSummaryReport;
 import net.chesstango.arena.core.reports.MatchesSearchesReport;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.ControllerFactory;
+import net.chesstango.evaluation.Evaluator;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNStringDecoder;
+import net.chesstango.search.builders.AlphaBetaBuilder;
 import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -37,7 +39,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    private static final MatchType MATCH_TYPE = new MatchByDepth(5);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(3);
     // private static final MatchType MATCH_TYPE = new MatchByTime(500);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 2, 1000);
     // private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
@@ -90,6 +92,11 @@ public class MatchMain {
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
             config.setPolyglotFile(POLYGLOT_FILE);
             config.setSyzygyPath(SYZYGY_PATH);
+            config.setSearch(AlphaBetaBuilder.createDefaultBuilderInstance()
+                    .withGameEvaluator(Evaluator.createInstance())
+                    .withStatistics()
+                    .build()
+            );
         });
 
 
@@ -120,14 +127,16 @@ public class MatchMain {
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
-        /*
+
+        // ES NECESARIO HABILITAR ESTADISTICAS PARA ESTE REPORTE
         new MatchesSearchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
+                .withTranspositionStatistics()
                 .breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
-        */
+
 
         // no tiene sentido imprimir para todos los matches, deberia almacenar y luego reportar o filtrar
 

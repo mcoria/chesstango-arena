@@ -44,7 +44,8 @@ public class MatchesSearchesByTreeSummaryReport {
                     .map(MatchResult::whiteSearches)
                     .filter(Objects::nonNull)
                     .flatMap(List::stream)
-                    .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                    .filter(SearchByTreeResult.class::isInstance)
+                    .map(SearchByTreeResult.class::cast)
                     .map(SearchByTreeResult::searchResult)
                     .toList();
 
@@ -53,7 +54,8 @@ public class MatchesSearchesByTreeSummaryReport {
                     .map(MatchResult::blackSearches)
                     .filter(Objects::nonNull)
                     .flatMap(List::stream)
-                    .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                    .filter(SearchByTreeResult.class::isInstance)
+                    .map(SearchByTreeResult.class::cast)
                     .map(SearchByTreeResult::searchResult)
                     .toList();
 
@@ -87,6 +89,11 @@ public class MatchesSearchesByTreeSummaryReport {
 
     public MatchesSearchesByTreeSummaryReport withCutoffStatistics() {
         searchesSummaryReport.withCutoffStatistics();
+        return this;
+    }
+
+    public MatchesSearchesByTreeSummaryReport withTranspositionStatistics() {
+        //searchesSummaryReport.withTranspositionStatistics();
         return this;
     }
 
