@@ -6,9 +6,9 @@ import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchType;
+import net.chesstango.arena.core.reports.MatchesByTreeSummaryReport;
 import net.chesstango.arena.core.reports.MatchesReport;
-import net.chesstango.arena.core.reports.MatchesSearchesByTreeSummaryReport;
-import net.chesstango.arena.core.reports.MatchesSearchesReport;
+import net.chesstango.arena.core.reports.MatchesBySearchManager;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.master.common.MatchSide;
@@ -121,16 +121,17 @@ public class MatchMain {
                 .withMatchResults(matchResult)
                 .printReport(System.out);
 
-        new MatchesSearchesReport()
+
+        new MatchesBySearchManager()
                 .breakByGame()
                 //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
 
-        /*
+
         // ES NECESARIO HABILITAR ESTADISTICAS PARA ESTE REPORTE
-        new MatchesSearchesByTreeSummaryReport()
+        new MatchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
                 .withTranspositionStatistics()
@@ -142,14 +143,14 @@ public class MatchMain {
 
         // no tiene sentido imprimir para todos los matches, deberia almacenar y luego reportar o filtrar
 
-
-        new MatchesSearchesByTreeDetailReport()
+        /*
+        new MatchesByTreeDetailReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
                 .withPrincipalVariationReport()
                 .withEvaluationReport()
                 //.withFilter(pgn -> pgn.getFen().toString().equals(FENParser.INITIAL_FEN))
-                .withMoveResults(MatchesSearchesByTreeDetailReport.filterByEngineName("Tango", matchResult))
+                .withMoveResults(MatchesByTreeDetailReport.filterByEngineName("Tango", matchResult))
                 .printReport(System.out);
          */
 

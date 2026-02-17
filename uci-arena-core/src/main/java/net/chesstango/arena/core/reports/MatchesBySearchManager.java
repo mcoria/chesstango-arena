@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  *
  * @author Mauricio Coria
  */
-public class MatchesSearchesReport {
+public class MatchesBySearchManager {
     private enum BreakType {
         NONE,
         COLOR,      // Resta implementar
@@ -24,13 +24,13 @@ public class MatchesSearchesReport {
 
     private BreakType breakType = BreakType.NONE;
 
-    public MatchesSearchesReport printReport(PrintStream output) {
+    public MatchesBySearchManager printReport(PrintStream output) {
         searchesSummaryReport.printReport(output);
         return this;
     }
 
 
-    public MatchesSearchesReport withMathResults(List<MatchResult> matchResults) {
+    public MatchesBySearchManager withMathResults(List<MatchResult> matchResults) {
         Set<String> engines = new HashSet<>();
         Set<String> events = new HashSet<>();
 
@@ -110,12 +110,12 @@ public class MatchesSearchesReport {
     }
 
 
-    public MatchesSearchesReport breakByColor() {
+    public MatchesBySearchManager breakByColor() {
         this.breakType = BreakType.COLOR;
         return this;
     }
 
-    public MatchesSearchesReport breakByGame() {
+    public MatchesBySearchManager breakByGame() {
         this.breakType = BreakType.GAMES;
         return this;
     }

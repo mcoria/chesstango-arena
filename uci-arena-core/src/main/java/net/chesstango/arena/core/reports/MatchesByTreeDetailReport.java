@@ -16,21 +16,21 @@ import java.util.Objects;
  *
  * @author Mauricio Coria
  */
-public class MatchesSearchesByTreeDetailReport {
+public class MatchesByTreeDetailReport {
     private final DetailReport searchesByTreeReport = new DetailReport();
 
 
-    public MatchesSearchesByTreeDetailReport printReport(PrintStream out) {
+    public MatchesByTreeDetailReport printReport(PrintStream out) {
         this.searchesByTreeReport.printReport(out);
         return this;
     }
 
-    public MatchesSearchesByTreeDetailReport withMoveResults(List<SearchResult> searchResultList) {
+    public MatchesByTreeDetailReport withMoveResults(List<SearchResult> searchResultList) {
         this.searchesByTreeReport.withMoveResults(searchResultList);
         return this;
     }
 
-    public MatchesSearchesByTreeDetailReport setReportTitle(String reportTitle) {
+    public MatchesByTreeDetailReport setReportTitle(String reportTitle) {
         this.searchesByTreeReport.setReportTitle(reportTitle);
         return this;
     }
@@ -63,23 +63,23 @@ public class MatchesSearchesByTreeDetailReport {
     }
 
 
-    public MatchesSearchesByTreeDetailReport withCutoffStatistics() {
+    public MatchesByTreeDetailReport withCutoffStatistics() {
         searchesByTreeReport.withCutoffStatistics();
         return this;
     }
 
-    public MatchesSearchesByTreeDetailReport withNodesVisitedStatistics() {
+    public MatchesByTreeDetailReport withNodesVisitedStatistics() {
         searchesByTreeReport.withNodesVisitedStatistics();
         return this;
     }
 
 
-    public MatchesSearchesByTreeDetailReport withEvaluationReport() {
+    public MatchesByTreeDetailReport withEvaluationReport() {
         searchesByTreeReport.withEvaluationReport();
         return this;
     }
 
-    public MatchesSearchesByTreeDetailReport withPrincipalVariationReport() {
+    public MatchesByTreeDetailReport withPrincipalVariationReport() {
         searchesByTreeReport.withPrincipalVariationReport();
         return this;
     }
