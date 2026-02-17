@@ -122,25 +122,27 @@ public class MatchMain {
                 .printReport(System.out);
 
         new MatchesSearchesReport()
-                //.breakByGame()
+                .breakByGame()
                 //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
 
+        /*
         // ES NECESARIO HABILITAR ESTADISTICAS PARA ESTE REPORTE
         new MatchesSearchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
-                //.withTranspositionStatistics()
-                .breakByColor()
+                .withTranspositionStatistics()
+                .breakByGame()
+                //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
 
         // no tiene sentido imprimir para todos los matches, deberia almacenar y luego reportar o filtrar
 
-        /*
+
         new MatchesSearchesByTreeDetailReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
