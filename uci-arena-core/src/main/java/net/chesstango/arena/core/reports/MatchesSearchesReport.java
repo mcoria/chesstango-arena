@@ -6,6 +6,7 @@ import net.chesstango.reports.engine.SearchManagerSummaryReport;
 
 import java.io.PrintStream;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Este reporte resume las sessiones de engine Tango
@@ -30,48 +31,82 @@ public class MatchesSearchesReport {
 
 
     public MatchesSearchesReport withMathResults(List<MatchResult> matchResults) {
-        Set<String> engineNames = new HashSet<>();
+        Set<String> engines = new HashSet<>();
+        Set<String> events = new HashSet<>();
 
-        matchResults.stream().map(MatchResult::pgn).forEach(pgn -> {
-            engineNames.add(pgn.getWhite());
-            engineNames.add(pgn.getBlack());
-        });
+        matchResults
+                .stream()
+                .map(MatchResult::pgn)
+                .forEach(pgn -> {
+                    engines.add(pgn.getWhite());
+                    engines.add(pgn.getBlack());
+                    events.add(pgn.getEvent());
+                });
 
-        engineNames.forEach(engineName -> {
-            List<SearchResponse> searchesWhite = matchResults.stream()
-                    .filter(matchResult -> Objects.equals(matchResult.pgn().getWhite(), engineName))
-                    .map(MatchResult::whiteSearches)
-                    .filter(Objects::nonNull)
-                    .flatMap(List::stream)
-                    .toList();
+        if (breakType == BreakType.COLOR || breakType == BreakType.NONE) {
+            engines.forEach(engineName -> {
+                // Extracts searches for engine playing white
+                List<SearchResponse> searchesWhite = searchesWhite(matchResults, matchResult -> Objects.equals(matchResult.pgn().getWhite(), engineName));
 
-            List<SearchResponse> searchesBlack = matchResults.stream()
-                    .filter(matchResult -> Objects.equals(matchResult.pgn().getBlack(), engineName))
-                    .map(MatchResult::blackSearches)
-                    .filter(Objects::nonNull)
-                    .flatMap(List::stream)
-                    .toList();
+                // Extracts searches for engine playing black
+                List<SearchResponse> searchesBlack = searchesBlack(matchResults, matchResult -> Objects.equals(matchResult.pgn().getBlack(), engineName));
 
 
-            if (breakType == BreakType.COLOR) {
-                if (!searchesWhite.isEmpty()) {
-                    searchesSummaryReport.addSearchResponses(String.format("%s white", engineName), searchesWhite);
+                // Adds searches to report based on break type
+                if (breakType == BreakType.COLOR) {
+                    if (!searchesWhite.isEmpty()) {
+                        searchesSummaryReport.addSearchResponses(String.format("%s white", engineName), searchesWhite);
+                    }
+                    if (!searchesBlack.isEmpty()) {
+                        searchesSummaryReport.addSearchResponses(String.format("%s black", engineName), searchesBlack);
+                    }
+                } else if (breakType == BreakType.NONE) {
+                    List<SearchResponse> searches = new ArrayList<>();
+                    searches.addAll(searchesWhite);
+                    searches.addAll(searchesBlack);
+
+                    if (!searches.isEmpty()) {
+                        searchesSummaryReport.addSearchResponses(engineName, searches);
+                    }
                 }
-                if (!searchesBlack.isEmpty()) {
-                    searchesSummaryReport.addSearchResponses(String.format("%s black", engineName), searchesBlack);
-                }
-            } else if (breakType == BreakType.NONE) {
+            });
+        } else if (breakType == BreakType.GAMES) {
+            events.forEach(event -> {
+                List<SearchResponse> searchesWhite = searchesWhite(matchResults, matchResult -> Objects.equals(matchResult.pgn().getEvent(), event));
+
+                List<SearchResponse> searchesBlack = searchesBlack(matchResults, matchResult -> Objects.equals(matchResult.pgn().getEvent(), event));
+
                 List<SearchResponse> searches = new ArrayList<>();
                 searches.addAll(searchesWhite);
                 searches.addAll(searchesBlack);
 
                 if (!searches.isEmpty()) {
-                    searchesSummaryReport.addSearchResponses(engineName, searches);
+                    searchesSummaryReport.addSearchResponses(event, searches);
                 }
-            }
-        });
+            });
+        }
 
         return this;
+    }
+
+    private List<SearchResponse> searchesWhite(List<MatchResult> matchResults, Predicate<MatchResult> filter) {
+        return matchResults
+                .stream()
+                .filter(filter)
+                .map(MatchResult::whiteSearches)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .toList();
+    }
+
+    private List<SearchResponse> searchesBlack(List<MatchResult> matchResults, Predicate<MatchResult> filter) {
+        return matchResults
+                .stream()
+                .filter(filter)
+                .map(MatchResult::blackSearches)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .toList();
     }
 
 

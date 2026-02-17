@@ -122,7 +122,7 @@ public class MatchMain {
                 .printReport(System.out);
 
         new MatchesSearchesReport()
-                //.breakByGame()
+                .breakByGame()
                 //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
@@ -132,8 +132,9 @@ public class MatchMain {
         new MatchesSearchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
-                //.withTranspositionStatistics()
-                .breakByColor()
+                .withTranspositionStatistics()
+                .breakByGame()
+                //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
