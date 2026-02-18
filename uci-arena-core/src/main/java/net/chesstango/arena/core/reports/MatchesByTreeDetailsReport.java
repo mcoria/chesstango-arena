@@ -3,7 +3,7 @@ package net.chesstango.arena.core.reports;
 
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.engine.SearchByTreeResult;
-import net.chesstango.reports.tree.summary.DetailReport;
+import net.chesstango.reports.search.DetailsReport;
 import net.chesstango.search.SearchResult;
 
 import java.io.PrintStream;
@@ -16,21 +16,21 @@ import java.util.Objects;
  *
  * @author Mauricio Coria
  */
-public class MatchesByTreeDetailReport {
-    private final DetailReport searchesByTreeReport = new DetailReport();
+public class MatchesByTreeDetailsReport {
+    private final DetailsReport searchesByTreeReport = new DetailsReport();
 
 
-    public MatchesByTreeDetailReport printReport(PrintStream out) {
+    public MatchesByTreeDetailsReport printReport(PrintStream out) {
         this.searchesByTreeReport.printReport(out);
         return this;
     }
 
-    public MatchesByTreeDetailReport withMoveResults(List<SearchResult> searchResultList) {
+    public MatchesByTreeDetailsReport withMoveResults(List<SearchResult> searchResultList) {
         this.searchesByTreeReport.withMoveResults(searchResultList);
         return this;
     }
 
-    public MatchesByTreeDetailReport setReportTitle(String reportTitle) {
+    public MatchesByTreeDetailsReport setReportTitle(String reportTitle) {
         this.searchesByTreeReport.setReportTitle(reportTitle);
         return this;
     }
@@ -63,23 +63,23 @@ public class MatchesByTreeDetailReport {
     }
 
 
-    public MatchesByTreeDetailReport withCutoffStatistics() {
+    public MatchesByTreeDetailsReport withCutoffStatistics() {
         searchesByTreeReport.withCutoffStatistics();
         return this;
     }
 
-    public MatchesByTreeDetailReport withNodesVisitedStatistics() {
+    public MatchesByTreeDetailsReport withNodesVisitedStatistics() {
         searchesByTreeReport.withNodesVisitedStatistics();
         return this;
     }
 
 
-    public MatchesByTreeDetailReport withEvaluationReport() {
+    public MatchesByTreeDetailsReport withEvaluationReport() {
         searchesByTreeReport.withEvaluationReport();
         return this;
     }
 
-    public MatchesByTreeDetailReport withPrincipalVariationReport() {
+    public MatchesByTreeDetailsReport withPrincipalVariationReport() {
         searchesByTreeReport.withPrincipalVariationReport();
         return this;
     }

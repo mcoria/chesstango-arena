@@ -144,13 +144,13 @@ public class MatchMain {
         // no tiene sentido imprimir para todos los matches, deberia almacenar y luego reportar o filtrar
 
         /*
-        new MatchesByTreeDetailReport()
+        new MatchesByTreeDetailsReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
                 .withPrincipalVariationReport()
                 .withEvaluationReport()
                 //.withFilter(pgn -> pgn.getFen().toString().equals(FENParser.INITIAL_FEN))
-                .withMoveResults(MatchesByTreeDetailReport.filterByEngineName("Tango", matchResult))
+                .withMoveResults(MatchesByTreeDetailsReport.filterByEngineName("Tango", matchResult))
                 .printReport(System.out);
          */
 

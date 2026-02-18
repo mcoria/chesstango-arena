@@ -53,7 +53,7 @@ public class MatchMainReader {
         */
 
         /*
-        new MatchesByTreeDetailReport()
+        new MatchesByTreeDetailsReport()
                 //.withCutoffStatistics()
                 .withNodesVisitedStatistics()
                 .withPrincipalVariationReport()
