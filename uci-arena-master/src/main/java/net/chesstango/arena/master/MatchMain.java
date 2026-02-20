@@ -134,6 +134,7 @@ public class MatchMain {
         new MatchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
                 .withCutoffStatistics()
+                .withEvaluationStatistics()
                 .withTranspositionStatistics()
                 .breakByGame()
                 //.breakByColor()

@@ -126,6 +126,11 @@ public class MatchesByTreeSummaryReport {
         return this;
     }
 
+    public MatchesByTreeSummaryReport withEvaluationStatistics() {
+        searchesSummaryReport.withEvaluationStatistics();
+        return this;
+    }
+
     public MatchesByTreeSummaryReport breakByColor() {
         this.breakType = BreakType.COLOR;
         return this;
