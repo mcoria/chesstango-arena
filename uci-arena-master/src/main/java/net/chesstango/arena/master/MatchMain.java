@@ -57,6 +57,7 @@ public class MatchMain {
     //private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
     private static final Path tango_1_1 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0-no-books.json");
     private static final Path tango_1_2 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.2.0.json");
+    private static final Path tango_1_3 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.2.0.json");
     //private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
     //private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0.json");
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
@@ -101,7 +102,7 @@ public class MatchMain {
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_2);
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_3);
 
         /*
         Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
