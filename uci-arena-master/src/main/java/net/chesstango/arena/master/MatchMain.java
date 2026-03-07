@@ -41,28 +41,28 @@ public class MatchMain {
 
     private static final MatchType MATCH_TYPE = new MatchByDepth(3);
     // private static final MatchType MATCH_TYPE = new MatchByTime(500);
-    //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 2, 1000);
+    // private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 2, 1000);
     // private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
 
     private static final boolean PRINT_PGN = false;
     private static final MatchSide MATCH_SIDE = MatchSide.BOTH;
 
-    //private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
+    // private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     private static final String POLYGLOT_FILE = "C:\\java\\projects\\chess\\chess-utils\\books\\openings\\polyglot-collection\\komodo.bin";
-    //C:\java\projects\chess\chess-utils\books\openings\chesstango
-    //private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5";
+    // C:\java\projects\chess\chess-utils\books\openings\chesstango
+    // private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5";
     private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5;D:\\k8s_shared\\syzygy\\6-DTZ;D:\\k8s_shared\\syzygy\\6-WDL";
 
-    //private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
-    //private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
+    // private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
+    // private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
     private static final Path tango_1_1 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0-no-books.json");
     private static final Path tango_1_2 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.2.0.json");
-    private static final Path tango_1_3 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.2.0.json");
-    //private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
-    //private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0.json");
+    private static final Path tango_1_3 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.3.0.json");
+    // private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
+    // private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0.json");
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
-    //private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
+    // private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
     private static final int parallelJobs = 2;
 
     /**
