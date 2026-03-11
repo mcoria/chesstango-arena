@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class Common {
 
-    public static final String SESSION_DATE = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm"));
+    public static final String SESSION_DATE = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
 
     public static String createSessionId(int depth) {
         return String.format("depth-%d-%s-%s", depth, SESSION_DATE, Tango.ENGINE_VERSION);

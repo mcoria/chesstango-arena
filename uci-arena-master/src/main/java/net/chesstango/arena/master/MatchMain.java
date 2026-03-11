@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
+import net.chesstango.arena.core.matchtypes.MatchByClock;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
+import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesByTreeSummaryReport;
 import net.chesstango.arena.core.reports.MatchesReport;
@@ -39,9 +41,10 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    private static final MatchType MATCH_TYPE = new MatchByDepth(3);
-    // private static final MatchType MATCH_TYPE = new MatchByTime(500);
-    // private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 2, 1000);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(5);
+    //private static final MatchType MATCH_TYPE = new MatchByTime(500);
+    //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 2, 1000);
+    //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 1, 0);
     // private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
 
     private static final boolean PRINT_PGN = false;
@@ -58,6 +61,7 @@ public class MatchMain {
     private static final Path tango_1_1 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0-no-books.json");
     private static final Path tango_1_2 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.2.0.json");
     private static final Path tango_1_3 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.3.0.json");
+    private static final Path tango_1_4 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.4.1.json");
     // private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
     // private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0.json");
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
@@ -102,7 +106,7 @@ public class MatchMain {
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_3);
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_4);
 
         /*
         Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
