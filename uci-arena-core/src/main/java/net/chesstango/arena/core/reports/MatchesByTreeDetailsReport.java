@@ -68,11 +68,10 @@ public class MatchesByTreeDetailsReport {
         return this;
     }
 
-    public MatchesByTreeDetailsReport withNodesVisitedStatistics() {
-        searchesByTreeReport.withNodesVisitedStatistics();
+    public MatchesByTreeDetailsReport withNodesDepthStatistics() {
+        searchesByTreeReport.withNodesDepthStatistics();
         return this;
     }
-
 
     public MatchesByTreeDetailsReport withEvaluationReport() {
         searchesByTreeReport.withEvaluationReport();
