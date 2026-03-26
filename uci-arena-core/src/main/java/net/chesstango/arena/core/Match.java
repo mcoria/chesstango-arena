@@ -94,7 +94,7 @@ public final class Match {
     void compete() {
         log.info("[{}] WHITE={} BLACK={}", mathId, white.getEngineName(), black.getEngineName());
 
-        Controller currentTurn = Color.WHITE.equals(game.getPosition().getCurrentTurn()) ? white : black;
+        Controller currentController = Color.WHITE.equals(game.getPosition().getCurrentTurn()) ? white : black;
 
         if (matchListener != null) {
             matchListener.notifyNewGame(game, white, black);
@@ -115,7 +115,7 @@ public final class Match {
                     });
 
             while (game.getStatus().isInProgress()) {
-                String moveStr = retrieveBestMove(currentTurn, startPosition, executedMovesStr);
+                String moveStr = retrieveBestMove(currentController, startPosition, executedMovesStr);
 
                 Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
 
@@ -124,13 +124,13 @@ public final class Match {
                     throw new RuntimeException(String.format("No move found %s", moveStr));
                 }
 
-                log.trace("[{}] {} plays move {}", mathId, currentTurn.getEngineName(), moveStr);
+                log.trace("[{}] {} plays move {}", mathId, currentController.getEngineName(), moveStr);
 
                 move.executeMove();
 
                 executedMovesStr.add(moveStr);
 
-                currentTurn = (currentTurn == white ? black : white);
+                currentController = (currentController == white ? black : white);
 
                 if (matchListener != null) {
                     matchListener.notifyMove(game, move);
@@ -190,14 +190,14 @@ public final class Match {
         black.startNewGame();
     }
 
-    private String retrieveBestMove(Controller currentTurn, FEN startPosition, List<String> moves) {
+    private String retrieveBestMove(Controller controller, FEN startPosition, List<String> moves) {
         if (FEN.START_POSITION.equals(startPosition)) {
-            currentTurn.send_ReqPosition(UCIRequest.position(moves));
+            controller.send_ReqPosition(UCIRequest.position(moves));
         } else {
-            currentTurn.send_ReqPosition(UCIRequest.position(startPosition.toString(), moves));
+            controller.send_ReqPosition(UCIRequest.position(startPosition.toString(), moves));
         }
 
-        RspBestMove bestMove = matchType.retrieveBestMove(currentTurn, currentTurn == white);
+        RspBestMove bestMove = matchType.requestBestMove(controller, controller == white);
 
         return bestMove.getBestMove();
     }
