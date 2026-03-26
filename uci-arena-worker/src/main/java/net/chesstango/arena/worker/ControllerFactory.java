@@ -20,13 +20,14 @@ import java.util.function.Supplier;
  * @author Mauricio Coria
  */
 public class ControllerFactory {
+
     public static Controller createProxyController(Path configFile) {
         try {
-            ProxyConfig config = ProxyConfigReader.readConfig(configFile);
-            UciProxy proxy = new UciProxy(config);
+            ProxyConfig proxyConfig = ProxyConfigReader.readConfig(configFile);
+            UciProxy proxy = new UciProxy(proxyConfig);
             return new ControllerProxy(proxy)
-                    .setOptionsCommands(config.uciOptionCommands())
-                    .overrideEngineName(config.getName());
+                    .setOptionsCommands(proxyConfig.uciOptionCommands())
+                    .overrideEngineName(proxyConfig.getName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -11,9 +11,9 @@ import net.chesstango.goyeneche.requests.ReqSetOption;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.*;
 import net.chesstango.goyeneche.stream.UCIOutputStreamGuiExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -22,10 +22,16 @@ import java.util.List;
 @Slf4j
 public abstract class ControllerAbstract implements Controller {
 
+    private static final long DEFAULT_TIMEOUT = 120 * 1000;
+
     private final UCIService service;
 
     private volatile UCIGui currentState;
+
     private volatile UCIResponse response;
+
+
+    long timeOut = DEFAULT_TIMEOUT;
 
     @Setter
     private String engineName;
@@ -37,8 +43,13 @@ public abstract class ControllerAbstract implements Controller {
 
     private List<ReqSetOption> reqSetOptions;
 
+    private Instant startTimeOutInstant;
+
+    final UCIGui messageExecutor;
+
+
     public ControllerAbstract(UCIService service) {
-        UCIGui messageExecutor = new UCIGui() {
+        this.messageExecutor = new UCIGui() {
             @Override
             public void do_uciOk(RspUciOk rspUciOk) {
                 currentState.do_uciOk(rspUciOk);
@@ -162,32 +173,43 @@ public abstract class ControllerAbstract implements Controller {
     public synchronized UCIResponse sendRequestWaitResponse(UCIGui newState, UCIRequest request) {
         this.response = null;
         this.currentState = newState;
+        this.startTimeOutInstant = Instant.now();
         log.trace("[{}] gui >> {}", engineName, request);
         service.accept(request);
+
         try {
             /**
              * Luego de service.accept(request), el mismo thread puede llamar a responseReceived y no bloquearse.
              * Por lo tanto esperamos solo si todavia no recibimos resuesta.
              */
-            if (response == null) {
-                wait(120 * 1000); // 120 seconds
-            }
-            if (response == null) {
-                log.error("Engine {} has not provided any response after sending: {}", engineName, request);
-                throw new RuntimeException("Perhaps engine has closed its output");
+            while (response == null) {
+                wait(timeOut + 100);
+                if (response == null) {
+                    long timeDiff = Duration.between(startTimeOutInstant, Instant.now()).toMillis();
+                    if (timeDiff > timeOut) {
+                        throw new NoResponseException(String.format("Engine %s has not provided any response after sending: %s", engineName, request));
+                    } else {
+                        log.trace("[{}] gui: {} - No response yet", engineName, request);
+                    }
+                }
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
         log.trace("[{}] gui << {}", engineName, response);
+
         return response;
     }
 
-    public synchronized void responseReceived(UCIResponse response) {
+    synchronized void responseReceived(UCIResponse response) {
         this.currentState = new StateNoWaitRsp();
         this.response = response;
         notifyAll();
     }
 
+    synchronized void rspInfoReceived(RspInfo rspInfo) {
+        this.startTimeOutInstant = Instant.now();
+        log.trace("[{}] gui << {}", engineName, rspInfo);
+    }
 }
