@@ -103,17 +103,17 @@ public final class Match {
         // Reset MatchType
         matchType.reset();
 
+
+        final FEN startPosition = game.getInitialFEN();
+
+        final List<String> executedMovesStr = new ArrayList<>();
+
+        game.getHistory().iteratorReverse()
+                .forEachRemaining(gameHistoryRecord -> {
+                    executedMovesStr.add(gameHistoryRecord.playedMove().coordinateEncoding());
+                });
+
         try {
-
-            final FEN startPosition = game.getInitialFEN();
-
-            final List<String> executedMovesStr = new ArrayList<>();
-
-            game.getHistory().iteratorReverse()
-                    .forEachRemaining(gameHistoryRecord -> {
-                        executedMovesStr.add(gameHistoryRecord.playedMove().coordinateEncoding());
-                    });
-
             while (game.getStatus().isInProgress()) {
                 String moveStr = retrieveBestMove(currentController, startPosition, executedMovesStr);
 
@@ -136,7 +136,6 @@ public final class Match {
                     matchListener.notifyMove(game, move);
                 }
             }
-
         } catch (MatchTimeOut e) {
             setMatchTimeOut(e);
         }

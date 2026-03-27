@@ -12,8 +12,6 @@ import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.*;
 import net.chesstango.goyeneche.stream.UCIOutputStreamGuiExecutor;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 
 /**
@@ -22,16 +20,9 @@ import java.util.List;
 @Slf4j
 public abstract class ControllerAbstract implements Controller {
 
-    private static final long DEFAULT_TIMEOUT = 120 * 1000;
-
     private final UCIService service;
 
     private volatile UCIGui currentState;
-
-    private volatile UCIResponse response;
-
-
-    long timeOut = DEFAULT_TIMEOUT;
 
     @Setter
     private String engineName;
@@ -42,8 +33,6 @@ public abstract class ControllerAbstract implements Controller {
     private ReqGo cmdGo;
 
     private List<ReqSetOption> reqSetOptions;
-
-    private Instant startTimeOutInstant;
 
     final UCIGui messageExecutor;
 
@@ -165,51 +154,21 @@ public abstract class ControllerAbstract implements Controller {
     }
 
     public synchronized void sendRequestNoWaitResponse(UCIRequest request) {
-        this.response = null;
         this.currentState = new StateNoWaitRsp();
         service.accept(request);
     }
 
-    public synchronized UCIResponse sendRequestWaitResponse(UCIGui newState, UCIRequest request) {
-        this.response = null;
-        this.currentState = newState;
-        this.startTimeOutInstant = Instant.now();
+    public synchronized UCIResponse sendRequestWaitResponse(StateWaitRsp stateWaitRsp, UCIRequest request) {
+        this.currentState = stateWaitRsp;
+
         log.trace("[{}] gui >> {}", engineName, request);
+
         service.accept(request);
 
-        try {
-            /**
-             * Luego de service.accept(request), el mismo thread puede llamar a responseReceived y no bloquearse.
-             * Por lo tanto esperamos solo si todavia no recibimos resuesta.
-             */
-            while (response == null) {
-                wait(timeOut + 100);
-                if (response == null) {
-                    long timeDiff = Duration.between(startTimeOutInstant, Instant.now()).toMillis();
-                    if (timeDiff > timeOut) {
-                        throw new NoResponseException(String.format("Engine %s has not provided any response after sending: %s", engineName, request));
-                    } else {
-                        log.trace("[{}] gui: {} - No response yet", engineName, request);
-                    }
-                }
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        UCIResponse response = stateWaitRsp.waitResponse(request);
 
         log.trace("[{}] gui << {}", engineName, response);
 
         return response;
-    }
-
-    synchronized void responseReceived(UCIResponse response) {
-        this.currentState = new StateNoWaitRsp();
-        this.response = response;
-        notifyAll();
-    }
-
-    synchronized void rspInfoReceived(RspInfo rspInfo) {
-        this.startTimeOutInstant = Instant.now();
-        log.trace("[{}] gui << {}", engineName, rspInfo);
     }
 }

@@ -43,7 +43,6 @@ public class ControllerAbstractTest {
 
     @Test
     void test_NoResponseException() {
-        controller.timeOut = 1000;
         try {
             controller.open();
 
@@ -62,28 +61,23 @@ public class ControllerAbstractTest {
 
     @Test
     void test_ThinkingTooMuch() {
-        controller.timeOut = 1000;
-
         doAnswer(_ -> {
             CompletableFuture.runAsync(() -> {
                 try {
-                    for (int i = 0; i < 10; i++) {
-                        Thread.sleep(500);
-                        controller.messageExecutor.do_info(UCIResponse.info("Hello, world!"));
-                    }
+                    Thread.sleep(2000);
                     controller.messageExecutor.do_bestMove(UCIResponse.bestMove("a2a3"));
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             });
             return null;
-        }).when(service).accept(UCIRequest.goFast(1000, 0, 1000, 0));
+        }).when(service).accept(UCIRequest.goFast(1000, 0, 3000, 0));
 
         RspBestMove response = null;
         try {
             controller.open();
 
-            response = controller.send_ReqGo(UCIRequest.goFast(1000, 0, 1000, 0));
+            response = controller.send_ReqGo(UCIRequest.goFast(1000, 0, 3000, 0));
 
         } finally {
             controller.close();
@@ -92,7 +86,7 @@ public class ControllerAbstractTest {
         assertEquals("a2a3", response.getBestMove());
 
         verify(service).open();
-        verify(service).accept(UCIRequest.goFast(1000, 0, 1000, 0));
+        verify(service).accept(UCIRequest.goFast(1000, 0, 3000, 0));
         verify(service).setOutputStream(any(UCIOutputStreamGuiExecutor.class));
         verify(service).close();
     }
