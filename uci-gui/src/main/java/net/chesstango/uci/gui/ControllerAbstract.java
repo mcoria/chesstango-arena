@@ -11,8 +11,6 @@ import net.chesstango.goyeneche.requests.ReqSetOption;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.*;
 import net.chesstango.goyeneche.stream.UCIOutputStreamGuiExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -25,7 +23,6 @@ public abstract class ControllerAbstract implements Controller {
     private final UCIService service;
 
     private volatile UCIGui currentState;
-    private volatile UCIResponse response;
 
     @Setter
     private String engineName;
@@ -37,8 +34,11 @@ public abstract class ControllerAbstract implements Controller {
 
     private List<ReqSetOption> reqSetOptions;
 
+    final UCIGui messageExecutor;
+
+
     public ControllerAbstract(UCIService service) {
-        UCIGui messageExecutor = new UCIGui() {
+        this.messageExecutor = new UCIGui() {
             @Override
             public void do_uciOk(RspUciOk rspUciOk) {
                 currentState.do_uciOk(rspUciOk);
@@ -153,41 +153,26 @@ public abstract class ControllerAbstract implements Controller {
         return this;
     }
 
-    public synchronized void sendRequestNoWaitResponse(UCIRequest request) {
-        this.response = null;
+    synchronized void sendRequestNoWaitResponse(UCIRequest request) {
         this.currentState = new StateNoWaitRsp();
         service.accept(request);
     }
 
-    public synchronized UCIResponse sendRequestWaitResponse(UCIGui newState, UCIRequest request) {
-        this.response = null;
-        this.currentState = newState;
+    synchronized UCIResponse sendRequestWaitResponse(StateWaitRsp stateWaitRsp, UCIRequest request) {
+        this.currentState = stateWaitRsp;
+
         log.trace("[{}] gui >> {}", engineName, request);
+
         service.accept(request);
-        try {
-            /**
-             * Luego de service.accept(request), el mismo thread puede llamar a responseReceived y no bloquearse.
-             * Por lo tanto esperamos solo si todavia no recibimos resuesta.
-             */
-            if (response == null) {
-                wait(120 * 1000); // 120 seconds
-            }
-            if (response == null) {
-                log.error("Engine {} has not provided any response after sending: {}", engineName, request);
-                throw new RuntimeException("Perhaps engine has closed its output");
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+
+        UCIResponse response = stateWaitRsp.waitResponse(request);
 
         log.trace("[{}] gui << {}", engineName, response);
+
         return response;
     }
 
-    public synchronized void responseReceived(UCIResponse response) {
-        this.currentState = new StateNoWaitRsp();
-        this.response = response;
-        notifyAll();
+    synchronized void sendRequestNoChangeState(UCIRequest request) {
+        service.accept(request);
     }
-
 }

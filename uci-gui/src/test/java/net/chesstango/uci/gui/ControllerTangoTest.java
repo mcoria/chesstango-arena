@@ -27,6 +27,7 @@ public class ControllerTangoTest {
         client.send_ReqUci();
 
         assertEquals("Mauricio Coria", client.getEngineAuthor());
+
         assertTrue(client.getEngineName().startsWith("Tango"));
 
         client.send_ReqIsReady();
@@ -35,9 +36,9 @@ public class ControllerTangoTest {
 
         client.send_ReqPosition(UCIRequest.position(Collections.emptyList()));
 
-        RspBestMove bestmove = client.send_ReqGo(UCIRequest.goDepth(1));
+        RspBestMove bestMove = client.send_ReqGo(UCIRequest.goDepth(1));
 
-        assertNotNull(bestmove);
+        assertNotNull(bestMove);
 
         client.send_ReqQuit();
 

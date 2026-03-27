@@ -21,7 +21,7 @@ public class ControllerProxyIntegrationTest {
     public void test_Proxy() {
         UciProxy engine = new UciProxy(SpikeProxy.INSTANCE);
 
-        ControllerAbstract client = new ControllerProxy(engine);
+        ControllerProxy client = new ControllerProxy(engine);
 
         client.open();
 
@@ -36,9 +36,9 @@ public class ControllerProxyIntegrationTest {
 
         client.send_ReqPosition(UCIRequest.position(Collections.emptyList()));
 
-        RspBestMove bestmove = client.send_ReqGo(UCIRequest.goDepth(1));
+        RspBestMove bestMove = client.send_ReqGo(UCIRequest.goDepth(1));
 
-        assertNotNull(bestmove);
+        assertNotNull(bestMove);
 
         client.send_ReqQuit();
     }

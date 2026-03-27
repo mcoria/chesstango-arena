@@ -33,7 +33,7 @@ public class MatchByClock implements MatchType {
     }
 
     @Override
-    public RspBestMove retrieveBestMove(Controller controller, boolean whiteTurn) {
+    public RspBestMove requestBestMove(Controller controller, boolean whiteTurn) {
         ReqGoFast goCmd = UCIRequest.goFast(wTime, inc, bTime, inc);
 
         Instant start = Instant.now();
