@@ -153,12 +153,12 @@ public abstract class ControllerAbstract implements Controller {
         return this;
     }
 
-    public synchronized void sendRequestNoWaitResponse(UCIRequest request) {
+    synchronized void sendRequestNoWaitResponse(UCIRequest request) {
         this.currentState = new StateNoWaitRsp();
         service.accept(request);
     }
 
-    public synchronized UCIResponse sendRequestWaitResponse(StateWaitRsp stateWaitRsp, UCIRequest request) {
+    synchronized UCIResponse sendRequestWaitResponse(StateWaitRsp stateWaitRsp, UCIRequest request) {
         this.currentState = stateWaitRsp;
 
         log.trace("[{}] gui >> {}", engineName, request);
@@ -170,5 +170,9 @@ public abstract class ControllerAbstract implements Controller {
         log.trace("[{}] gui << {}", engineName, response);
 
         return response;
+    }
+
+    synchronized void sendRequestNoChangeState(UCIRequest request) {
+        service.accept(request);
     }
 }

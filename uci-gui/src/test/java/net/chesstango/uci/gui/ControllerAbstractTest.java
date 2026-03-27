@@ -85,9 +85,10 @@ public class ControllerAbstractTest {
 
         assertEquals("a2a3", response.getBestMove());
 
+        verify(service).setOutputStream(any(UCIOutputStreamGuiExecutor.class));
         verify(service).open();
         verify(service).accept(UCIRequest.goFast(1000, 0, 3000, 0));
-        verify(service).setOutputStream(any(UCIOutputStreamGuiExecutor.class));
+        verify(service).accept(UCIRequest.stop());
         verify(service).close();
     }
 }

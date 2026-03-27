@@ -31,7 +31,7 @@ class StateWaitRspBestMove implements StateWaitRsp {
             boolean stopSent = false;
             while (response == null) {
                 if (stopSent) {
-                    wait(1000);
+                    wait(5000);
                     if (response == null) {
                         throw new NoResponseException(String.format("Engine %s has not provided any response after sending: %s",
                                 controllerAbstract.getEngineName(),
@@ -40,7 +40,7 @@ class StateWaitRspBestMove implements StateWaitRsp {
                 } else {
                     long timeOut = calcTimeOut((ReqGo) request);
                     wait(timeOut);
-                    controllerAbstract.send_ReqStop();
+                    controllerAbstract.sendRequestNoChangeState(UCIRequest.stop());
                     stopSent = true;
                 }
             }
@@ -53,9 +53,9 @@ class StateWaitRspBestMove implements StateWaitRsp {
     long calcTimeOut(ReqGo cmdGo) {
         return switch (cmdGo) {
             case ReqGoInfinite reqGoInfinite -> 1000 * 60 * 10;     // 10 minutes
-            case ReqGoTime reqGoTime -> reqGoTime.getTimeOut();
+            case ReqGoTime reqGoTime -> reqGoTime.getTimeOut() + 1000;
             case ReqGoDepth reqGoDepth -> 1000 * 60 * 2;            // 2 minutes
-            case ReqGoFast reqGoFast -> Math.max(reqGoFast.getWTime(), reqGoFast.getBTime()) + 1000;
+            case ReqGoFast reqGoFast -> Math.max(reqGoFast.getWTime(), reqGoFast.getBTime()) + 5000;
             default -> 1000;
         };
     }

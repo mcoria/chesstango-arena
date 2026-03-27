@@ -34,15 +34,15 @@ public class ControllerPoolFactory extends BasePooledObjectFactory<Controller> {
     }
 
     @Override
+    public void activateObject(PooledObject<Controller> pooledController) throws Exception {
+        pooledController.getObject().send_ReqIsReady();
+    }
+
+    @Override
     public void destroyObject(PooledObject<Controller> pooledController) {
         Controller controller = pooledController.getObject();
 
         controller.stopEngine();
-    }
-
-    @Override
-    public void activateObject(PooledObject<Controller> pooledController) throws Exception {
-        pooledController.getObject().send_ReqIsReady();
     }
 
 }
