@@ -115,7 +115,7 @@ public class UciProxyIntegrationTest {
         PipedInputStream pisOutput = new PipedInputStream(posOutput);
         BufferedReader input = new BufferedReader(new InputStreamReader(pisOutput));
 
-        try (UciProxy proxy = new UciProxy(SpikeProxyConfig.INSTANCE, new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))))) {
+        try (UciProxy proxy = new UciProxy(MoraProxyConfig.INSTANCE, new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))))) {
             // uci command
             proxy.accept(UCIRequest.uci());
             Thread.sleep(200);
