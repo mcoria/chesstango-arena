@@ -32,9 +32,8 @@ public class UciProxyIntegrationTest {
 
         Thread drainThread = drainPipe(input);
 
-        try (UciProxy proxy = new UciProxy(SpikeProxyConfig.INSTANCE,
-                new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))))
-        ) {
+        try (UciProxy proxy = new UciProxy(SpikeProxyConfig.INSTANCE)) {
+            proxy.setUCIOutputStream(new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))));
             // No envia nada
         }
 
@@ -48,9 +47,9 @@ public class UciProxyIntegrationTest {
         PipedInputStream pisOutput = new PipedInputStream(posOutput);
         BufferedReader input = new BufferedReader(new InputStreamReader(pisOutput));
 
-        try (UciProxy proxy = new UciProxy(SpikeProxyConfig.INSTANCE,
-                new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))))
-        ) {
+        try (UciProxy proxy = new UciProxy(SpikeProxyConfig.INSTANCE)) {
+            proxy.setUCIOutputStream(new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))));
+
             // uci command
             proxy.accept(UCIRequest.uci());
             Thread.sleep(200);
@@ -70,7 +69,8 @@ public class UciProxyIntegrationTest {
         PipedInputStream pisOutput = new PipedInputStream(posOutput);
         BufferedReader input = new BufferedReader(new InputStreamReader(pisOutput));
 
-        try (UciProxy proxy = new UciProxy(SpikeProxyConfig.INSTANCE, new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))))) {
+        try (UciProxy proxy = new UciProxy(SpikeProxyConfig.INSTANCE)) {
+            proxy.setUCIOutputStream(new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))));
 
             assertEquals("Spike 1.4 (Build 84) by Volker Boehm & Ralf Schaefer, Book by Timo Klaustermeyer", input.readLine());
 
@@ -115,7 +115,9 @@ public class UciProxyIntegrationTest {
         PipedInputStream pisOutput = new PipedInputStream(posOutput);
         BufferedReader input = new BufferedReader(new InputStreamReader(pisOutput));
 
-        try (UciProxy proxy = new UciProxy(MoraProxyConfig.INSTANCE, new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))))) {
+        try (UciProxy proxy = new UciProxy(MoraProxyConfig.INSTANCE)) {
+            proxy.setUCIOutputStream(new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))));
+
             // uci command
             proxy.accept(UCIRequest.uci());
             Thread.sleep(200);
@@ -160,7 +162,8 @@ public class UciProxyIntegrationTest {
         PipedInputStream pisOutput = new PipedInputStream(posOutput);
         BufferedReader input = new BufferedReader(new InputStreamReader(pisOutput));
 
-        try (UciProxy proxy = new UciProxy(SpikeProxyConfig.INSTANCE, new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))))) {
+        try (UciProxy proxy = new UciProxy(MoraProxyConfig.INSTANCE)) {
+            proxy.setUCIOutputStream(new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))));
 
             // uci command
             proxy.accept(UCIRequest.uci());
@@ -207,7 +210,8 @@ public class UciProxyIntegrationTest {
         PipedInputStream pisOutput = new PipedInputStream(posOutput);
         BufferedReader input = new BufferedReader(new InputStreamReader(pisOutput));
 
-        try (UciProxy proxy = new UciProxy(SpikeProxyConfig.INSTANCE, new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))))) {
+        try (UciProxy proxy = new UciProxy(MoraProxyConfig.INSTANCE)) {
+            proxy.setUCIOutputStream(new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(new PrintStream(posOutput, true)))));
 
             // uci command
             proxy.accept(UCIRequest.uci());

@@ -33,10 +33,11 @@ public class UciMain implements Runnable, AutoCloseable {
     }
 
     public UciMain(ProxyConfig config, InputStream in, PrintStream out) {
-        this.uciProxy = new UciProxy(config, new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(out))));
+        this.uciProxy = new UciProxy(config);
+        this.uciProxy.setUCIOutputStream(new UCIOutputStreamToStringAdapter(new StringConsumer(new OutputStreamWriter(out))));
         this.pipe = new UCIActiveStreamReader();
-        this.pipe.setInputStream(new UCIInputStreamFromStringAdapter(new StringSupplier(new InputStreamReader(in))));
         this.pipe.setOutputStream(uciProxy::accept);
+        this.pipe.setInputStream(new UCIInputStreamFromStringAdapter(new StringSupplier(new InputStreamReader(in))));
     }
 
     @Override

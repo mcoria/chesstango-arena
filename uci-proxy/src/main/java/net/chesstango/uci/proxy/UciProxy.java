@@ -21,24 +21,27 @@ public class UciProxy implements UCIService {
     private final UCIActiveStreamReader pipe;
     private final UciProcess uciProcess;
     private final String proxyName;
-    private final UCIOutputStream responseOutputStream;
     private final CountDownLatch latch = new CountDownLatch(1);
 
     private Thread readingPipeThread;
+    private UCIOutputStream output;
 
 
     /**
      * Para que Spike pueda leer sus settings, el working directory debe ser el del ejecutable.
      * Los settings generales para todos los engines se controlan desde EngineManagement -> UCI en Arena.
      */
-    public UciProxy(ProxyConfig config, UCIOutputStream output) {
+    public UciProxy(ProxyConfig config) {
         this.pipe = new UCIActiveStreamReader();
         this.uciProcess = new UciProcess(config);
         this.proxyName = config.getName();
-        this.responseOutputStream = output;
-        startReadingProcess();
     }
 
+    @Override
+    public void setUCIOutputStream(UCIOutputStream output) {
+        this.output = output;
+        this.startReadingProcess();
+    }
 
     @Override
     public void accept(UCICommand message) {
@@ -60,7 +63,7 @@ public class UciProxy implements UCIService {
 
         pipe.setInputStream(new UCIInputStreamFromStringAdapter(stringActionSupplierSupplier));
 
-        pipe.setOutputStream(responseOutputStream);
+        pipe.setOutputStream(output);
 
         readingPipeThread = new Thread(this::readFromProcess);
 
