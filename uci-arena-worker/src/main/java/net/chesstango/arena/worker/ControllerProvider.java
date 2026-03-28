@@ -66,7 +66,7 @@ class ControllerProvider implements AutoCloseable {
         } else {
             throw new RuntimeException("Invalid engine: " + engine);
         }
-        controller.init();
+        controller.startEngine();
         return controller;
     }
 

@@ -25,7 +25,7 @@ public class ControllerPoolFactory extends BasePooledObjectFactory<Controller> {
 
         Controller controller = fnCreateEngineController.get();
 
-        controller.init();
+        controller.startEngine();
 
         return controller;
     }

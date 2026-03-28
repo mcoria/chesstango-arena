@@ -57,7 +57,7 @@ public interface Controller extends AutoCloseable{
     /**
      * Starts the engine by opening connection and initializing UCI protocol.
      */
-    default void init() {
+    default void startEngine() {
         send_ReqUci();
         send_ReqOptions();
         send_ReqIsReady();
