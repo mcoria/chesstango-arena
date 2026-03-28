@@ -40,8 +40,8 @@ public class MatchIntegrationTest {
                 )
         ).overrideEngineName(DUMMY);
 
-        smartEngine.startEngine();
-        dummyEngine.startEngine();
+        smartEngine.init();
+        dummyEngine.init();
     }
 
     @AfterEach

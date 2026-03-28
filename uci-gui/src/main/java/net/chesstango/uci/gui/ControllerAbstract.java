@@ -71,16 +71,12 @@ public abstract class ControllerAbstract implements Controller {
         };
 
         this.service = service;
-        this.service.setOutputStream(new UCIOutputStreamGuiExecutor(messageExecutor));
+        this.service.setUCIOutputStream(new UCIOutputStreamGuiExecutor(messageExecutor));
     }
 
     @Override
-    public void open() {
-        service.open();
-    }
-
-    @Override
-    public void close() {
+    public void close() throws Exception {
+        service.accept(UCIRequest.quit());
         service.close();
     }
 
