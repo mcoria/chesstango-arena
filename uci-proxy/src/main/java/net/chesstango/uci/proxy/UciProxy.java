@@ -10,7 +10,7 @@ import net.chesstango.goyeneche.stream.strings.StringActionSupplier;
 import net.chesstango.goyeneche.stream.strings.StringSupplier;
 
 import java.io.InputStreamReader;
-import java.util.function.Supplier;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Mauricio Coria
@@ -21,9 +21,10 @@ public class UciProxy implements UCIService {
     private final UCIActiveStreamReader pipe;
     private final UciProcess uciProcess;
     private final String proxyName;
+    private final CountDownLatch latch = new CountDownLatch(1);
 
-    private UCIOutputStream responseOutputStream;
     private Thread readingPipeThread;
+    private UCIOutputStream output;
 
 
     /**
@@ -36,6 +37,11 @@ public class UciProxy implements UCIService {
         this.proxyName = config.getName();
     }
 
+    @Override
+    public void setUCIOutputStream(UCIOutputStream output) {
+        this.output = output;
+        this.startReadingProcess();
+    }
 
     @Override
     public void accept(UCICommand message) {
@@ -48,44 +54,37 @@ public class UciProxy implements UCIService {
         uciProcess.outputStreamProcess.println(message);
     }
 
-    @Override
-    public void open() {
+    private void startReadingProcess() {
         uciProcess.startProcess();
 
-        Supplier<String> stringSupplier = new StringSupplier(new InputStreamReader(uciProcess.inputStreamProcess));
+        StringSupplier stringSupplier = new StringSupplier(new InputStreamReader(uciProcess.inputStreamProcess));
 
-        stringSupplier = new StringActionSupplier(stringSupplier, line -> log.trace("{} << {}", proxyName, line));
+        StringActionSupplier stringActionSupplierSupplier = new StringActionSupplier(stringSupplier, line -> log.trace("{} << {}", proxyName, line));
 
-        pipe.setInputStream(new UCIInputStreamFromStringAdapter(stringSupplier));
-        pipe.setOutputStream(responseOutputStream);
+        pipe.setInputStream(new UCIInputStreamFromStringAdapter(stringActionSupplierSupplier));
+
+        pipe.setOutputStream(output);
 
         readingPipeThread = new Thread(this::readFromProcess);
+
         readingPipeThread.start();
+    }
+
+    private void readFromProcess() {
+        latch.countDown();
+        log.debug("{} Start reading engine output", proxyName);
+        pipe.run();
+        log.debug("{} Stop reading engine output", proxyName);
     }
 
     @Override
     public void close() {
-        pipe.stopReading();
-
-        uciProcess.closeProcessIO();
-
+        uciProcess.stopProcess();
         try {
+            latch.await();
             readingPipeThread.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-        uciProcess.stopProcess();
-    }
-
-    @Override
-    public void setOutputStream(UCIOutputStream output) {
-        this.responseOutputStream = output;
-    }
-
-    private void readFromProcess() {
-        log.debug("{} Start reading engine output", proxyName);
-        pipe.run();
-        log.debug("{} Stop reading engine output", proxyName);
     }
 }

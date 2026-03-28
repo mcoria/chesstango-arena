@@ -17,32 +17,29 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ControllerTangoTest {
 
     @Test
-    public void test_Tango() {
-        UciTango service = new UciTango();
+    public void test_Tango() throws Exception {
+        UciTango uciTango = new UciTango();
 
-        ControllerAbstract client = new ControllerTango(service);
+        try (ControllerAbstract client = new ControllerTango(uciTango)) {
 
-        client.open();
+            client.send_ReqUci();
 
-        client.send_ReqUci();
+            assertEquals("Mauricio Coria", client.getEngineAuthor());
 
-        assertEquals("Mauricio Coria", client.getEngineAuthor());
+            assertTrue(client.getEngineName().startsWith("Tango"));
 
-        assertTrue(client.getEngineName().startsWith("Tango"));
+            client.send_ReqIsReady();
 
-        client.send_ReqIsReady();
+            client.send_ReqUciNewGame();
 
-        client.send_ReqUciNewGame();
+            client.send_ReqPosition(UCIRequest.position(Collections.emptyList()));
 
-        client.send_ReqPosition(UCIRequest.position(Collections.emptyList()));
+            RspBestMove bestMove = client.send_ReqGo(UCIRequest.goDepth(1));
 
-        RspBestMove bestMove = client.send_ReqGo(UCIRequest.goDepth(1));
+            assertNotNull(bestMove);
 
-        assertNotNull(bestMove);
-
-        client.send_ReqQuit();
-
-        client.close();
+            client.send_ReqQuit();
+        }
     }
 
 

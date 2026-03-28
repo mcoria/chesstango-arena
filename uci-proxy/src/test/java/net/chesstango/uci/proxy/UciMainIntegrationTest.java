@@ -1,10 +1,8 @@
 package net.chesstango.uci.proxy;
 
 
-import net.chesstango.uci.proxy.UciProxy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -21,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Mauricio Coria
  */
-public class UciMainProxyIntegrationTest {
+public class UciMainIntegrationTest {
 
     private ExecutorService executorService;
 
@@ -48,49 +46,48 @@ public class UciMainProxyIntegrationTest {
         PipedOutputStream outputToEngine = new PipedOutputStream();
         PipedInputStream inputFromEngine = new PipedInputStream();
 
-        UciProxy engine = new UciProxy(SpikeProxy.INSTANCE);
+        try (UciMain uciMain = new UciMain(SpikeProxyConfig.INSTANCE, new PipedInputStream(outputToEngine), new PrintStream(new PipedOutputStream(inputFromEngine), true))) {
+            executorService.execute(uciMain);
 
-        UciMain uciMain = new UciMain(engine, new PipedInputStream(outputToEngine), new PrintStream(new PipedOutputStream(inputFromEngine), true));
-        executorService.execute(uciMain);
+            PrintStream out = new PrintStream(outputToEngine, true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(inputFromEngine));
 
-        PrintStream out = new PrintStream(outputToEngine, true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(inputFromEngine));
-
-        // uci command
-        out.println("uci");
-        Thread.sleep(200);
-        lines = readLastLine(in, "uciok"::equals);
-        assertTrue(lines.stream().filter("id name Spike 1.4"::equals).findAny().isPresent());
-
-        // isready command
-        out.println("isready");
-        Thread.sleep(200);
-        assertEquals("readyok", in.readLine());
-
-        // ucinewgame command
-        out.println("ucinewgame");
-        Thread.sleep(200);
-
-        // isready command
-        out.println("isready");
-        Thread.sleep(200);
-
-        // isrpositioneady command
-        out.println("position startpos");
-        Thread.sleep(200);
-
-        // go command
-        out.println("go depth 1");
-        Thread.sleep(200);
-
-        lines = readLastLine(in, line -> line.startsWith("bestmove"));
-        assertTrue(lines.size() > 0);
-
-        // quit command
-        out.println("quit");
-
-        while (uciMain.isRunning()) {
+            // uci command
+            out.println("uci");
             Thread.sleep(200);
+            lines = readLastLine(in, "uciok"::equals);
+            assertTrue(lines.stream().anyMatch("id name Spike 1.4"::equals));
+
+            // isready command
+            out.println("isready");
+            Thread.sleep(200);
+            assertEquals("readyok", in.readLine());
+
+            // ucinewgame command
+            out.println("ucinewgame");
+            Thread.sleep(200);
+
+            // isready command
+            out.println("isready");
+            Thread.sleep(200);
+
+            // isrpositioneady command
+            out.println("position startpos");
+            Thread.sleep(200);
+
+            // go command
+            out.println("go depth 1");
+            Thread.sleep(200);
+
+            lines = readLastLine(in, line -> line.startsWith("bestmove"));
+            assertTrue(lines.size() > 0);
+
+            // quit command
+            out.println("quit");
+
+            while (uciMain.isRunning()) {
+                Thread.sleep(200);
+            }
         }
     }
 

@@ -18,29 +18,27 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ControllerProxyIntegrationTest {
 
     @Test
-    public void test_Proxy() {
+    public void test_Proxy() throws Exception {
         UciProxy engine = new UciProxy(SpikeProxy.INSTANCE);
 
-        ControllerProxy client = new ControllerProxy(engine);
+        try(ControllerProxy client = new ControllerProxy(engine)) {
 
-        client.open();
+            client.send_ReqUci();
 
-        client.send_ReqUci();
+            //assertEquals("Ralf Schäfer und Volker Böhm", client.getEngineAuthor());
+            assertEquals("Spike 1.4", client.getEngineName());
 
-        //assertEquals("Ralf Schäfer und Volker Böhm", client.getEngineAuthor());
-        assertEquals("Spike 1.4", client.getEngineName());
+            client.send_ReqIsReady();
 
-        client.send_ReqIsReady();
+            client.send_ReqUciNewGame();
 
-        client.send_ReqUciNewGame();
+            client.send_ReqPosition(UCIRequest.position(Collections.emptyList()));
 
-        client.send_ReqPosition(UCIRequest.position(Collections.emptyList()));
+            RspBestMove bestMove = client.send_ReqGo(UCIRequest.goDepth(1));
 
-        RspBestMove bestMove = client.send_ReqGo(UCIRequest.goDepth(1));
+            assertNotNull(bestMove);
 
-        assertNotNull(bestMove);
-
-        client.send_ReqQuit();
+        }
     }
 
 

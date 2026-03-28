@@ -11,17 +11,8 @@ import net.chesstango.goyeneche.responses.RspBestMove;
  *
  * @author Mauricio Coria
  */
-public interface Controller {
+public interface Controller extends AutoCloseable{
 
-    /**
-     * Opens the connection to the chess engine.
-     */
-    void open();
-
-    /**
-     * Closes the connection to the chess engine.
-     */
-    void close();
 
     /**
      * Sends UCI initialization request to the engine.
@@ -67,21 +58,12 @@ public interface Controller {
      * Starts the engine by opening connection and initializing UCI protocol.
      */
     default void startEngine() {
-        open();
         send_ReqUci();
         send_ReqOptions();
         send_ReqIsReady();
     }
 
     default void send_ReqOptions() {
-    }
-
-    /**
-     * Stops the engine by sending quit command and closing connection.
-     */
-    default void stopEngine() {
-        send_ReqQuit();
-        close();
     }
 
     /**

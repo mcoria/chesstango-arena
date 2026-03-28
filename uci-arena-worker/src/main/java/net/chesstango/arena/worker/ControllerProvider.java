@@ -42,8 +42,12 @@ class ControllerProvider implements AutoCloseable {
     @Override
     public void close() {
         controllers.values().forEach(controller -> {
-            log.info("Closing engine: {}", controller.getEngineName());
-            controller.stopEngine();
+            try {
+                log.info("Closing engine: {}", controller.getEngineName());
+                controller.close();
+            } catch (Exception e) {
+                log.error("Failed to close engine: {}", controller.getEngineName(), e);
+            }
         });
     }
 
