@@ -10,7 +10,7 @@ import net.chesstango.goyeneche.stream.strings.StringActionSupplier;
 import net.chesstango.goyeneche.stream.strings.StringSupplier;
 
 import java.io.InputStreamReader;
-import java.util.function.Supplier;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Mauricio Coria
@@ -21,8 +21,9 @@ public class UciProxy implements UCIService {
     private final UCIActiveStreamReader pipe;
     private final UciProcess uciProcess;
     private final String proxyName;
+    private final UCIOutputStream responseOutputStream;
+    private final CountDownLatch latch = new CountDownLatch(1);
 
-    private UCIOutputStream responseOutputStream;
     private Thread readingPipeThread;
 
 
@@ -30,10 +31,12 @@ public class UciProxy implements UCIService {
      * Para que Spike pueda leer sus settings, el working directory debe ser el del ejecutable.
      * Los settings generales para todos los engines se controlan desde EngineManagement -> UCI en Arena.
      */
-    public UciProxy(ProxyConfig config) {
+    public UciProxy(ProxyConfig config, UCIOutputStream output) {
         this.pipe = new UCIActiveStreamReader();
         this.uciProcess = new UciProcess(config);
         this.proxyName = config.getName();
+        this.responseOutputStream = output;
+        startReadingProcess();
     }
 
 
@@ -48,44 +51,37 @@ public class UciProxy implements UCIService {
         uciProcess.outputStreamProcess.println(message);
     }
 
-    @Override
-    public void open() {
+    private void startReadingProcess() {
         uciProcess.startProcess();
 
-        Supplier<String> stringSupplier = new StringSupplier(new InputStreamReader(uciProcess.inputStreamProcess));
+        StringSupplier stringSupplier = new StringSupplier(new InputStreamReader(uciProcess.inputStreamProcess));
 
-        stringSupplier = new StringActionSupplier(stringSupplier, line -> log.trace("{} << {}", proxyName, line));
+        StringActionSupplier stringActionSupplierSupplier = new StringActionSupplier(stringSupplier, line -> log.trace("{} << {}", proxyName, line));
 
-        pipe.setInputStream(new UCIInputStreamFromStringAdapter(stringSupplier));
+        pipe.setInputStream(new UCIInputStreamFromStringAdapter(stringActionSupplierSupplier));
+
         pipe.setOutputStream(responseOutputStream);
 
         readingPipeThread = new Thread(this::readFromProcess);
+
         readingPipeThread.start();
+    }
+
+    private void readFromProcess() {
+        latch.countDown();
+        log.debug("{} Start reading engine output", proxyName);
+        pipe.run();
+        log.debug("{} Stop reading engine output", proxyName);
     }
 
     @Override
     public void close() {
-        pipe.stopReading();
-
-        uciProcess.closeProcessIO();
-
+        uciProcess.stopProcess();
         try {
+            latch.await();
             readingPipeThread.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-        uciProcess.stopProcess();
-    }
-
-    @Override
-    public void setOutputStream(UCIOutputStream output) {
-        this.responseOutputStream = output;
-    }
-
-    private void readFromProcess() {
-        log.debug("{} Start reading engine output", proxyName);
-        pipe.run();
-        log.debug("{} Stop reading engine output", proxyName);
     }
 }

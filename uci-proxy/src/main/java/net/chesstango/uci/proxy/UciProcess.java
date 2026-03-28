@@ -2,7 +2,10 @@ package net.chesstango.uci.proxy;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.ProcessBuilder.Redirect.INHERIT;
 
@@ -21,28 +24,41 @@ class UciProcess {
         this.processBuilder = config.processBuilder();
     }
 
-    void startProcess() {
+    synchronized void startProcess() {
         try {
-            synchronized (this) {
-                processBuilder.redirectError(INHERIT);
-                process = processBuilder.start();
-                inputStreamProcess = process.getInputStream();
-                outputStreamProcess = new PrintStream(process.getOutputStream(), true);
-            }
+            processBuilder.redirectError(INHERIT);
+            process = processBuilder.start();
+            inputStreamProcess = process.getInputStream();
+            outputStreamProcess = new PrintStream(process.getOutputStream(), true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Espera que termine normalmente (ejemplo: recibe QUIT)
+     * Si no muere envia SIGTERM
+     * Si no muere envia SIGKILL
+     */
     void stopProcess() {
         log.debug("stopProcess() invoked");
 
+        boolean finished = false;
         try {
-            process.waitFor();
+            finished = process.waitFor(5, TimeUnit.SECONDS);
+            if (!finished) {
+                log.debug("stopProcess() sending SIGTERM");
+                process.destroy();
+                finished = process.waitFor(5, TimeUnit.SECONDS);
+                if (!finished) {
+                    log.debug("stopProcess() sending SIGKILL");
+                }
+            } else {
+                log.debug("stopProcess(): process exited normally");
+            }
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            log.error("stopProcess() interrupted", e);
         }
-
         log.debug("stopProcess() finished");
     }
 
@@ -60,15 +76,6 @@ class UciProcess {
         }
         if (outputStreamProcess == null) {
             throw new RuntimeException("Process has not started yet");
-        }
-    }
-
-    void closeProcessIO() {
-        try {
-            outputStreamProcess.close();
-            inputStreamProcess.close();
-        } catch (IOException e) {
-            log.error("Error:", e);
         }
     }
 }
