@@ -34,11 +34,9 @@ public abstract class ControllerAbstract implements Controller {
 
     private List<ReqSetOption> reqSetOptions;
 
-    final UCIGui messageExecutor;
-
 
     public ControllerAbstract(UCIService service) {
-        this.messageExecutor = new UCIGui() {
+        UCIGui messageExecutor = new UCIGui() {
             @Override
             public void do_uciOk(RspUciOk rspUciOk) {
                 currentState.do_uciOk(rspUciOk);
