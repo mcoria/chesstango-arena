@@ -62,8 +62,8 @@ public class MatchMain {
     private static final Path tango_1_2 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.2.0.json");
     private static final Path tango_1_3 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.3.0.json");
     private static final Path tango_1_4 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.4.1.json");
-    // private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
-    // private static final Path tango = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0.json");
+    private static final Path tango_1_5 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.5.0.json");
+    private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
     // private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
@@ -106,7 +106,7 @@ public class MatchMain {
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_4);
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_5);
 
         /*
         Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
