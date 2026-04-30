@@ -18,7 +18,7 @@ import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.evaluation.Evaluator;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
-import net.chesstango.gardel.pgn.PGNStringDecoder;
+import net.chesstango.gardel.pgn.PGNDecoder;
 import net.chesstango.search.builders.AlphaBetaBuilder;
 import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.ObjectPool;
@@ -63,6 +63,7 @@ public class MatchMain {
     private static final Path tango_1_3 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.3.0.json");
     private static final Path tango_1_4 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.4.1.json");
     private static final Path tango_1_5 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.5.0.json");
+    private static final Path tango_1_6 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.6.0.json");
     private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
@@ -106,7 +107,7 @@ public class MatchMain {
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_5);
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_6);
 
         /*
         Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
@@ -164,7 +165,7 @@ public class MatchMain {
 
     private static Stream<PGN> readPGNFile() {
         try (FileInputStream fis = new FileInputStream("C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\openings\\Balsa_v2724\\Balsa_Top10.pgn")) {
-            return new PGNStringDecoder().decodePGNs(fis).limit(1);
+            return new PGNDecoder().decodePGNs(fis).limit(1);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -11,7 +11,7 @@ import net.chesstango.goyeneche.responses.RspBestMove;
  *
  * @author Mauricio Coria
  */
-public interface Controller extends AutoCloseable{
+public interface Controller extends AutoCloseable {
 
 
     /**

@@ -38,9 +38,7 @@ public class MatchMultipleTest {
     public void setup() {
         smartEnginePool = new GenericObjectPool<>(new ControllerPoolFactory(() ->
                 new ControllerTango(
-                        new UciTango(new Config()
-                                .setSyncSearch(true)
-                        )
+                        new UciTango(Config.create())
                 ).overrideEngineName("Smart")
         ));
 
@@ -48,8 +46,7 @@ public class MatchMultipleTest {
 
         dummyEnginePool = new GenericObjectPool<>(new ControllerPoolFactory(() ->
                 new ControllerTango(
-                        new UciTango(new Config()
-                                .setSyncSearch(true)
+                        new UciTango(Config.create()
                                 .setSearch(new Dummy())
                         )
                 ).overrideEngineName("Dummy")

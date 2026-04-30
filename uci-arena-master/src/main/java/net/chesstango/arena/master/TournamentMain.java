@@ -11,7 +11,7 @@ import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.evaluation.evaluators.EvaluatorByMaterialAndPST;
 import net.chesstango.evaluation.evaluators.EvaluatorImp02;
 import net.chesstango.gardel.pgn.PGN;
-import net.chesstango.gardel.pgn.PGNStringDecoder;
+import net.chesstango.gardel.pgn.PGNDecoder;
 import net.chesstango.uci.gui.Controller;
 
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class TournamentMain {
     private static Stream<PGN> getPGNs() {
         try {
             //List<String> fenList = new Transcoding().pgnFileToFenPositions(TournamentMain.class.getClassLoader().getResourceAsStream("Balsa_v2724.pgn"));
-            Stream<PGN> pgnStream = new PGNStringDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Top10.pgn"));
+            Stream<PGN> pgnStream = new PGNDecoder().decodePGNs(MatchMain.class.getClassLoader().getResourceAsStream("Balsa_Top10.pgn"));
             //List<String> fenList = List.of(FENDecoder.INITIAL_FEN);
             return pgnStream;
         } catch (IOException e) {

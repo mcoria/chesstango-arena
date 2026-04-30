@@ -10,7 +10,7 @@ import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.MatchRequest;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
-import net.chesstango.gardel.pgn.PGNStringDecoder;
+import net.chesstango.gardel.pgn.PGNDecoder;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
@@ -298,7 +298,7 @@ public class MatchMainProducer implements Runnable {
 
     private static List<PGN> fromPGN(String pgnFile) {
         try {
-            return new PGNStringDecoder()
+            return new PGNDecoder()
                     .decodePGNs(Path.of(pgnFile))
                     .toList();
         } catch (IOException e) {

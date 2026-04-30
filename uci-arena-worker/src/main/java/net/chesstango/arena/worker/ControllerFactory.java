@@ -34,15 +34,15 @@ public class ControllerFactory {
     }
 
     public static Controller createTangoController() {
-        Config config = new Config();
-        config.setSyncSearch(true);
+        Config config = Config.create()
+                        .setAsyncSearch(false);
 
         return new ControllerTango(new UciTango(config));
     }
 
     public static Controller createTangoControllerCustomConfig(Consumer<Config> configConsumer) {
-        Config config = new Config();
-        config.setSyncSearch(true);
+        Config config = Config.create()
+                .setAsyncSearch(false);
         configConsumer.accept(config);
 
         return new ControllerTango(new UciTango(config));
@@ -52,8 +52,8 @@ public class ControllerFactory {
     public static Controller createTangoControllerWithSearch(Supplier<Search> searchMoveSupplier) {
         Search search = searchMoveSupplier.get();
 
-        Config config = new Config();
-        config.setSyncSearch(true);
+        Config config = Config.create()
+                .setAsyncSearch(false);
         config.setSearch(search);
 
         return new ControllerTango(new UciTango(config))
@@ -64,8 +64,8 @@ public class ControllerFactory {
     public static Controller createTangoControllerWithEvaluator(Supplier<Evaluator> evaluatorSupplier) {
         Evaluator evaluator = evaluatorSupplier.get();
 
-        Config config = new Config();
-        config.setSyncSearch(true);
+        Config config = Config.create()
+                .setAsyncSearch(false);
         config.setEvaluator(evaluator);
 
         return new ControllerTango(new UciTango(config))

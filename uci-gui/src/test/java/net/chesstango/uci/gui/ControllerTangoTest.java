@@ -1,6 +1,7 @@
 package net.chesstango.uci.gui;
 
 
+import net.chesstango.engine.Config;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
 import net.chesstango.uci.engine.UciTango;
@@ -17,10 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ControllerTangoTest {
 
     @Test
-    public void test_Tango() throws Exception {
-        UciTango uciTango = new UciTango();
-
-        try (ControllerAbstract client = new ControllerTango(uciTango)) {
+    public void test_Tango() {
+        try (UciTango uciTango = new UciTango(Config.create().setAsyncSearch(false));
+             ControllerAbstract client = new ControllerTango(uciTango)) {
 
             client.send_ReqUci();
 
@@ -39,6 +39,9 @@ public class ControllerTangoTest {
             assertNotNull(bestMove);
 
             client.send_ReqQuit();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            fail(e.getMessage());
         }
     }
 

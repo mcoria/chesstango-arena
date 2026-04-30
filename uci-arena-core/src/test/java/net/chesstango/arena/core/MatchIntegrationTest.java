@@ -34,8 +34,9 @@ public class MatchIntegrationTest {
 
 
         dummyEngine = new ControllerTango(
-                new UciTango(new Config()
-                        .setSyncSearch(true)
+                new UciTango(Config.create()
+                        .setAsyncSearch(false)
+                        .setEvaluator(null)
                         .setSearch(new Dummy())
                 )
         ).overrideEngineName(DUMMY);

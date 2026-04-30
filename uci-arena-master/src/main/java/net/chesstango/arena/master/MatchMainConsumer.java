@@ -3,15 +3,10 @@ package net.chesstango.arena.master;
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.worker.MatchResponse;
-import net.chesstango.board.Game;
-import net.chesstango.gardel.fen.FEN;
-import net.chesstango.gardel.pgn.PGNStringDecoder;
 import org.apache.commons.cli.*;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
