@@ -313,7 +313,7 @@ public class MatchMainProducer implements Runnable {
         Path filePath = Paths.get(fenFile);
         try (Stream<String> lines = Files.lines(filePath)) {
             lines.filter(s -> s != null && !s.trim().isEmpty())
-                    .map(FEN::of)
+                    .map(FEN::from)
                     .forEach(fens::add);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());

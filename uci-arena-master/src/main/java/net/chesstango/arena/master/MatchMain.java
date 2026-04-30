@@ -178,7 +178,7 @@ public class MatchMain {
 
         try (Stream<String> lines = Files.lines(filePath)) {
             lines.filter(s -> s != null && !s.trim().isEmpty())
-                    .map(FEN::of)
+                    .map(FEN::from)
                     .limit(200)
                     .map(PGN::from)
                     .forEach(fenBuilder::add);
@@ -204,7 +204,7 @@ public class MatchMain {
 
         return fenList
                 .stream()
-                .map(FEN::of)
+                .map(FEN::from)
                 .map(PGN::from);
     }
 
