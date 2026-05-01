@@ -8,7 +8,6 @@ import net.chesstango.arena.core.Match;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchListener;
 import net.chesstango.arena.core.matchtypes.MatchType;
-import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.ObjectPool;
@@ -38,7 +37,7 @@ public class MatchMultiple {
 
     @Setter
     @Accessors(chain = true)
-    private boolean printPGN;
+    private boolean debug;
 
     @Setter
     @Accessors(chain = true)
@@ -86,7 +85,7 @@ public class MatchMultiple {
             controller2 = getControllerFromPool(thePool2);
 
             Match match = new Match(controller1, controller2, matchType, pgn)
-                    .setPrintPGN(printPGN)
+                    .setDebug(debug)
                     .setMatchListener(matchListener);
 
             match.setMatchListener(matchListener);

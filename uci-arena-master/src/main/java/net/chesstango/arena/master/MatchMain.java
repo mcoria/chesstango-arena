@@ -4,13 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
-import net.chesstango.arena.core.matchtypes.MatchByClock;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
-import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
+import net.chesstango.arena.core.reports.MatchesBySearchManager;
 import net.chesstango.arena.core.reports.MatchesByTreeSummaryReport;
 import net.chesstango.arena.core.reports.MatchesReport;
-import net.chesstango.arena.core.reports.MatchesBySearchManager;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.master.common.MatchSide;
@@ -47,8 +45,8 @@ public class MatchMain {
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 1, 0);
     // private static final MatchType MATCH_TYPE = new MatchByClock(100, 0); // Will time out
 
-    private static final boolean PRINT_PGN = false;
-    private static final MatchSide MATCH_SIDE = MatchSide.BOTH;
+    private static final boolean DEBUG = true;
+    private static final MatchSide MATCH_SIDE = MatchSide.WHITE_ONLY;
 
     // private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     private static final String POLYGLOT_FILE = "C:\\java\\projects\\chess\\chess-utils\\books\\openings\\polyglot-collection\\komodo.bin";
@@ -68,7 +66,7 @@ public class MatchMain {
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
     // private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
-    private static final int parallelJobs = 2;
+    private static final int parallelJobs = 1;
 
     /**
      * Add the following JVM parameters:
@@ -94,10 +92,9 @@ public class MatchMain {
 
         //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithEvaluator(Evaluator::getInstance);
 
-
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
-            config.setPolyglotFile(POLYGLOT_FILE);
-            config.setSyzygyPath(SYZYGY_PATH);
+            //config.setPolyglotFile(POLYGLOT_FILE);
+            //config.setSyzygyPath(SYZYGY_PATH);
             config.setSearch(AlphaBetaBuilder.createDefaultBuilderInstance()
                     .withGameEvaluator(Evaluator.createInstance())
                     .withStatistics()
@@ -107,17 +104,18 @@ public class MatchMain {
 
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_6);
+        //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_6);
 
-        /*
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
-                AlphaBetaBuilder
-                        .createDefaultBuilderInstance()
-                        .withGameEvaluator(new EvaluatorByMaterial())
-                        .withStatistics()
-                        .build()
-        ).overrideEngineName("EvaluatorByMaterial");
-         */
+
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
+            //config.setPolyglotFile(POLYGLOT_FILE);
+            //config.setSyzygyPath(SYZYGY_PATH);
+            config.setSearch(AlphaBetaBuilder.createDefaultBuilderInstance()
+                    .withGameEvaluator(Evaluator.createInstance())
+                    .withStatistics()
+                    .build()
+            );
+        });
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
@@ -133,7 +131,6 @@ public class MatchMain {
                 //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
-
 
 
         // ES NECESARIO HABILITAR ESTADISTICAS PARA ESTE REPORTE
@@ -222,7 +219,7 @@ public class MatchMain {
              ObjectPool<Controller> opponentPool = new GenericObjectPool<>(new ControllerPoolFactory(engine2Supplier))) {
 
             MatchMultiple matchMultiple = new MatchMultiple(parallelJobs, mainPool, opponentPool, MATCH_TYPE)
-                    .setPrintPGN(PRINT_PGN)
+                    .setDebug(DEBUG)
                     .setSide(MATCH_SIDE)
                     .setMatchListener(new MatchBroadcaster()
                             //.addListener(new MatchListenerToMBean())

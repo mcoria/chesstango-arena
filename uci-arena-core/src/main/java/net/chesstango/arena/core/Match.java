@@ -15,6 +15,7 @@ import net.chesstango.board.representations.GameDebugEncoder;
 import net.chesstango.board.representations.move.SimpleMoveDecoder;
 import net.chesstango.engine.SearchResponse;
 import net.chesstango.engine.Session;
+import net.chesstango.gardel.epd.EPD;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.goyeneche.requests.UCIRequest;
@@ -49,7 +50,7 @@ public final class Match {
 
     @Setter
     @Accessors(chain = true)
-    private boolean printPGN;
+    private boolean debug;
 
     @Setter
     @Accessors(chain = true)
@@ -120,7 +121,7 @@ public final class Match {
                 Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
 
                 if (move == null) {
-                    printGameForDebug(System.err);
+                    printDebug(System.err);
                     throw new RuntimeException(String.format("No move found %s", moveStr));
                 }
 
@@ -172,12 +173,12 @@ public final class Match {
                 log.info("[{}] WHITE WON BY TIME OUT {}", mathId, white.getEngineName());
             }
         } else {
-            printGameForDebug(System.err);
+            printDebug(System.err);
             throw new RuntimeException("Game is still in progress.");
         }
 
-        if (printPGN) {
-            printGameForDebug(System.out);
+        if (debug) {
+            printDebug(System.out);
         }
 
         return new MatchResult(createPGN(), visitEngineController(white), visitEngineController(black));
@@ -201,20 +202,20 @@ public final class Match {
         return bestMove.getBestMove();
     }
 
-    private void printGameForDebug(PrintStream printStream) {
-        printStream.println(createPGN());
+    private void printDebug(PrintStream printStream) {
+        PGN pgn = createPGN();
 
-        printStream.println();
+        printStream.println(pgn);
+
+        printStream.println("--------------------------------------------------------------------------------");
 
         printMoveExecution(printStream);
 
         printStream.println("--------------------------------------------------------------------------------");
-    }
 
-    private void printMoveExecution(PrintStream printStream) {
-        GameDebugEncoder encoder = new GameDebugEncoder();
+        printEPDExecution(pgn, printStream);
 
-        printStream.println(encoder.encode(game));
+        printStream.println("--------------------------------------------------------------------------------");
     }
 
     private PGN createPGN() {
@@ -232,6 +233,18 @@ public final class Match {
         }
 
         return pgn;
+    }
+
+    private void printMoveExecution(PrintStream printStream) {
+        GameDebugEncoder encoder = new GameDebugEncoder();
+
+        printStream.println(encoder.encode(game));
+    }
+
+    private void printEPDExecution(PGN pgn, PrintStream printStream) {
+        pgn.toEPD()
+                .map(EPD::toString)
+                .forEach(printStream::println);
     }
 
     /**

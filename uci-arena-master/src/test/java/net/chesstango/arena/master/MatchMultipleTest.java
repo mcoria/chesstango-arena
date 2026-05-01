@@ -56,7 +56,7 @@ public class MatchMultipleTest {
     @Test
     public void testPlay() {
         MatchMultiple matchMultiple = new MatchMultiple(1, smartEnginePool, dummyEnginePool, new MatchByDepth(3))
-                //.setPrintPGN(true)
+                //.setDebug(true)
                 .setSide(MatchSide.BOTH);
 
 

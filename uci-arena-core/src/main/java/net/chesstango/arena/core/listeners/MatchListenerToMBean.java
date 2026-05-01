@@ -71,7 +71,7 @@ public class MatchListenerToMBean implements MatchListener {
 
         String lastMove = encodeMove(move);
 
-        GameDescriptionCurrent gameDescriptionCurrent = new GameDescriptionCurrent(currentGameId, game.getCurrentFEN().toString(), turn, lastMove, arrayMoveStr);
+        GameDescriptionCurrent gameDescriptionCurrent = new GameDescriptionCurrent(currentGameId, game.toFEN().toString(), turn, lastMove, arrayMoveStr);
 
         arena.newMove(gameDescriptionCurrent);
     }

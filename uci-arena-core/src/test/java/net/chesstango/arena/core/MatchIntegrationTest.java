@@ -54,7 +54,7 @@ public class MatchIntegrationTest {
     @Test
     public void testPlay() {
         Match match = new Match(smartEngine, dummyEngine, new MatchByDepth(3), PGN.from(FEN.START_POSITION) );
-        //match.setPrintPGN(true);
+        //match.setDebug(true);
 
         MatchResult matchResult = match.play();
 
