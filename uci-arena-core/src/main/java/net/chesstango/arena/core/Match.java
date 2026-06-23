@@ -13,13 +13,16 @@ import net.chesstango.board.Status;
 import net.chesstango.board.moves.Move;
 import net.chesstango.board.representations.GameDebugEncoder;
 import net.chesstango.board.representations.move.SimpleMoveDecoder;
+import net.chesstango.engine.SearchByTreeResult;
 import net.chesstango.engine.SearchResponse;
 import net.chesstango.engine.Session;
 import net.chesstango.gardel.epd.EPD;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
+import net.chesstango.gardel.pgn.PGNMove;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
+import net.chesstango.search.SearchResult;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerVisitor;
@@ -189,13 +192,15 @@ public final class Match {
 
         PGN pgnGame = createPGN();
 
-        if (debug) {
-            printDebug(pgnGame, System.out);
-        }
-
         List<SearchResponse> whiteSearches = visitEngineController(white);
 
         List<SearchResponse> blackSearches = visitEngineController(black);
+
+        attachEvaluations(pgnGame, whiteSearches, blackSearches);
+
+        if (debug) {
+            printDebug(pgnGame, System.out);
+        }
 
         return new MatchResult(pgnGame, whiteSearches, blackSearches);
     }
@@ -252,20 +257,35 @@ public final class Match {
         return pgnGame;
     }
 
-    private void addEvaluation() {
-        /*
-        final boolean whiteMovesFirst = pgn.getFen() == null || "w".equals(pgn.getFen().getActiveColor());
-        int i = 0;
-        for (PGNMove pgnMove : pgnResult.getPgnMoves()) {
-            if (i >= searchFrom) {
-                // White turn first
-                if (whiteMovesFirst) {
+    private void attachEvaluations(PGN pgnGame, List<SearchResponse> whiteSearches, List<SearchResponse> blackSearches) {
+        int searchFrom = pgn.getPgnMoves().size();
+        boolean whiteTurn = pgn.getFen() == null || "w".equals(pgn.getFen().getActiveColor());
+        int pgnMoveCounter = 0;
+        int whiteMoveCounter = 0;
+        int blackMoveCounter = 0;
+        for (PGNMove pgnMove : pgnGame.getPgnMoves()) {
+            if (pgnMoveCounter >= searchFrom) {
+                SearchResponse searchResponse = null;
 
+                if (whiteTurn && whiteSearches != null && whiteMoveCounter < whiteSearches.size()) {
+                    searchResponse = whiteSearches.get(whiteMoveCounter);
+                    whiteMoveCounter++;
+                }
+
+                if (!whiteTurn && blackSearches != null && blackMoveCounter < blackSearches.size()) {
+                    searchResponse = blackSearches.get(blackMoveCounter);
+                    blackMoveCounter++;
+                }
+
+                if (searchResponse instanceof SearchByTreeResult searchByTreeResult) {
+                    SearchResult searchResult = searchByTreeResult.searchResult();
+                    Integer evaluation = searchResult.getBestEvaluation();
+                    pgnMove.putCommand("eval", evaluation == null ? "" : evaluation.toString());
                 }
             }
-            i++;
+            pgnMoveCounter++;
+            whiteTurn = !whiteTurn;
         }
-         */
     }
 
     private void printMoveExecution(PrintStream printStream) {
