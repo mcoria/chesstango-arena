@@ -39,14 +39,8 @@ public final class Match {
     private final Controller white;
     private final Controller black;
     private final MatchType matchType;
-    private final Game game;
+    private final PGN pgn;
     private final SimpleMoveDecoder simpleMoveDecoder = new SimpleMoveDecoder();
-
-    @Setter(AccessLevel.PACKAGE)
-    private MatchTimeOut matchTimeOut;
-
-    @Setter(AccessLevel.PACKAGE)
-    private MatchResult matchResult;
 
     @Setter
     @Accessors(chain = true)
@@ -56,13 +50,27 @@ public final class Match {
     @Accessors(chain = true)
     private MatchListener matchListener;
 
+    @Setter(AccessLevel.PACKAGE)
+    @Accessors(chain = true)
+    private MatchTimeOut matchTimeOut;
+
+    @Setter(AccessLevel.PACKAGE)
+    @Accessors(chain = true)
+    private MatchResult matchResult;
+
+    @Setter(AccessLevel.PACKAGE)
+    @Accessors(chain = true)
     private String mathId;
+
+    @Setter(AccessLevel.PACKAGE)
+    @Accessors(chain = true)
+    private Game game;
 
     public Match(Controller white, Controller black, MatchType matchType, PGN pgn) {
         this.white = white;
         this.black = black;
         this.matchType = matchType;
-        this.game = Game.from(pgn);
+        this.pgn = pgn;
     }
 
     public MatchResult play() {
@@ -73,6 +81,8 @@ public final class Match {
         try {
 
             this.mathId = mathId;
+
+            this.game = Game.from(pgn);
 
             startNewGame();
 
@@ -104,12 +114,12 @@ public final class Match {
         // Reset MatchType
         matchType.reset();
 
-
         final FEN startPosition = game.getInitialFEN();
 
         final List<String> executedMovesStr = new ArrayList<>();
 
-        game.getHistory().iteratorReverse()
+        game.getHistory()
+                .iteratorReverse()
                 .forEachRemaining(gameHistoryRecord -> {
                     executedMovesStr.add(gameHistoryRecord.playedMove().coordinateEncoding());
                 });
@@ -121,7 +131,7 @@ public final class Match {
                 Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
 
                 if (move == null) {
-                    printDebug(System.err);
+                    printDebug(createPGN(), System.err);
                     throw new RuntimeException(String.format("No move found %s", moveStr));
                 }
 
@@ -173,15 +183,21 @@ public final class Match {
                 log.info("[{}] WHITE WON BY TIME OUT {}", mathId, white.getEngineName());
             }
         } else {
-            printDebug(System.err);
+            printDebug(createPGN(), System.err);
             throw new RuntimeException("Game is still in progress.");
         }
 
+        PGN pgnGame = createPGN();
+
         if (debug) {
-            printDebug(System.out);
+            printDebug(pgnGame, System.out);
         }
 
-        return new MatchResult(createPGN(), visitEngineController(white), visitEngineController(black));
+        List<SearchResponse> whiteSearches = visitEngineController(white);
+
+        List<SearchResponse> blackSearches = visitEngineController(black);
+
+        return new MatchResult(pgnGame, whiteSearches, blackSearches);
     }
 
 
@@ -202,9 +218,7 @@ public final class Match {
         return bestMove.getBestMove();
     }
 
-    private void printDebug(PrintStream printStream) {
-        PGN pgn = createPGN();
-
+    private void printDebug(PGN pgn, PrintStream printStream) {
         printStream.println(pgn);
 
         printStream.println("--------------------------------------------------------------------------------");
@@ -219,20 +233,39 @@ public final class Match {
     }
 
     private PGN createPGN() {
-        PGN pgn = game.toPGN();
-        pgn.setEvent(mathId);
-        pgn.setWhite(white.getEngineName());
-        pgn.setBlack(black.getEngineName());
+        PGN pgnGame = game.toPGN();
+        pgnGame.setEvent(mathId);
+        pgnGame.setWhite(white.getEngineName());
+        pgnGame.setBlack(black.getEngineName());
+
+        int searchFrom = pgn.getPgnMoves().size();
+        pgnGame.setTag("ArenaSearch", Integer.toString(searchFrom));
 
         if (matchTimeOut != null) {
             Controller winner = matchTimeOut.getController() == white ? black : white;
-            pgn.setResult(winner == white ? PGN.Result.WHITE_WINS : PGN.Result.BLACK_WINS);
-            pgn.setTermination(PGN.Termination.TIME_FORFEIT);
+            pgnGame.setResult(winner == white ? PGN.Result.WHITE_WINS : PGN.Result.BLACK_WINS);
+            pgnGame.setTermination(PGN.Termination.TIME_FORFEIT);
         } else {
-            pgn.setTermination(PGN.Termination.NORMAL);
+            pgnGame.setTermination(PGN.Termination.NORMAL);
         }
 
-        return pgn;
+        return pgnGame;
+    }
+
+    private void addEvaluation() {
+        /*
+        final boolean whiteMovesFirst = pgn.getFen() == null || "w".equals(pgn.getFen().getActiveColor());
+        int i = 0;
+        for (PGNMove pgnMove : pgnResult.getPgnMoves()) {
+            if (i >= searchFrom) {
+                // White turn first
+                if (whiteMovesFirst) {
+
+                }
+            }
+            i++;
+        }
+         */
     }
 
     private void printMoveExecution(PrintStream printStream) {

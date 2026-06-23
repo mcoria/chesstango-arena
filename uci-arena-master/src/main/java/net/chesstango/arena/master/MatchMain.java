@@ -13,6 +13,7 @@ import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.ControllerFactory;
+import net.chesstango.engine.Tango;
 import net.chesstango.evaluation.Evaluator;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
@@ -54,7 +55,7 @@ public class MatchMain {
     // private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5";
     private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5;D:\\k8s_shared\\syzygy\\6-DTZ;D:\\k8s_shared\\syzygy\\6-WDL";
 
-    // private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
+    private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
     // private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
     private static final Path tango_1_1 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.1.0-no-books.json");
     private static final Path tango_1_2 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.2.0.json");
@@ -79,43 +80,18 @@ public class MatchMain {
     public static void main(String[] args) {
         //Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
 
-        /*
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
                 AlphaBetaBuilder
                         .createDefaultBuilderInstance()
-                        .withGameEvaluator(Evaluator.getInstance())
+                        .withGameEvaluator(Evaluator.createInstance())
                         .withStatistics()
                         .build()
         ).overrideEngineName(Tango.ENGINE_NAME);
-         */
-
 
         //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithEvaluator(Evaluator::getInstance);
 
-        Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
-            //config.setPolyglotFile(POLYGLOT_FILE);
-            //config.setSyzygyPath(SYZYGY_PATH);
-            config.setSearch(AlphaBetaBuilder.createDefaultBuilderInstance()
-                    .withGameEvaluator(Evaluator.createInstance())
-                    .withStatistics()
-                    .build()
-            );
-        });
-
-
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_6);
-
-
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
-            //config.setPolyglotFile(POLYGLOT_FILE);
-            //config.setSyzygyPath(SYZYGY_PATH);
-            config.setSearch(AlphaBetaBuilder.createDefaultBuilderInstance()
-                    .withGameEvaluator(Evaluator.createInstance())
-                    .withStatistics()
-                    .build()
-            );
-        });
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(spike);
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
@@ -189,15 +165,6 @@ public class MatchMain {
 
     private static Stream<PGN> fromFEN() {
         List<String> fenList = List.of(FEN.START_POSITION_STRING);
-        //List<String> fenList = List.of("QN4n1/6r1/3k4/8/b2K4/8/8/8 b - - 0 1");
-        //List<String> fenList =  List.of("8/8/8/8/8/8/2Rk4/1K6 b - - 0 1");
-        //List<String> fenList = List.of(FENParser.INITIAL_FEN, "1k1r3r/pp6/2P1bp2/2R1p3/Q3Pnp1/P2q4/1BR3B1/6K1 b - - 0 1");
-        //List<String> fenList = List.of("8/5K1p/1p6/8/6P1/8/k7/8 b - - 0 1");
-        //List<String> fenList = List.of("8/1k6/4K1p1/6P1/8/8/8/8 w - - 0 1");
-        //List<String> fenList = List.of(
-        //"r2q1rk1/1pp2ppp/2npbn2/p1b1p3/2B1P3/2PP1N1P/PP3PP1/RNBQR1K1 w - - 2 9",
-        //"r1bq1rk1/bpp2ppp/2np1n2/p3p3/2B1P3/2PP1N1P/PP1N1PP1/R1BQ1RK1 w - - 2 9"
-        //);
 
         return fenList
                 .stream()
