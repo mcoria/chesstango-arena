@@ -29,9 +29,8 @@ import net.chesstango.uci.gui.ControllerVisitor;
 import net.chesstango.uci.proxy.UciProxy;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -42,7 +41,7 @@ public final class Match {
     private final Controller white;
     private final Controller black;
     private final MatchType matchType;
-    private final PGN pgn;
+    private final PGN pgnMatch;
     private final SimpleMoveDecoder simpleMoveDecoder = new SimpleMoveDecoder();
 
     @Setter
@@ -73,7 +72,7 @@ public final class Match {
         this.white = white;
         this.black = black;
         this.matchType = matchType;
-        this.pgn = pgn;
+        this.pgnMatch = pgn;
     }
 
     public MatchResult play() {
@@ -85,7 +84,7 @@ public final class Match {
 
             this.mathId = mathId;
 
-            this.game = Game.from(pgn);
+            this.game = Game.from(pgnMatch);
 
             startNewGame();
 
@@ -223,8 +222,8 @@ public final class Match {
         return bestMove.getBestMove();
     }
 
-    private void printDebug(PGN pgn, PrintStream printStream) {
-        printStream.println(pgn);
+    private void printDebug(PGN pgnGame, PrintStream printStream) {
+        printStream.println(pgnGame);
 
         printStream.println("--------------------------------------------------------------------------------");
 
@@ -232,7 +231,7 @@ public final class Match {
 
         printStream.println("--------------------------------------------------------------------------------");
 
-        printEPDExecution(pgn, printStream);
+        printEPDExecution(pgnGame, printStream);
 
         printStream.println("--------------------------------------------------------------------------------");
     }
@@ -240,10 +239,12 @@ public final class Match {
     private PGN createPGN() {
         PGN pgnGame = game.toPGN();
         pgnGame.setEvent(mathId);
+        pgnGame.setSite(getComputerName());
+        pgnGame.setDate(getToday());
         pgnGame.setWhite(white.getEngineName());
         pgnGame.setBlack(black.getEngineName());
 
-        int searchFrom = pgn.getPgnMoves().size();
+        int searchFrom = pgnMatch.getPgnMoves().size();
         pgnGame.setTag("ArenaSearch", Integer.toString(searchFrom));
 
         if (matchTimeOut != null) {
@@ -258,8 +259,8 @@ public final class Match {
     }
 
     private void attachEvaluations(PGN pgnGame, List<SearchResponse> whiteSearches, List<SearchResponse> blackSearches) {
-        int searchFrom = pgn.getPgnMoves().size();
-        boolean whiteTurn = pgn.getFen() == null || "w".equals(pgn.getFen().getActiveColor());
+        final int searchFrom = pgnMatch.getPgnMoves().size();
+        boolean whiteTurn = pgnMatch.getFen() == null || "w".equals(pgnMatch.getFen().getActiveColor());
         int pgnMoveCounter = 0;
         int whiteMoveCounter = 0;
         int blackMoveCounter = 0;
@@ -280,7 +281,7 @@ public final class Match {
                 if (searchResponse instanceof SearchByTreeResult searchByTreeResult) {
                     SearchResult searchResult = searchByTreeResult.searchResult();
                     Integer evaluation = searchResult.getBestEvaluation();
-                    pgnMove.putCommand("eval", evaluation == null ? "" : evaluation.toString());
+                    pgnMove.putCommand(PGNMove.EVAL_COMMAND, evaluation == null ? "" : evaluation.toString());
                 }
             }
             pgnMoveCounter++;
@@ -294,8 +295,8 @@ public final class Match {
         printStream.println(encoder.encode(game));
     }
 
-    private void printEPDExecution(PGN pgn, PrintStream printStream) {
-        pgn.toEPD()
+    private void printEPDExecution(PGN pgnGame, PrintStream printStream) {
+        pgnGame.toEPD()
                 .map(EPD::toString)
                 .forEach(printStream::println);
     }
@@ -320,5 +321,18 @@ public final class Match {
         Session session = sessionRef.get();
 
         return session != null ? session.getSearchResults() : null;
+    }
+
+    private static String getComputerName() {
+        Map<String, String> env = System.getenv();
+        if (env.containsKey("COMPUTERNAME"))
+            return env.get("COMPUTERNAME");
+        else return env.getOrDefault("HOSTNAME", "Unknown Computer");
+    }
+
+    private String getToday() {
+        String pattern = "yyyy.MM.dd";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        return simpleDateFormat.format(new Date());
     }
 }
