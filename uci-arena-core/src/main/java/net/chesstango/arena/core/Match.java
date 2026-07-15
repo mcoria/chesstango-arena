@@ -13,22 +13,24 @@ import net.chesstango.board.Status;
 import net.chesstango.board.moves.Move;
 import net.chesstango.board.representations.GameDebugEncoder;
 import net.chesstango.board.representations.move.SimpleMoveDecoder;
+import net.chesstango.engine.SearchByTreeResult;
 import net.chesstango.engine.SearchResponse;
 import net.chesstango.engine.Session;
 import net.chesstango.gardel.epd.EPD;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
+import net.chesstango.gardel.pgn.PGNMove;
 import net.chesstango.goyeneche.requests.UCIRequest;
 import net.chesstango.goyeneche.responses.RspBestMove;
+import net.chesstango.search.SearchResult;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerVisitor;
 import net.chesstango.uci.proxy.UciProxy;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -39,14 +41,8 @@ public final class Match {
     private final Controller white;
     private final Controller black;
     private final MatchType matchType;
-    private final Game game;
+    private final PGN pgnMatch;
     private final SimpleMoveDecoder simpleMoveDecoder = new SimpleMoveDecoder();
-
-    @Setter(AccessLevel.PACKAGE)
-    private MatchTimeOut matchTimeOut;
-
-    @Setter(AccessLevel.PACKAGE)
-    private MatchResult matchResult;
 
     @Setter
     @Accessors(chain = true)
@@ -56,13 +52,27 @@ public final class Match {
     @Accessors(chain = true)
     private MatchListener matchListener;
 
+    @Setter(AccessLevel.PACKAGE)
+    @Accessors(chain = true)
+    private MatchTimeOut matchTimeOut;
+
+    @Setter(AccessLevel.PACKAGE)
+    @Accessors(chain = true)
+    private MatchResult matchResult;
+
+    @Setter(AccessLevel.PACKAGE)
+    @Accessors(chain = true)
     private String mathId;
+
+    @Setter(AccessLevel.PACKAGE)
+    @Accessors(chain = true)
+    private Game game;
 
     public Match(Controller white, Controller black, MatchType matchType, PGN pgn) {
         this.white = white;
         this.black = black;
         this.matchType = matchType;
-        this.game = Game.from(pgn);
+        this.pgnMatch = pgn;
     }
 
     public MatchResult play() {
@@ -73,6 +83,8 @@ public final class Match {
         try {
 
             this.mathId = mathId;
+
+            this.game = Game.from(pgnMatch);
 
             startNewGame();
 
@@ -104,12 +116,12 @@ public final class Match {
         // Reset MatchType
         matchType.reset();
 
-
         final FEN startPosition = game.getInitialFEN();
 
         final List<String> executedMovesStr = new ArrayList<>();
 
-        game.getHistory().iteratorReverse()
+        game.getHistory()
+                .iteratorReverse()
                 .forEachRemaining(gameHistoryRecord -> {
                     executedMovesStr.add(gameHistoryRecord.playedMove().coordinateEncoding());
                 });
@@ -121,7 +133,7 @@ public final class Match {
                 Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
 
                 if (move == null) {
-                    printDebug(System.err);
+                    printDebug(createPGN(), System.err);
                     throw new RuntimeException(String.format("No move found %s", moveStr));
                 }
 
@@ -173,15 +185,23 @@ public final class Match {
                 log.info("[{}] WHITE WON BY TIME OUT {}", mathId, white.getEngineName());
             }
         } else {
-            printDebug(System.err);
+            printDebug(createPGN(), System.err);
             throw new RuntimeException("Game is still in progress.");
         }
 
+        PGN pgnGame = createPGN();
+
+        List<SearchResponse> whiteSearches = visitEngineController(white);
+
+        List<SearchResponse> blackSearches = visitEngineController(black);
+
+        attachEvaluations(pgnGame, whiteSearches, blackSearches);
+
         if (debug) {
-            printDebug(System.out);
+            printDebug(pgnGame, System.out);
         }
 
-        return new MatchResult(createPGN(), visitEngineController(white), visitEngineController(black));
+        return new MatchResult(pgnGame, whiteSearches, blackSearches);
     }
 
 
@@ -202,10 +222,8 @@ public final class Match {
         return bestMove.getBestMove();
     }
 
-    private void printDebug(PrintStream printStream) {
-        PGN pgn = createPGN();
-
-        printStream.println(pgn);
+    private void printDebug(PGN pgnGame, PrintStream printStream) {
+        printStream.println(pgnGame);
 
         printStream.println("--------------------------------------------------------------------------------");
 
@@ -213,26 +231,62 @@ public final class Match {
 
         printStream.println("--------------------------------------------------------------------------------");
 
-        printEPDExecution(pgn, printStream);
+        printEPDExecution(pgnGame, printStream);
 
         printStream.println("--------------------------------------------------------------------------------");
     }
 
     private PGN createPGN() {
-        PGN pgn = game.toPGN();
-        pgn.setEvent(mathId);
-        pgn.setWhite(white.getEngineName());
-        pgn.setBlack(black.getEngineName());
+        PGN pgnGame = game.toPGN();
+        pgnGame.setEvent(mathId);
+        pgnGame.setSite(getComputerName());
+        pgnGame.setDate(getToday());
+        pgnGame.setWhite(white.getEngineName());
+        pgnGame.setBlack(black.getEngineName());
+
+        int searchFrom = pgnMatch.getPgnMoves().size();
+        pgnGame.setTag("ArenaSearch", Integer.toString(searchFrom));
 
         if (matchTimeOut != null) {
             Controller winner = matchTimeOut.getController() == white ? black : white;
-            pgn.setResult(winner == white ? PGN.Result.WHITE_WINS : PGN.Result.BLACK_WINS);
-            pgn.setTermination(PGN.Termination.TIME_FORFEIT);
+            pgnGame.setResult(winner == white ? PGN.Result.WHITE_WINS : PGN.Result.BLACK_WINS);
+            pgnGame.setTermination(PGN.Termination.TIME_FORFEIT);
         } else {
-            pgn.setTermination(PGN.Termination.NORMAL);
+            pgnGame.setTermination(PGN.Termination.NORMAL);
         }
 
-        return pgn;
+        return pgnGame;
+    }
+
+    private void attachEvaluations(PGN pgnGame, List<SearchResponse> whiteSearches, List<SearchResponse> blackSearches) {
+        final int searchFrom = pgnMatch.getPgnMoves().size();
+        boolean whiteTurn = pgnMatch.getFen() == null || "w".equals(pgnMatch.getFen().getActiveColor());
+        int pgnMoveCounter = 0;
+        int whiteMoveCounter = 0;
+        int blackMoveCounter = 0;
+        for (PGNMove pgnMove : pgnGame.getPgnMoves()) {
+            if (pgnMoveCounter >= searchFrom) {
+                SearchResponse searchResponse = null;
+
+                if (whiteTurn && whiteSearches != null && whiteMoveCounter < whiteSearches.size()) {
+                    searchResponse = whiteSearches.get(whiteMoveCounter);
+                    whiteMoveCounter++;
+                }
+
+                if (!whiteTurn && blackSearches != null && blackMoveCounter < blackSearches.size()) {
+                    searchResponse = blackSearches.get(blackMoveCounter);
+                    blackMoveCounter++;
+                }
+
+                if (searchResponse instanceof SearchByTreeResult searchByTreeResult) {
+                    SearchResult searchResult = searchByTreeResult.searchResult();
+                    Integer evaluation = searchResult.getBestEvaluation();
+                    pgnMove.putCommand(PGNMove.EVAL_COMMAND, evaluation == null ? "" : evaluation.toString());
+                }
+            }
+            pgnMoveCounter++;
+            whiteTurn = !whiteTurn;
+        }
     }
 
     private void printMoveExecution(PrintStream printStream) {
@@ -241,8 +295,8 @@ public final class Match {
         printStream.println(encoder.encode(game));
     }
 
-    private void printEPDExecution(PGN pgn, PrintStream printStream) {
-        pgn.toEPD()
+    private void printEPDExecution(PGN pgnGame, PrintStream printStream) {
+        pgnGame.toEPD()
                 .map(EPD::toString)
                 .forEach(printStream::println);
     }
@@ -267,5 +321,18 @@ public final class Match {
         Session session = sessionRef.get();
 
         return session != null ? session.getSearchResults() : null;
+    }
+
+    private static String getComputerName() {
+        Map<String, String> env = System.getenv();
+        if (env.containsKey("COMPUTERNAME"))
+            return env.get("COMPUTERNAME");
+        else return env.getOrDefault("HOSTNAME", "Unknown Computer");
+    }
+
+    private String getToday() {
+        String pattern = "yyyy.MM.dd";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        return simpleDateFormat.format(new Date());
     }
 }

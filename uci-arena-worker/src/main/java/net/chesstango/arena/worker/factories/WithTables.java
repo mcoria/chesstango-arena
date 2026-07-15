@@ -3,6 +3,7 @@ package net.chesstango.arena.worker.factories;
 import net.chesstango.arena.worker.ControllerFactory;
 import net.chesstango.uci.gui.Controller;
 
+import java.nio.file.Path;
 import java.util.function.Supplier;
 
 /**
@@ -29,8 +30,8 @@ public class WithTables implements Supplier<Controller> {
                             .build()
             );
              */
-            config.setPolyglotFile(POLYGLOT_FILE);
-            config.setSyzygyPath(SYZYGY_PATH);
+            config.setPolyglotFile(Path.of(POLYGLOT_FILE));
+            config.setSyzygyPath(Path.of(SYZYGY_PATH));
         });
     }
 }
