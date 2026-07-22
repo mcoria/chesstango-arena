@@ -5,6 +5,8 @@ import net.chesstango.uci.gui.Controller;
 import net.chesstango.goyeneche.requests.ReqGo;
 import net.chesstango.goyeneche.responses.RspBestMove;
 
+import java.time.Duration;
+
 /**
  * @author Mauricio Coria
  */
@@ -22,6 +24,11 @@ public class MatchByDepth implements MatchType {
     @Override
     public RspBestMove requestBestMove(Controller controller, boolean whiteTurn) {
         return controller.send_ReqGo(reqGo);
+    }
+
+    @Override
+    public Duration getTimeRemaining(boolean whiteTurn) {
+        return null;
     }
 
     @Override
