@@ -8,6 +8,7 @@ import net.chesstango.arena.core.matchtypes.MatchByClock;
 import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
+import net.chesstango.arena.core.reports.MatchesByClock;
 import net.chesstango.arena.core.reports.MatchesBySearchManager;
 import net.chesstango.arena.core.reports.MatchesByTreeSummaryReport;
 import net.chesstango.arena.core.reports.MatchesReport;
@@ -42,14 +43,14 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    //private static final MatchType MATCH_TYPE = new MatchByDepth(5);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(7);
     //private static final MatchType MATCH_TYPE = new MatchByTime(500);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 2, 1000);
-    private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60, 0);
+    //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60, 0);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000, 0); // Will time out
 
     private static final boolean DEBUG = true;
-    private static final MatchSide MATCH_SIDE = MatchSide.WHITE_ONLY;
+    private static final MatchSide MATCH_SIDE = MatchSide.BLACK_ONLY;
 
     // private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     private static final String POLYGLOT_FILE = "C:\\java\\projects\\chess\\chess-utils\\books\\openings\\polyglot-collection\\komodo.bin";
@@ -81,8 +82,8 @@ public class MatchMain {
      * -Dcom.sun.management.jmxremote.ssl=false
      */
     public static void main(String[] args) {
-        Supplier<Controller> engine1Supplier = () -> ControllerFactory.createProxyController(tango_1_6);
-        //Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
+        //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createProxyController(tango_1_6);
+        Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
 
         /*
         Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
@@ -97,7 +98,7 @@ public class MatchMain {
         //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithEvaluator(Evaluator::getInstance);
 
         //Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango);
-        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_7);
+        Supplier<Controller> engine2Supplier = () -> ControllerFactory.createProxyController(tango_1_6);
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
@@ -114,7 +115,12 @@ public class MatchMain {
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
+        new MatchesByClock()
+                .withMathResults(matchResult)
+                .printReport(System.out);
 
+
+        /*
         // ES NECESARIO HABILITAR ESTADISTICAS PARA ESTE REPORTE
         new MatchesByTreeSummaryReport()
                 .withNodesVisitedStatistics()
@@ -129,13 +135,13 @@ public class MatchMain {
 
         // no tiene sentido imprimir para todos los matches, deberia almacenar y luego reportar o filtrar
 
-        /*
+
         new MatchesByTreeDetailsReport()
                 .withCutoffStatistics()
                 .withNodesVisitedStatistics()
                 .withPrincipalVariationReport()
                 .withEvaluationReport()
-                //.withFilter(pgn -> pgn.getFen().toString().equals(FENParser.INITIAL_FEN))
+                .withFilter(pgn -> pgn.getFen().toString().equals(FENParser.INITIAL_FEN))
                 .withMoveResults(MatchesByTreeDetailsReport.filterByEngineName("Tango", matchResult))
                 .printReport(System.out);
          */

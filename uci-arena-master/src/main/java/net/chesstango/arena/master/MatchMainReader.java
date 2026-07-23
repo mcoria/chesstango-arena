@@ -2,8 +2,9 @@ package net.chesstango.arena.master;
 
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
-import net.chesstango.arena.core.reports.MatchesReport;
+import net.chesstango.arena.core.reports.MatchesByClock;
 import net.chesstango.arena.core.reports.MatchesBySearchManager;
+import net.chesstango.arena.core.reports.MatchesReport;
 import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.ByteArrayInputStream;
@@ -22,12 +23,15 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMainReader {
 
-    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-07-21-21-20-49-depth7-nobooks");
+    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-07-23-01-00-46-time1seg");
 
     public static void main(String[] args) {
         List<MatchResponse> matchResponses = loadMatchResponses(responsesStore);
 
-        List<MatchResult> matchResult = matchResponses.stream().map(MatchResponse::getMatchResult).toList();
+        List<MatchResult> matchResult = matchResponses
+                .stream()
+                .map(MatchResponse::getMatchResult)
+                .toList();
 
         new MatchesReport()
                 .withMatchResults(matchResult)
@@ -36,13 +40,18 @@ public class MatchMainReader {
                 .printReport(System.out);
 
 
+        new MatchesByClock()
+                .withMathResults(matchResult)
+                .printReport(System.out);
+
         new MatchesBySearchManager()
                 //.breakByGame()
                 //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
-         /*
+
+        /*
         new MatchesByTreeSummaryReport()
                 //.withCollisionStatistics()
                 .withNodesVisitedStatistics()
@@ -50,9 +59,7 @@ public class MatchMainReader {
                 .breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
-        */
 
-        /*
         new MatchesByTreeDetailsReport()
                 //.withCutoffStatistics()
                 .withNodesVisitedStatistics()
