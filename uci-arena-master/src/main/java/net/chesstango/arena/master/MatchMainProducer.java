@@ -153,7 +153,7 @@ public class MatchMainProducer implements Runnable {
                     matchRequests.add(createMatchRequest(engine, opponent, pgn, String.format("%s-white", baseMatchId)));
                 }
                 if (side == MatchSide.BOTH || side == MatchSide.BLACK_ONLY) {
-                    matchRequests.add(createMatchRequest(engine, opponent, pgn, String.format("%s-black", baseMatchId)));
+                    matchRequests.add(createMatchRequest(opponent, engine, pgn, String.format("%s-black", baseMatchId)));
                 }
             }
         }
