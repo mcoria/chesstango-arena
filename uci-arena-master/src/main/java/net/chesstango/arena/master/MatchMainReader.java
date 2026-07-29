@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMainReader {
 
-    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-07-23-01-00-46-time1seg");
+    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-07-25-14-45-52-1min-nobooks");
 
     public static void main(String[] args) {
         List<MatchResponse> matchResponses = loadMatchResponses(responsesStore);
@@ -75,15 +75,19 @@ public class MatchMainReader {
     public static List<MatchResponse> loadMatchResponses(Path directory) {
         List<MatchResponse> matchResponses = new LinkedList<>();
         try (Stream<Path> files = Files.list(directory)) {
-            files.forEach(file -> {
-                try {
-                    log.info("File: {}", file.getFileName());
-                    MatchResponse matchResponse = deserializeFromFile(file);
-                    matchResponses.add(matchResponse);
-                } catch (IOException e) {
-                    log.error("Error reading file: " + file.getFileName(), e);
-                }
-            });
+            files
+                    .filter(Files::isRegularFile)
+                    .filter(file -> file.getFileName().toString().endsWith(".ser"))
+                    .peek(file -> log.info("File: {}", file.getFileName()))
+                    .forEach(file -> {
+                        try {
+
+                            MatchResponse matchResponse = deserializeFromFile(file);
+                            matchResponses.add(matchResponse);
+                        } catch (IOException e) {
+                            log.error("Error reading file: " + file.getFileName(), e);
+                        }
+                    });
         } catch (IOException e) {
             log.error("Error listing directory: " + directory, e);
         }
