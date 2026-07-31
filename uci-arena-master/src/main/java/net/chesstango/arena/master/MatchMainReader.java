@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMainReader {
 
-    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-07-25-14-45-52-1min-nobooks");
+    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-07-31-10-27-42");
 
     public static void main(String[] args) {
         List<MatchResponse> matchResponses = loadMatchResponses(responsesStore);
@@ -81,7 +81,6 @@ public class MatchMainReader {
                     .peek(file -> log.info("File: {}", file.getFileName()))
                     .forEach(file -> {
                         try {
-
                             MatchResponse matchResponse = deserializeFromFile(file);
                             matchResponses.add(matchResponse);
                         } catch (IOException e) {

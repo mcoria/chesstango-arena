@@ -19,9 +19,9 @@ public class MatchesByClock {
     @Getter
     private final List<ReportRowModel> reportRowModels = new ArrayList<>();
 
-    private PrintStream out;
+    private final Comparator<? super ReportRowModel> theComparator = Comparator.comparing(row -> row.engineName);
 
-    private Comparator<? super ReportRowModel> theComparator = Comparator.comparing(row -> row.engineName);
+    private PrintStream out;
 
     public MatchesByClock withMathResults(List<MatchResult> matchResult) {
 
@@ -46,12 +46,17 @@ public class MatchesByClock {
                             String[] parts = elapsedTime.get().split(":");
                             long hours = Long.parseLong(parts[0]);
                             long minutes = Long.parseLong(parts[1]);
-                            long seconds = Long.parseLong(parts[2]);
+
+                            parts = parts[2].split("\\.");
+
+                            long seconds = Long.parseLong(parts[0]);
+                            long millis = Long.parseLong(parts[1]);
 
                             Duration elapsedTimeDuration = Duration
                                     .ofHours(hours)
                                     .plusMinutes(minutes)
-                                    .plusSeconds(seconds);
+                                    .plusSeconds(seconds)
+                                    .plusMillis(millis);
 
                             thinkingTimeByEngine.put(currentEngine, thinkingTime.plus(elapsedTimeDuration));
                         }

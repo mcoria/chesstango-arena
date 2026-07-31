@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MatchesByClockTest {
+public class MatchesByClockTest {
 
     /**
      * Tests the {@code withMathResults} method in the {@code MatchesByClock} class.
@@ -33,8 +33,8 @@ class MatchesByClockTest {
                         [PlyCount "18"]
                         [EventDate "2022.??.??"]
                         
-                        1. e4 {[%emt 00:02:00]} e6 {[%emt 00:01:30]}
-                        2. d4 {[%emt 00:01:45]} d5 {[%emt 00:01:20]} *
+                        1. e4 {[%emt 0:02:00.500]} e6 {[%emt 0:01:30.400]}
+                        2. d4 {[%emt 0:01:45.500]} d5 {[%emt 0:01:20.600]} *
                         """;
 
         PGN pgn = PGN.from(pgnString);
@@ -51,14 +51,14 @@ class MatchesByClockTest {
                 .findFirst()
                 .orElse(null);
         assertNotNull(engine1Row);
-        assertEquals("00:03:45", engine1Row.getElapsedTimeTotal());
+        assertEquals("00:03:46", engine1Row.getElapsedTimeTotal());
 
         MatchesByClock.ReportRowModel engine2Row = matchesByClock.getReportRowModels().stream()
                 .filter(row -> row.getEngineName().equals("Engine2"))
                 .findFirst()
                 .orElse(null);
         assertNotNull(engine2Row);
-        assertEquals("00:02:50", engine2Row.getElapsedTimeTotal());
+        assertEquals("00:02:51", engine2Row.getElapsedTimeTotal());
     }
 
     /**
@@ -82,8 +82,8 @@ class MatchesByClockTest {
                         [PlyCount "10"]
                         [EventDate "2022.??.??"]
                         
-                        1. e4 {[%emt 00:01:00]} e5 {[%emt 00:00:10]}
-                        2. Nf3 {[%emt 00:02:00]} Nc6 {[%emt 00:00:20]} *
+                        1. e4 {[%emt 0:01:00.500]} e5 {[%emt 0:00:10.250]}
+                        2. Nf3 {[%emt 0:02:00.500]} Nc6 {[%emt 0:00:20.250]} *
                         """;
 
         PGN pgn1 = PGN.from(pgnString1);
@@ -102,8 +102,8 @@ class MatchesByClockTest {
                         [PlyCount "10"]
                         [EventDate "2022.??.??"]
                         
-                        1. e4 {[%emt 00:00:30]} e5 {[%emt 00:03:00]}
-                        2. Nf3 {[%emt 00:00:40]} Nc6 {[%emt 00:04:00]} *
+                        1. e4 {[%emt 0:00:30.500]} e5 {[%emt 0:03:00.250]}
+                        2. Nf3 {[%emt 0:00:40.500]} Nc6 {[%emt 0:04:00.250]} *
                         """;
 
         PGN pgn2 = PGN.from(pgnString2);
@@ -121,14 +121,14 @@ class MatchesByClockTest {
                 .findFirst()
                 .orElse(null);
         assertNotNull(engine1Row);
-        assertEquals("00:10:00", engine1Row.getElapsedTimeTotal());
+        assertEquals("00:10:01", engine1Row.getElapsedTimeTotal());
 
         MatchesByClock.ReportRowModel engine2Row = matchesByClock.getReportRowModels().stream()
                 .filter(row -> row.getEngineName().equals("Engine2"))
                 .findFirst()
                 .orElse(null);
         assertNotNull(engine2Row);
-        assertEquals("00:01:40", engine2Row.getElapsedTimeTotal());
+        assertEquals("00:01:41", engine2Row.getElapsedTimeTotal());
     }
 
     /**

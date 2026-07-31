@@ -317,20 +317,22 @@ public final class Match {
 
                 if (moveClocks.elapsedTime() != null) {
                     Duration elapsedTime = moveClocks.elapsedTime();
-                    String elapsedTimeStr = String.format("%02d:%02d:%02d",
+                    String elapsedTimeStr = String.format("%01d:%02d:%02d.%03d",
                             elapsedTime.toHoursPart(),
                             elapsedTime.toMinutesPart(),
-                            elapsedTime.toSecondsPart()
+                            elapsedTime.toSecondsPart(),
+                            elapsedTime.toMillisPart()
                     );
                     pgnMove.putCommand(ELAPSED_MOVE_TIME_COMMAND, elapsedTimeStr);
                 }
 
                 if (moveClocks.timeRemaining() != null) {
                     Duration timeRemaining = moveClocks.timeRemaining();
-                    String timeRemainingStr = String.format("%02d:%02d:%02d",
+                    String timeRemainingStr = String.format("%02d:%02d:%02d.%03d",
                             timeRemaining.toHoursPart(),
                             timeRemaining.toMinutesPart(),
-                            timeRemaining.toSecondsPart()
+                            timeRemaining.toSecondsPart(),
+                            timeRemaining.toMillisPart()
                     );
                     pgnMove.putCommand(CLOCK_COMMAND, timeRemainingStr);
                 }

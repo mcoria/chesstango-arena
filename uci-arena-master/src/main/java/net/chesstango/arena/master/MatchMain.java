@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    private static final MatchType MATCH_TYPE = new MatchByDepth(7);
+    private static final MatchType MATCH_TYPE = new MatchByDepth(5);
     //private static final MatchType MATCH_TYPE = new MatchByTime(500);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 2, 1000);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60, 0);
