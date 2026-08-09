@@ -67,7 +67,8 @@ public class MatchesByClock {
         thinkingTimeByEngine.forEach((engineName, thinkingTime) -> {
             ReportRowModel row = new ReportRowModel();
             row.engineName = engineName;
-            row.elapsedTimeTotal = String.format("%02d:%02d:%02d",
+            row.elapsedTimeTotal = String.format("%02d:%02d:%02d:%02d",
+                    thinkingTime.toDaysPart(),
                     thinkingTime.toHoursPart(),
                     thinkingTime.toMinutesPart(),
                     thinkingTime.toSecondsPart()
@@ -93,7 +94,7 @@ public class MatchesByClock {
                 .stream()
                 .sorted(theComparator)
                 .forEach(row -> {
-                    out.printf("|%34s |        %8s |\n", row.engineName, row.elapsedTimeTotal);
+                    out.printf("|%34s |     %11s |\n", row.engineName, row.elapsedTimeTotal);
                 });
         out.print(" -----------------------------------------------------\n");
     }
