@@ -11,6 +11,7 @@
 
     <artifactId>uci-arena-parent</artifactId>
     <packaging>pom</packaging>
+    <version>1.7.1</version>
 
     <scm>
         <developerConnection>scm:git:https://github.com/mcoria/chesstango-arena.git</developerConnection>
