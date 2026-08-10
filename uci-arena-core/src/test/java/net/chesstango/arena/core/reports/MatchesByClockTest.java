@@ -2,12 +2,12 @@ package net.chesstango.arena.core.reports;
 
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.gardel.pgn.PGN;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Mauricio Coria
@@ -164,7 +164,13 @@ public class MatchesByClockTest {
         // Act
         matchesByClock.withMathResults(List.of(matchResult));
 
-        // Assert
-        assertTrue(matchesByClock.getReportRowModels().isEmpty());
+        List<MatchesByClock.ReportRowModel> rowModels = matchesByClock.getReportRowModels();
+
+        assertEquals(2, rowModels.size());
+
+        for (MatchesByClock.ReportRowModel rowModel : rowModels) {
+            assertEquals("00:00:00:00", rowModel.getElapsedTimeTotal());
+            assertEquals("00:00:00:00", rowModel.getRemainingTimeTotal());
+        }
     }
 }
