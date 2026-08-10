@@ -9,6 +9,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author Mauricio Coria
+ */
 public class MatchesByClockTest {
 
     /**
@@ -51,14 +54,14 @@ public class MatchesByClockTest {
                 .findFirst()
                 .orElse(null);
         assertNotNull(engine1Row);
-        assertEquals("00:03:46", engine1Row.getElapsedTimeTotal());
+        assertEquals("00:00:03:46", engine1Row.getElapsedTimeTotal());
 
         MatchesByClock.ReportRowModel engine2Row = matchesByClock.getReportRowModels().stream()
                 .filter(row -> row.getEngineName().equals("Engine2"))
                 .findFirst()
                 .orElse(null);
         assertNotNull(engine2Row);
-        assertEquals("00:02:51", engine2Row.getElapsedTimeTotal());
+        assertEquals("00:00:02:51", engine2Row.getElapsedTimeTotal());
     }
 
     /**
@@ -121,14 +124,14 @@ public class MatchesByClockTest {
                 .findFirst()
                 .orElse(null);
         assertNotNull(engine1Row);
-        assertEquals("00:10:01", engine1Row.getElapsedTimeTotal());
+        assertEquals("00:00:10:01", engine1Row.getElapsedTimeTotal());
 
         MatchesByClock.ReportRowModel engine2Row = matchesByClock.getReportRowModels().stream()
                 .filter(row -> row.getEngineName().equals("Engine2"))
                 .findFirst()
                 .orElse(null);
         assertNotNull(engine2Row);
-        assertEquals("00:01:41", engine2Row.getElapsedTimeTotal());
+        assertEquals("00:00:01:41", engine2Row.getElapsedTimeTotal());
     }
 
     /**
