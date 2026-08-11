@@ -1,7 +1,8 @@
 package net.chesstango.uci.proxy;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +24,7 @@ public class ProxyConfigReader {
     protected static ProxyConfig readConfig(InputStream inputStream) throws IOException {
         try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
 
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = JsonMapper.builder().build();
 
             return objectMapper.readValue(inputStreamReader, ProxyConfig.class);
         }
