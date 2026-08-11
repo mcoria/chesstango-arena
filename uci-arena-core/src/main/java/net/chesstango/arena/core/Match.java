@@ -30,8 +30,12 @@ import net.chesstango.uci.proxy.UciProxy;
 
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static net.chesstango.gardel.pgn.PGNMove.*;
 
 /**
  * @author Mauricio Coria
@@ -68,6 +72,8 @@ public final class Match {
     @Accessors(chain = true)
     private Game game;
 
+    private List<Clocks> clocks;
+
     public Match(Controller white, Controller black, MatchType matchType, PGN pgn) {
         this.white = white;
         this.black = black;
@@ -85,6 +91,8 @@ public final class Match {
             this.mathId = mathId;
 
             this.game = Game.from(pgnMatch);
+
+            this.clocks = new ArrayList<>();
 
             startNewGame();
 
@@ -128,7 +136,15 @@ public final class Match {
 
         try {
             while (game.getStatus().isInProgress()) {
+                Instant start = Instant.now();
+
                 String moveStr = retrieveBestMove(currentController, startPosition, executedMovesStr);
+
+                Duration elapsedTime = Duration.between(start, Instant.now());
+
+                Duration timeRemaining = matchType.getTimeRemaining(currentController == white);
+
+                clocks.add(new Clocks(elapsedTime, timeRemaining));
 
                 Move move = simpleMoveDecoder.decode(game.getPossibleMoves(), moveStr);
 
@@ -196,6 +212,8 @@ public final class Match {
         List<SearchResponse> blackSearches = visitEngineController(black);
 
         attachEvaluations(pgnGame, whiteSearches, blackSearches);
+
+        attachClocks(pgnGame);
 
         if (debug) {
             printDebug(pgnGame, System.out);
@@ -281,11 +299,47 @@ public final class Match {
                 if (searchResponse instanceof SearchByTreeResult searchByTreeResult) {
                     SearchResult searchResult = searchByTreeResult.searchResult();
                     Integer evaluation = searchResult.getBestEvaluation();
-                    pgnMove.putCommand(PGNMove.EVAL_COMMAND, evaluation == null ? "" : evaluation.toString());
+                    pgnMove.putCommand(EVAL_COMMAND, evaluation == null ? "" : evaluation.toString());
                 }
             }
             pgnMoveCounter++;
             whiteTurn = !whiteTurn;
+        }
+    }
+
+    private void attachClocks(PGN pgnGame) {
+        final int searchFrom = pgnMatch.getPgnMoves().size();
+        int pgnMoveCounter = 0;
+        int moveCounter = 0;
+        for (PGNMove pgnMove : pgnGame.getPgnMoves()) {
+            if (pgnMoveCounter >= searchFrom) {
+                Clocks moveClocks = clocks.get(moveCounter);
+
+                if (moveClocks.elapsedTime() != null) {
+                    Duration elapsedTime = moveClocks.elapsedTime();
+                    String elapsedTimeStr = String.format("%01d:%02d:%02d.%03d",
+                            elapsedTime.toHoursPart(),
+                            elapsedTime.toMinutesPart(),
+                            elapsedTime.toSecondsPart(),
+                            elapsedTime.toMillisPart()
+                    );
+                    pgnMove.putCommand(ELAPSED_MOVE_TIME_COMMAND, elapsedTimeStr);
+                }
+
+                if (moveClocks.timeRemaining() != null) {
+                    Duration timeRemaining = moveClocks.timeRemaining();
+                    String timeRemainingStr = String.format("%02d:%02d:%02d.%03d",
+                            timeRemaining.toHoursPart(),
+                            timeRemaining.toMinutesPart(),
+                            timeRemaining.toSecondsPart(),
+                            timeRemaining.toMillisPart()
+                    );
+                    pgnMove.putCommand(CLOCK_COMMAND, timeRemainingStr);
+                }
+
+                moveCounter++;
+            }
+            pgnMoveCounter++;
         }
     }
 
@@ -334,5 +388,8 @@ public final class Match {
         String pattern = "yyyy.MM.dd";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.format(new Date());
+    }
+
+    record Clocks(Duration elapsedTime, Duration timeRemaining) {
     }
 }

@@ -2,8 +2,9 @@ package net.chesstango.arena.master;
 
 import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
-import net.chesstango.arena.core.reports.MatchesReport;
+import net.chesstango.arena.core.reports.MatchesByClock;
 import net.chesstango.arena.core.reports.MatchesBySearchManager;
+import net.chesstango.arena.core.reports.MatchesReport;
 import net.chesstango.arena.worker.MatchResponse;
 
 import java.io.ByteArrayInputStream;
@@ -22,12 +23,15 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMainReader {
 
-    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-04-04-01-33-59");
+    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-08-09-20-38-53-3min-v1.7.1-Tolfiks-v1.3.0");
 
     public static void main(String[] args) {
         List<MatchResponse> matchResponses = loadMatchResponses(responsesStore);
 
-        List<MatchResult> matchResult = matchResponses.stream().map(MatchResponse::getMatchResult).toList();
+        List<MatchResult> matchResult = matchResponses
+                .stream()
+                .map(MatchResponse::getMatchResult)
+                .toList();
 
         new MatchesReport()
                 .withMatchResults(matchResult)
@@ -36,13 +40,18 @@ public class MatchMainReader {
                 .printReport(System.out);
 
 
+        new MatchesByClock()
+                .withMathResults(matchResult)
+                .printReport(System.out);
+
         new MatchesBySearchManager()
                 //.breakByGame()
                 //.breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
-         /*
+
+        /*
         new MatchesByTreeSummaryReport()
                 //.withCollisionStatistics()
                 .withNodesVisitedStatistics()
@@ -50,9 +59,7 @@ public class MatchMainReader {
                 .breakByColor()
                 .withMathResults(matchResult)
                 .printReport(System.out);
-        */
 
-        /*
         new MatchesByTreeDetailsReport()
                 //.withCutoffStatistics()
                 .withNodesVisitedStatistics()
@@ -68,15 +75,18 @@ public class MatchMainReader {
     public static List<MatchResponse> loadMatchResponses(Path directory) {
         List<MatchResponse> matchResponses = new LinkedList<>();
         try (Stream<Path> files = Files.list(directory)) {
-            files.forEach(file -> {
-                try {
-                    log.info("File: {}", file.getFileName());
-                    MatchResponse matchResponse = deserializeFromFile(file);
-                    matchResponses.add(matchResponse);
-                } catch (IOException e) {
-                    log.error("Error reading file: " + file.getFileName(), e);
-                }
-            });
+            files
+                    .filter(Files::isRegularFile)
+                    .filter(file -> file.getFileName().toString().endsWith(".ser"))
+                    .peek(file -> log.info("File: {}", file.getFileName()))
+                    .forEach(file -> {
+                        try {
+                            MatchResponse matchResponse = deserializeFromFile(file);
+                            matchResponses.add(matchResponse);
+                        } catch (IOException e) {
+                            log.error("Error reading file: " + file.getFileName(), e);
+                        }
+                    });
         } catch (IOException e) {
             log.error("Error listing directory: " + directory, e);
         }

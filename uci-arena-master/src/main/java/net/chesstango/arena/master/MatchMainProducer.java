@@ -147,27 +147,25 @@ public class MatchMainProducer implements Runnable {
 
     private void createMatchRequests(PGN pgn) {
         for (int i = 0; i < iterations; i++) {
-            if (side == MatchSide.BOTH || side == MatchSide.WHITE_ONLY) {
-                opponents.stream()
-                        .map(opponent -> createMatchRequest(engine, opponent, pgn))
-                        .forEach(matchRequests::add);
-            }
-
-            if (side == MatchSide.BOTH || side == MatchSide.BLACK_ONLY) {
-                opponents.stream()
-                        .map(opponent -> createMatchRequest(opponent, engine, pgn))
-                        .forEach(matchRequests::add);
+            for (String opponent : opponents) {
+                String baseMatchId = UUID.randomUUID().toString();
+                if (side == MatchSide.BOTH || side == MatchSide.WHITE_ONLY) {
+                    matchRequests.add(createMatchRequest(engine, opponent, pgn, String.format("%s-white", baseMatchId)));
+                }
+                if (side == MatchSide.BOTH || side == MatchSide.BLACK_ONLY) {
+                    matchRequests.add(createMatchRequest(opponent, engine, pgn, String.format("%s-black", baseMatchId)));
+                }
             }
         }
     }
 
 
-    private MatchRequest createMatchRequest(String whiteEngine, String blackEngine, PGN pgn) {
+    private MatchRequest createMatchRequest(String whiteEngine, String blackEngine, PGN pgn, String matchId) {
         return new MatchRequest()
                 .setWhiteEngine(whiteEngine)
                 .setBlackEngine(blackEngine)
                 .setMatchType(matchType)
-                .setMatchId(UUID.randomUUID().toString())
+                .setMatchId(matchId)
                 .setSessionId(SESSION_DATE)
                 .setPgn(pgn);
     }

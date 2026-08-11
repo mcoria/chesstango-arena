@@ -33,6 +33,11 @@ public class MatchByClock implements MatchType {
     }
 
     @Override
+    public Duration getTimeRemaining(boolean whiteTurn) {
+        return whiteTurn ? Duration.ofMillis(wTime) : Duration.ofMillis(bTime);
+    }
+
+    @Override
     public RspBestMove requestBestMove(Controller controller, boolean whiteTurn) {
         ReqGoFast goCmd = UCIRequest.goFast(wTime, inc, bTime, inc);
 
