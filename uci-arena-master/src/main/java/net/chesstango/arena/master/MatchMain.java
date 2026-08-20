@@ -16,6 +16,7 @@ import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.ControllerFactory;
+import net.chesstango.arena.worker.factories.WithoutTransposition;
 import net.chesstango.engine.Tango;
 import net.chesstango.evaluation.Evaluator;
 import net.chesstango.gardel.fen.FEN;
@@ -49,8 +50,8 @@ public class MatchMain {
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60, 0);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000, 0); // Will time out
 
-    private static final boolean DEBUG = true;
-    private static final MatchSide MATCH_SIDE = MatchSide.BLACK_ONLY;
+    private static final boolean DEBUG = false;
+    private static final MatchSide MATCH_SIDE = MatchSide.BOTH;
 
     // private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
     private static final String POLYGLOT_FILE = "C:\\java\\projects\\chess\\chess-utils\\books\\openings\\polyglot-collection\\komodo.bin";
@@ -71,7 +72,7 @@ public class MatchMain {
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
     // private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
-    private static final int parallelJobs = 1;
+    private static final int parallelJobs = 2;
 
     /**
      * Add the following JVM parameters:
@@ -82,18 +83,14 @@ public class MatchMain {
      * -Dcom.sun.management.jmxremote.ssl=false
      */
     public static void main(String[] args) {
-        //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createProxyController(tango_1_6);
-        Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
+        //Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
 
-        /*
-        Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithSearch(() ->
-                AlphaBetaBuilder
-                        .createDefaultBuilderInstance()
-                        .withGameEvaluator(Evaluator.createInstance())
-                        .withStatistics()
-                        .build()
-        ).overrideEngineName(Tango.ENGINE_NAME);
-         */
+        //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config->{
+        //    config.setHashSizeMB(64);
+        //});
+
+
+        Supplier<Controller> engine1Supplier = new WithoutTransposition();
 
         //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithEvaluator(Evaluator::getInstance);
 
@@ -186,18 +183,17 @@ public class MatchMain {
     private static Stream<PGN> fromPGN() {
         String pgn =
                 """
-                [Event "SCCT - Unique v150"]
-                [Site "?"]
-                [Date "2023.02.07"]
+                [Event "07a9a832-5a96-4365-b5cc-2f6e16674ce0-white"]
+                [Site "uci-arena-worker-7dc86796-2bmj4"]
+                [Date "2026.08.18"]
                 [Round "?"]
-                [White "X"]
-                [Black "X"]
-                [Result "*"]
-                [ECO "C16"]
-                [PlyCount "18"]
-                [EventDate "2022.??.??"]
+                [White "Tango-v1.8.0"]
+                [Black "Tango-v1.6.0"]
+                [Result "0-1"]
+                [Termination "normal"]
+                [ArenaSearch "17"]
                 
-                1. e4 e6 2. d4 d5 3. Nc3 Bb4 4. e5 Qd7 5. a3 Bxc3+ 6. bxc3 b6 7. Qg4 f5 8. Qg3 Bb7 9. a4 Nc6 *
+                1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 Bb4 5. Bg5 dxc4 6. e4 h6 7. Bxf6 Qxf6 8. Bxc4 c5 9. O-O
                 """;
 
         return Stream.of(PGN.from(pgn));

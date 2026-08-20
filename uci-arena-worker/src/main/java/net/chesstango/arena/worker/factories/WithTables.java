@@ -22,14 +22,6 @@ public class WithTables implements Supplier<Controller> {
     @Override
     public Controller get() {
         return ControllerFactory.createTangoControllerCustomConfig(config -> {
-            /*
-            config.setSearch(
-                    AlphaBetaBuilder.createDefaultBuilderInstance()
-                            .withGameEvaluator(Evaluator.getInstance())
-                            .withStatistics()
-                            .build()
-            );
-             */
             config.setPolyglotFile(Path.of(POLYGLOT_FILE));
             config.setSyzygyPath(Path.of(SYZYGY_PATH));
         });
