@@ -5,13 +5,13 @@
     <parent>
         <groupId>net.chesstango</groupId>
         <artifactId>engine-parent</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.8.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <artifactId>uci-arena-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.8.0-SNAPSHOT</version>
+    <version>1.8.0</version>
 
     <scm>
         <developerConnection>scm:git:https://github.com/mcoria/chesstango-arena.git</developerConnection>
@@ -37,7 +37,7 @@
         <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
 
-        <commons-cli.version>1.8.0</commons-cli.version>
+        <commons-cli.version>1.11.0</commons-cli.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
         <rabitmq.verison>5.26.0</rabitmq.verison>
     </properties>
@@ -47,27 +47,27 @@
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-arena-ipc</artifactId>
-                <version>1.8.0-SNAPSHOT</version>
+                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-proxy</artifactId>
-                <version>1.8.0-SNAPSHOT</version>
+                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-gui</artifactId>
-                <version>1.8.0-SNAPSHOT</version>
+                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-arena-core</artifactId>
-                <version>1.8.0-SNAPSHOT</version>
+                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>net.chesstango</groupId>
                 <artifactId>uci-arena-worker</artifactId>
-                <version>1.8.0-SNAPSHOT</version>
+                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-cli</groupId>
