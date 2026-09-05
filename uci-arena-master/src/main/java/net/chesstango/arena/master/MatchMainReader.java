@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.reports.MatchesByClock;
 import net.chesstango.arena.core.reports.MatchesBySearchManager;
+import net.chesstango.arena.core.reports.MatchesByTreeSummaryReport;
 import net.chesstango.arena.core.reports.MatchesReport;
 import net.chesstango.arena.worker.MatchResponse;
 
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMainReader {
 
-    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-08-18-18-41-12");
+    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-08-28-17-26-16");
 
     public static void main(String[] args) {
         List<MatchResponse> matchResponses = loadMatchResponses(responsesStore);
@@ -60,13 +61,15 @@ public class MatchMainReader {
                 .withMathResults(matchResult)
                 .printReport(System.out);
 
+
         new MatchesByTreeDetailsReport()
-                //.withCutoffStatistics()
-                .withNodesVisitedStatistics()
-                .withPrincipalVariationReport()
                 .withMathResults(matchResult)
                 .printReport(System.out);
-         */
+        */
+
+
+        new MatchToWindowsDump()
+                .dump(matchResult);
 
         new MatchToPGN(responsesStore)
                 .save(matchResult);

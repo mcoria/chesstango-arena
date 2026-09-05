@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 /**
  * @author Mauricio Coria
  */
-public class DefaultTango implements Supplier<Controller> {
+public class Default implements Supplier<Controller> {
 
     @Override
     public Controller get() {

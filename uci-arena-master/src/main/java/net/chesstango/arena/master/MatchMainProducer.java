@@ -37,6 +37,7 @@ public class MatchMainProducer implements Runnable {
      * Example:
      * -d 2 -e "file:Spike" -o "file:Spike" -p "C:\java\projects\chess\chess-utils\testing\matches\Balsa_Top10.pgn"
      * -d 2 -e "class:WithTables" -o "file:Stockfish" -s white -f "C:\\java\\projects\\chess\\chess-utils\\testing\\PGN\\full\\LumbrasGigaBase\\OverTheBoard\\LumbrasGigaBase_OTB_2025_6_pieces-white-wins.fen"
+     * -d 7 -e "class:WithTables" -o "file:Tofiks" -s both -p "C:\java\projects\chess\chess-utils\testing\PGN\openings\Balsa_270423\Unique_v150.pgn"
      * -d 7 -e "file:Tango-v1.3.0" -o "file:Stockfish" -s both -p "C:\java\projects\chess\chess-utils\testing\PGN\openings\Perfect2023\Perfect2023-Tango.pgn"
      * <p>
      * -c 1:0 -e "file:Tango-v1.3.0" -o "file:Tango-v1.2.0" -s both -i 300
