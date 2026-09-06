@@ -5,24 +5,17 @@ import net.chesstango.arena.core.MatchResult;
 import net.chesstango.arena.core.listeners.MatchBroadcaster;
 import net.chesstango.arena.core.listeners.SavePGNGame;
 import net.chesstango.arena.core.matchtypes.MatchByClock;
-import net.chesstango.arena.core.matchtypes.MatchByDepth;
-import net.chesstango.arena.core.matchtypes.MatchByTime;
 import net.chesstango.arena.core.matchtypes.MatchType;
 import net.chesstango.arena.core.reports.MatchesByClock;
 import net.chesstango.arena.core.reports.MatchesBySearchManager;
-import net.chesstango.arena.core.reports.MatchesByTreeSummaryReport;
 import net.chesstango.arena.core.reports.MatchesReport;
 import net.chesstango.arena.master.common.ControllerPoolFactory;
 import net.chesstango.arena.master.common.MatchMultiple;
 import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.arena.worker.ControllerFactory;
-import net.chesstango.arena.worker.factories.WithoutTransposition;
-import net.chesstango.engine.Tango;
-import net.chesstango.evaluation.Evaluator;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
 import net.chesstango.gardel.pgn.PGNDecoder;
-import net.chesstango.search.builders.AlphaBetaBuilder;
 import net.chesstango.uci.gui.Controller;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -35,6 +28,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -44,20 +38,23 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMain {
 
-    private static final MatchType MATCH_TYPE = new MatchByDepth(5);
+    //private static final MatchType MATCH_TYPE = new MatchByDepth(5);
     //private static final MatchType MATCH_TYPE = new MatchByTime(500);
-    //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60 * 2, 1000);
-    //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60, 0);
+    //private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60, 1000);
+    private static final MatchType MATCH_TYPE = new MatchByClock(1000 * 60, 0);
     //private static final MatchType MATCH_TYPE = new MatchByClock(1000, 0); // Will time out
 
     private static final boolean DEBUG = false;
     private static final MatchSide MATCH_SIDE = MatchSide.BOTH;
 
     // private static final String POLYGLOT_FILE = "C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin";
-    private static final String POLYGLOT_FILE = "C:\\java\\projects\\chess\\chess-utils\\books\\openings\\polyglot-collection\\komodo.bin";
+    private static final Path POLYGLOT_FILE = Path.of("C:/java/projects/chess/chess-utils/books/openings/polyglot-collection/komodo.bin");
     // C:\java\projects\chess\chess-utils\books\openings\chesstango
-    // private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5";
-    private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5;D:\\k8s_shared\\syzygy\\6-DTZ;D:\\k8s_shared\\syzygy\\6-WDL";
+    //private static final String SYZYGY_PATH = "D:\\k8s_shared\\syzygy\\3-4-5";
+    private static final Set<Path> SYZYGY_PATH = Set.of(Path.of("D:\\k8s_shared\\syzygy\\3-4-5"),
+            Path.of("D:\\k8s_shared\\syzygy\\6-WDL"),
+            Path.of("D:\\k8s_shared\\syzygy\\6-DTZ")
+    );
 
     private static final Path spike = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Spike.json");
     // private static final Path stockfish = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Stockfish.json");
@@ -66,13 +63,13 @@ public class MatchMain {
     private static final Path tango_1_3 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.3.0.json");
     private static final Path tango_1_4 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.4.1.json");
     private static final Path tango_1_5 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.5.0.json");
-    private static final Path tango_1_6 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.6.0-nobook.json");
+    private static final Path tango_1_6 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.6.0.json");
     private static final Path tango_1_7 = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Tango-v1.7.0-nobook.json");
     private static final Path obsedian = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Obsidian.json");
     private static final Path arasan = Path.of("C:\\java\\projects\\chess\\chess-utils\\engines\\catalog_win\\Arasan.json");
 
     // private static final int parallelJobs = Runtime.getRuntime().availableProcessors();
-    private static final int parallelJobs = 2;
+    private static final int parallelJobs = 1;
 
     /**
      * Add the following JVM parameters:
@@ -85,12 +82,14 @@ public class MatchMain {
     public static void main(String[] args) {
         //Supplier<Controller> engine1Supplier = ControllerFactory::createTangoController;
 
-        //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config->{
-        //    config.setHashSizeMB(64);
-        //});
+        Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerCustomConfig(config -> {
+            config.setHashSizeMB(64);
+            config.setPolyglotFile(POLYGLOT_FILE);
+            config.setSyzygyDirs(SYZYGY_PATH);
+        });
 
 
-        Supplier<Controller> engine1Supplier = new WithoutTransposition();
+        //Supplier<Controller> engine1Supplier = new Default();
 
         //Supplier<Controller> engine1Supplier = () -> ControllerFactory.createTangoControllerWithEvaluator(Evaluator::getInstance);
 
@@ -99,7 +98,7 @@ public class MatchMain {
 
 
         List<MatchResult> matchResult = new MatchMain(engine1Supplier, engine2Supplier)
-                .play(fromPGN());
+                .play(fromFEN());
 
         new MatchesReport()
                 .withMatchResults(matchResult)
@@ -183,18 +182,18 @@ public class MatchMain {
     private static Stream<PGN> fromPGN() {
         String pgn =
                 """
-                [Event "07a9a832-5a96-4365-b5cc-2f6e16674ce0-white"]
-                [Site "uci-arena-worker-7dc86796-2bmj4"]
-                [Date "2026.08.18"]
-                [Round "?"]
-                [White "Tango-v1.8.0"]
-                [Black "Tango-v1.6.0"]
-                [Result "0-1"]
-                [Termination "normal"]
-                [ArenaSearch "17"]
-                
-                1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 Bb4 5. Bg5 dxc4 6. e4 h6 7. Bxf6 Qxf6 8. Bxc4 c5 9. O-O
-                """;
+                        [Event "07a9a832-5a96-4365-b5cc-2f6e16674ce0-white"]
+                        [Site "uci-arena-worker-7dc86796-2bmj4"]
+                        [Date "2026.08.18"]
+                        [Round "?"]
+                        [White "Tango-v1.8.0"]
+                        [Black "Tango-v1.6.0"]
+                        [Result "0-1"]
+                        [Termination "normal"]
+                        [ArenaSearch "17"]
+                        
+                        1. d4 Nf6 2. c4 e6 3. Nf3 d5 4. Nc3 Bb4 5. Bg5 dxc4 6. e4 h6 7. Bxf6 Qxf6 8. Bxc4 c5 9. O-O
+                        """;
 
         return Stream.of(PGN.from(pgn));
     }
