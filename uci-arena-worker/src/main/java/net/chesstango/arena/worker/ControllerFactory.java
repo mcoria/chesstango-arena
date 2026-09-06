@@ -43,6 +43,7 @@ public class ControllerFactory {
     public static Controller createTangoControllerCustomConfig(Consumer<Config> configConsumer) {
         Config config = Config.create()
                 .setAsyncSearch(false);
+
         configConsumer.accept(config);
 
         return new ControllerTango(new UciTango(config));
