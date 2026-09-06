@@ -149,6 +149,7 @@ public abstract class ControllerAbstract implements Controller {
 
     synchronized void sendRequestNoWaitResponse(UCIRequest request) {
         this.currentState = new StateNoWaitRsp();
+        log.trace("[{}] gui >> {}", engineName, request);
         service.accept(request);
     }
 
