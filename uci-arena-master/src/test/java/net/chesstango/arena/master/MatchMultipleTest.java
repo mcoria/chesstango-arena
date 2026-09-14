@@ -8,7 +8,6 @@ import net.chesstango.arena.master.common.MatchSide;
 import net.chesstango.engine.Config;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
-import net.chesstango.search.dummy.Dummy;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerTango;
@@ -26,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Mauricio Coria
  */
+
 
 public class MatchMultipleTest {
 
@@ -47,7 +47,7 @@ public class MatchMultipleTest {
         dummyEnginePool = new GenericObjectPool<>(new ControllerPoolFactory(() ->
                 new ControllerTango(
                         new UciTango(Config.create()
-                                .setSearch(new Dummy())
+                                .setSearch(new SearchDummy())
                         )
                 ).overrideEngineName("Dummy")
         ));
