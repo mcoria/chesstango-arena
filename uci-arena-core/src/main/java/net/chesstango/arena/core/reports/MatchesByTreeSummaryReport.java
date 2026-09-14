@@ -116,8 +116,8 @@ public class MatchesByTreeSummaryReport {
         return this;
     }
 
-    public MatchesByTreeSummaryReport withCutoffStatistics() {
-        searchesSummaryReport.withCutoffStatistics();
+    public MatchesByTreeSummaryReport withNodesVisitedPercentageStatistics() {
+        searchesSummaryReport.withNodesVisitedPercentageStatistics();
         return this;
     }
 

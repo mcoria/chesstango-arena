@@ -4,7 +4,6 @@ import net.chesstango.arena.core.matchtypes.MatchByDepth;
 import net.chesstango.engine.Config;
 import net.chesstango.gardel.fen.FEN;
 import net.chesstango.gardel.pgn.PGN;
-import net.chesstango.search.dummy.Dummy;
 import net.chesstango.uci.engine.UciTango;
 import net.chesstango.uci.gui.Controller;
 import net.chesstango.uci.gui.ControllerTango;
@@ -37,7 +36,7 @@ public class MatchIntegrationTest {
                 new UciTango(Config.create()
                         .setAsyncSearch(false)
                         .setEvaluator(null)
-                        .setSearch(new Dummy())
+                        .setSearch(new SearchDummy())
                 )
         ).overrideEngineName(DUMMY);
 

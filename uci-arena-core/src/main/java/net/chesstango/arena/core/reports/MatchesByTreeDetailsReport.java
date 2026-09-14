@@ -55,7 +55,7 @@ public class MatchesByTreeDetailsReport {
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
                 .filter(searchResponse -> searchResponse instanceof SearchByTreeResult)
-                .map(searchResponse -> (SearchByTreeResult) searchResponse)
+                .map(SearchByTreeResult.class::cast)
                 .map(SearchByTreeResult::searchResult)
                 .forEach(searchResultList::add);
 
@@ -63,13 +63,13 @@ public class MatchesByTreeDetailsReport {
     }
 
 
-    public MatchesByTreeDetailsReport withCutoffStatistics() {
-        searchesByTreeReport.withCutoffStatistics();
+    public MatchesByTreeDetailsReport withNodesVisitedPercentageStatistics() {
+        searchesByTreeReport.withNodesVisitedPercentageStatistics();
         return this;
     }
 
-    public MatchesByTreeDetailsReport withNodesDepthStatistics() {
-        searchesByTreeReport.withNodesDepthStatistics();
+    public MatchesByTreeDetailsReport withNodesVisitedStatistics() {
+        searchesByTreeReport.withNodesVisitedStatistics();
         return this;
     }
 

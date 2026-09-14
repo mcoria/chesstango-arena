@@ -1,0 +1,52 @@
+
+package net.chesstango.arena.core;
+
+import net.chesstango.board.Game;
+import net.chesstango.board.PiecePositioned;
+import net.chesstango.board.moves.Move;
+import net.chesstango.board.moves.containers.MoveContainerReader;
+import net.chesstango.search.*;
+
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+
+/**
+ * @author Mauricio Coria
+ */
+public class SearchDummy implements Search {
+
+    @Override
+    public SearchResult startSearch(Game game) {
+        MoveContainerReader<Move> moves = game.getPossibleMoves();
+
+        Map<PiecePositioned, List<Move>> moveMap = new HashMap<>();
+
+        moves.forEach(move ->
+                moveMap.computeIfAbsent(move.getFrom(), k -> new ArrayList<>()).add(move)
+        );
+
+        Set<PiecePositioned> fromPieces = moveMap.keySet();
+
+        PiecePositioned[] pieces = fromPieces.toArray(new PiecePositioned[moveMap.size()]);
+
+        PiecePositioned selectedPiece = pieces[ThreadLocalRandom.current().nextInt(0, pieces.length)];
+
+        List<Move> selectedMovesCollection = moveMap.get(selectedPiece);
+
+        RootMoveEvaluation bestMove = new RootMoveEvaluation(selectedMovesCollection.get(ThreadLocalRandom.current().nextInt(0, selectedMovesCollection.size())), 0, Bound.EXACT, null);
+
+        return new SearchResult().addSearchResultByDepth(new SearchResultByDepth(1).setBestRootMoveEvaluation(bestMove));
+    }
+
+    @Override
+    public void stopSearch() {
+    }
+
+    @Override
+    public void reset() {
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+    }
+}
