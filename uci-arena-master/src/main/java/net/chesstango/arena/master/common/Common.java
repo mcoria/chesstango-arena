@@ -34,11 +34,13 @@ public class Common {
         Path sessionDirectory = suiteDirectory.resolve(sessionId);
 
         if (!Files.exists(sessionDirectory)) {
-            try {
-                log.info("Creating session directory {}", sessionDirectory.getFileName().toString());
-                Files.createDirectory(sessionDirectory);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            synchronized (Common.class) {
+                try {
+                    log.info("Creating session directory {}", sessionDirectory.getFileName().toString());
+                    Files.createDirectory(sessionDirectory);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return sessionDirectory;

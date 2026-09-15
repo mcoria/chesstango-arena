@@ -7,8 +7,7 @@ import org.apache.commons.cli.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 
 
@@ -53,28 +52,27 @@ public class MatchMainConsumer implements Runnable {
     public void run() {
         log.info("To exit press CTRL+C");
 
-        try (ExecutorService executorService = Executors.newSingleThreadExecutor()) {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(rabbitHost);
-            factory.setUsername("guest");
-            factory.setPassword("guest");
-            factory.setSharedExecutor(executorService);
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(rabbitHost);
+        factory.setUsername("guest");
+        factory.setPassword("guest");
+        factory.setSharedExecutor(ForkJoinPool.commonPool());
 
-            log.info("Connecting to RabbitMQ");
-            try (ResponseConsumer responseConsumer = new ResponseConsumer(factory)) {
+        log.info("Connecting to RabbitMQ");
+        try (ResponseConsumer responseConsumer = new ResponseConsumer(factory)) {
 
-                log.info("Connected to RabbitMQ");
+            log.info("Connected to RabbitMQ");
 
-                responseConsumer.setupQueueConsumer(matchResponseConsumer);
+            responseConsumer.setupQueueConsumer(matchResponseConsumer);
 
-                log.info("Waiting for MatchResponse");
+            log.info("Waiting for MatchResponse");
 
-                Thread.sleep(Long.MAX_VALUE);
+            Thread.sleep(Long.MAX_VALUE);
 
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
         log.info("Done");
     }
 

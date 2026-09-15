@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class MatchMainReader {
 
-    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-09-08-23-32-12-10min-Tofiks1.5");
+    private static final Path responsesStore = Path.of("C:\\java\\projects\\chess\\chess-utils\\testing\\matches\\2026-09-14-17-38-51-5min-Tango1.9.0");
 
     public static void main(String[] args) {
         List<MatchResponse> matchResponses = loadMatchResponses(responsesStore);
