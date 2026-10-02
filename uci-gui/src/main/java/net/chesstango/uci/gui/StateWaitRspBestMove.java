@@ -52,11 +52,11 @@ class StateWaitRspBestMove implements StateWaitRsp {
 
     long calcTimeOut(ReqGo cmdGo) {
         return switch (cmdGo) {
-            case ReqGoInfinite reqGoInfinite -> 1000 * 60 * 10;     // 10 minutes
+            case ReqGoInfinite _ -> 1000 * 60 * 10;                         // 10 minutes
             case ReqGoTime reqGoTime -> reqGoTime.getTimeOut() + 1000;
-            case ReqGoDepth reqGoDepth -> 1000 * 60 * 2;            // 2 minutes
+            case ReqGoDepth _ -> 1000 * 60 * 2;                             // 2 minutes
             case ReqGoFast reqGoFast -> Math.max(reqGoFast.getWTime(), reqGoFast.getBTime()) + 5000;
-            default -> 1000;
+            default -> 1000 * 60 * 2;                                       // 2 minutes
         };
     }
 }
